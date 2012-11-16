@@ -1,0 +1,362 @@
+//===== Oplex Origins Script =================================
+//= Work Bench Script
+//===== By: ==================================================
+//= Sigma
+//===== Current Version: =====================================
+//= 3.0
+//===== Compatible With: =====================================
+//= Any Oplex Version 
+//===== Description: =========================================
+//= We need a menu similar to the old Work Bench where the player
+//= selects an item, the script will then take the player to that case
+//= and set the variable .@item to the chosen items ID.
+//= The script will then check if the item ammount is greater than 0.
+//= If so, the script will call the function work_bench,
+//= Which will fill in the information accordingly.
+//= If possible, we should allow the player to input how many of the item
+//= he/she wished to decompose/create. If not, set an IF statement to allow
+//= them at lease 1,5, or 10 at a time.
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//============================================================
+
+la_jack,13,17,5	script	Work Bench::wb	111,{
+
+//============================================================
+//= Notes
+//============================================================
+// What we should have at the moment, using one resource as an example:
+// .@fabric = Fabric Item ID
+// .@fabric_name$ = "Fabric"
+//============================================================
+// Now we need the script to set .@item according to what the player selects.
+// .@item should be set after the player is taken to the case.
+// Then check if the ammount of .@item is greater than 0.
+// If so, the script will call the function work_bench,
+// which will fill in the resource ammounts.
+// Then for item creation, we simply subract that amount.
+// And for decomposition, we add it.
+// If possible, see the note below for randomizing decomposition
+// randomization.
+
+//============================================================
+//= Resources
+//============================================================
+// Resource ID Array
+setarray .@resources[0],.@fabric,.@metal,.@plastic,.@latex,.@stone,.@wood,.@cyan,.@leather,.@sulfur,.@charcoal,.@salt,.@coal,.@ducttape,.@gunpowder,.@nails;
+
+// Resource name Array
+setarray .@resource_names[0],.@fabric_name$,.@metal_name$,.@plastic_name$,.@latex_name$,.@stone_name$,.@wood_name$,.@cyan_name$,.@leather_name$,.@sulfur_name$,.@charcoal_name$,.@salt_name$,.@coal_name$,.@ducttape_name$,.@gunpowder_name$,.@nails_name$;
+
+// Resource Amounts
+setarray .@resource_nums[0],.@fabric_num,.@metal_num,.@plastic_num,.@latex_num,.@stone_num,.@wood_num,.@cyan_num,.@leather_num,.@sulfur_num,.@charcoal_num,.@salt_num,.@coal_num,.@ducttape_num,.@gunpowder_num,.@nails_num;
+
+// Resource Values
+set .@fabric,1002;
+set .@fabric_name$, "Fabric";
+
+set .@metal,1003;
+set .@metal_name$, "Metal";
+
+set .@plastic,1004;
+set .@plastic_name$, "Plastic";
+
+set .@latex,1005;
+set .@latex_name$, "Latex";
+
+set .@stone,1006;
+set .@stone_name$, "Stone";
+
+set .@wood,1007;
+set .@wood_name$, "Wood";
+
+set .@cyan,1015;
+set .@cyan_name$, "Cyanoacrylate";
+
+set .@leather,1016;
+set .@leather_name$, "Leather";
+
+set .@sulfur,1017;
+set .@sulfur_name$, "Sulfur";
+
+set .@charcoal,1018;
+set .@charcoal_name$, "Charcoal";
+
+set .@salt,1019;
+set .@salt_name$, "Salt";
+
+set .@coal,1066;
+set .@coal_name$, "Coal";
+
+set .@ducttape,1068;
+set .@ducttape_name$, "Duct Tape";
+
+set .@gunpowder,1075;
+set .@gunpowder_name$, "Gun Powder";
+
+set .@nails,1150;
+set .@nails_name$, "Nails";
+//============================================================
+//= Base NPC
+//============================================================
+mes	"^990000 [ Work Bench ]^000000";
+mes	"You look upon the Work Bench and wonder...";
+switch(select("Forge/Dismantle an item:Temper Equipment")) {
+
+// Create | Dismantle Item
+case 1:
+goto L_comp;
+
+// Refine Item
+case 2:
+goto L_WBRefine;
+
+}
+
+//============================================================
+//= Create/Dismatnle Item Input (L_Comp)
+//============================================================
+L_Comp:
+	next;
+	mes	"^990000 [ Work Bench ]^000000";
+	mes	"What will you attempt to create/dismantle?";
+	input .@item$;
+	mes	"You said: ^009900" +.@item$+ "^000000.";
+//============================================================
+//SQL Query to select the resource amounts from the item using its ID, 
+//So .@Item must equal an item ID. Then set them into variables.
+//Query Used - ("SELECT COL, COL, COL FROM `TABLE` WHERE name_english='"+.@item$+"'", .@SetColVar, .@SetColVar);
+
+query_sql("SELECT fabric, metal, plastic, latex, stone, wood, cyan, leather, sulfur, charcoal, salt, coal, ducttape, gunpowder, nails FROM `item_db2` WHERE name_english='"+.@item$+"'", .@fabric_num, .@metal_num, .@plastic_num, .@latex_num, .@stone_num, .@wood_num, .@cyan_num, .@leather_num, .@sulfur_num, .@charcoal_num, .@salt_num, .@coal_num, .@ducttape_num, .@gunpowder_num, .@nails_num);
+
+//============================================================
+// Items go here. Use the name from the db column name_english.
+//============================================================
+if(.@item$)=="Human Meat" {goto S_WB;}
+if(.@item$)=="Energy Drink" {goto S_WB;}
+if(.@item$)=="Ration" {goto S_WB;}
+if(.@item$)=="Water" {goto S_WB;}
+if(.@item$)=="Celerity" {goto S_WB;}
+if(.@item$)=="StamiNax" {goto S_WB;}
+if(.@item$)=="Fix8" {goto S_WB;}
+if(.@item$)=="Celerity DX" {goto S_WB;}
+if(.@item$)=="StamiNax DX" {goto S_WB;}
+if(.@item$)=="Fix8 DX" {goto S_WB;}
+if(.@item$)=="Celerity PURE" {goto S_WB;}
+if(.@item$)=="StamiNax PURE" {goto S_WB;}
+if(.@item$)=="Fix8 PURE" {goto S_WB;}
+if(.@item$)=="Fruit Juice" {goto S_WB;}
+if(.@item$)=="Tea" {goto S_WB;}
+if(.@item$)=="Lettuce" {goto S_WB;}
+if(.@item$)=="Bread" {goto S_WB;}
+if(.@item$)=="Rice" {goto S_WB;}
+if(.@item$)=="Can of Soup" {goto S_WB;}
+if(.@item$)=="Egg" {goto S_WB;}
+if(.@item$)=="Beer" {goto S_WB;}
+if(.@item$)=="Soft Drink" {goto S_WB;}
+if(.@item$)=="Milk" {goto S_WB;}
+if(.@item$)=="Acorn" {goto S_WB;}
+if(.@item$)=="Apple" {goto S_WB;}
+if(.@item$)=="Banana" {goto S_WB;}
+if(.@item$)=="Butter" {goto S_WB;}
+if(.@item$)=="Cake" {goto S_WB;}
+if(.@item$)=="Carrot" {goto S_WB;}
+if(.@item$)=="Cheese" {goto S_WB;}
+if(.@item$)=="Chocolate" {goto S_WB;}
+if(.@item$)=="Chocolate Cake" {goto S_WB;}
+if(.@item$)=="Cookie" {goto S_WB;}
+if(.@item$)=="Dumpling" {goto S_WB;}
+if(.@item$)=="First Aid" {goto S_WB;}
+if(.@item$)=="Fish" {goto S_WB;}
+if(.@item$)=="Fried Potato" {goto S_WB;}
+if(.@item$)=="Grape" {goto S_WB;}
+if(.@item$)=="Honey" {goto S_WB;}
+if(.@item$)=="Lettuce" {goto S_WB;}
+if(.@item$)=="Mushroom" {goto S_WB;}
+if(.@item$)=="Potato" {goto S_WB;}
+if(.@item$)=="Pretzel" {goto S_WB;}
+if(.@item$)=="Shrimp" {goto S_WB;}
+if(.@item$)=="Sushi" {goto S_WB;}
+if(.@item$)=="Wine" {goto S_WB;}
+if(.@item$)=="Uncooked Meat" {goto S_WB;}
+if(.@item$)=="Cooked Meat" {goto S_WB;}
+if(.@item$)=="Hot Soup" {goto S_WB;}
+if(.@item$)=="Sandwich" {goto S_WB;}
+if(.@item$)=="Cooked Eggs" {goto S_WB;}
+if(.@item$)=="Salad" {goto S_WB;}
+if(.@item$)=="Flashlight" {goto S_WB;}
+if(.@item$)=="Sleeping Bag" {goto S_WB;}
+if(.@item$)=="Megaphone" {goto S_WB;}
+if(.@item$)=="Radio" {goto S_WB;}
+if(.@item$)=="Watch" {goto S_WB;}
+if(.@item$)=="Haircut Kit" {goto S_WB;}
+if(.@item$)=="MP3 Player" {goto S_WB;}
+if(.@item$)=="Game" {goto S_WB;}
+if(.@item$)=="Book" {goto S_WB;}
+if(.@item$)=="Family Portrait" {goto S_WB;}
+if(.@item$)=="Food Supply Box (C)" {goto S_WB;}
+if(.@item$)=="Food Supply Box (U)" {goto S_WB;}
+if(.@item$)=="Food Supply Box (R)" {goto S_WB;}
+if(.@item$)=="Drug Supply Box (C)" {goto S_WB;}
+if(.@item$)=="Drug Supply Box (U)" {goto S_WB;}
+if(.@item$)=="Drug Supply Box (R)" {goto S_WB;}
+if(.@item$)=="Tool Supply Box (C)" {goto S_WB;}
+if(.@item$)=="Tool Supply Box (U)" {goto S_WB;}
+if(.@item$)=="Tool Supply Box (R)" {goto S_WB;}
+if(.@item$)=="Weapon Supply Box (C)" {goto S_WB;}
+if(.@item$)=="Weapon Supply Box (U)" {goto S_WB;}
+if(.@item$)=="Weapon Supply Box (R)" {goto S_WB;}
+if(.@item$)=="Accessory Supply Box (C)" {goto S_WB;}
+if(.@item$)=="Accessory Supply Box (U)" {goto S_WB;}
+if(.@item$)=="Accessory Supply Box (R)" {goto S_WB;}
+if(.@item$)=="Resource Supply Box (C)" {goto S_WB;}
+if(.@item$)=="Resource Supply Box (U)" {goto S_WB;}
+if(.@item$)=="Resource Supply Box (R)" {goto S_WB;}
+if(.@item$)=="Random Supply Box (C)" {goto S_WB;}
+if(.@item$)=="Red Dye" {goto S_WB;}
+if(.@item$)=="Blue Dye" {goto S_WB;}
+if(.@item$)=="Green Dye" {goto S_WB;}
+if(.@item$)=="White Dye" {goto S_WB;}
+if(.@item$)=="Black Dye" {goto S_WB;}
+if(.@item$)=="Purple Dye" {goto S_WB;}
+if(.@item$)=="Orange Dye" {goto S_WB;}
+if(.@item$)=="Brown Dye" {goto S_WB;}
+if(.@item$)=="Skull" {goto S_WB;}
+if(.@item$)=="Fabric" {goto S_WB;}
+if(.@item$)=="Metal" {goto S_WB;}
+if(.@item$)=="Plastic" {goto S_WB;}
+if(.@item$)=="Latex" {goto S_WB;}
+if(.@item$)=="Stone" {goto S_WB;}
+if(.@item$)=="Wood" {goto S_WB;}
+if(.@item$)=="Stone" {goto S_WB;}
+if(.@item$)=="Battery" {goto S_WB;}
+if(.@item$)=="Origins Document" {goto S_WB;}
+if(.@item$)=="Cooking Oil" {goto S_WB;}
+if(.@item$)=="Cyanoacrylate" {goto S_WB;}
+if(.@item$)=="Leather" {goto S_WB;}
+if(.@item$)=="Sulfur" {goto S_WB;}
+if(.@item$)=="Charcoal" {goto S_WB;}
+if(.@item$)=="Salt" {goto S_WB;}
+if(.@item$)=="Wrench" {goto S_WB;}
+if(.@item$)=="House Key" {goto S_WB;}
+if(.@item$)=="Lock Pick" {goto S_WB;}
+if(.@item$)=="Key Card" {goto S_WB;}
+if(.@item$)=="Hammer" {goto S_WB;}
+if(.@item$)=="Fishing Rod (Poor)" {goto S_WB;}
+if(.@item$)=="Fishing Rod" {goto S_WB;}
+if(.@item$)=="Fishing Rod (Great)" {goto S_WB;}
+if(.@item$)=="Animal Skin" {goto S_WB;}
+if(.@item$)=="Bearfoot" {goto S_WB;}
+if(.@item$)=="Bent Spoon" {goto S_WB;}
+if(.@item$)=="Bone" {goto S_WB;}
+if(.@item$)=="Bottle" {goto S_WB;}
+if(.@item$)=="Bouquet" {goto S_WB;}
+if(.@item$)=="Bowl" {goto S_WB;}
+if(.@item$)=="Coal" {goto S_WB;}
+if(.@item$)=="Diamond" {goto S_WB;}
+if(.@item$)=="Ducttape" {goto S_WB;}
+if(.@item$)=="Elastic Band" {goto S_WB;}
+if(.@item$)=="Flower" {goto S_WB;}
+if(.@item$)=="Frying Pan" {goto S_WB;}
+if(.@item$)=="Match Stick" {goto S_WB;}
+if(.@item$)=="Alcohol" {goto S_WB;}
+if(.@item$)=="Fertilizer" {goto S_WB;}
+if(.@item$)=="Gun Powder" {goto S_WB;}
+if(.@item$)=="Plywood" {goto S_WB;}
+if(.@item$)=="9mm Bullet" {goto S_WB;}
+if(.@item$)=="9mm Box" {goto S_WB;}
+if(.@item$)=="12 Gauge Cartridge" {goto S_WB;}
+if(.@item$)=="12 Gauge Case" {goto S_WB;}
+if(.@item$)=="556mm" {goto S_WB;}
+if(.@item$)=="556mm Ammo Case" {goto S_WB;}
+if(.@item$)=="Crowbar" {goto S_WB;}
+if(.@item$)=="Nail" {goto S_WB;}
+if(.@item$)=="Pocket Knife" {goto S_WB;}
+if(.@item$)=="Combat Knife" {goto S_WB;}
+if(.@item$)=="Swiss Army Knife" {goto S_WB;}
+if(.@item$)=="Butcher Knife" {goto S_WB;}
+if(.@item$)=="Weeder Knife" {goto S_WB;}
+if(.@item$)=="Ice Pick" {goto S_WB;}
+if(.@item$)=="Axe (Poor)" {goto S_WB;}
+if(.@item$)=="Axe" {goto S_WB;}
+if(.@item$)=="Axe (Great)" {goto S_WB;}
+if(.@item$)=="Pickaxe (Poor)" {goto S_WB;}
+if(.@item$)=="Pickaxe" {goto S_WB;}
+if(.@item$)=="Pickaxe (Great)" {goto S_WB;}
+if(.@item$)=="Hammer" {goto S_WB;}
+if(.@item$)=="Tomahawk" {goto S_WB;}
+if(.@item$)=="Backpack Blue" {goto S_WB;}
+if(.@item$)=="Backpack Green" {goto S_WB;}
+if(.@item$)=="Backpack Red" {goto S_WB;}
+if(.@item$)=="T-Shirt" {goto S_WB;}
+if(.@item$)=="Sneakers" {goto S_WB;}
+if(.@item$)=="Boots" {goto S_WB;}
+if(.@item$)=="High Heels" {goto S_WB;}
+if(.@item$)=="Army Boots" {goto S_WB;}
+if(.@item$)=="Safety Boots" {goto S_WB;}
+if(.@item$)=="Running Shoes" {goto S_WB;}
+if(.@item$)=="Light Wagon" {goto S_WB;}
+if(.@item$)=="Heavy Wagon" {goto S_WB;}
+if(.@item$)=="Super Heavy Wagon" {goto S_WB;}
+if(.@item$)=="Earring" {goto S_WB;}
+if(.@item$)=="Ring" {goto S_WB;}
+if(.@item$)=="Belt" {goto S_WB;}
+if(.@item$)=="Glove" {goto S_WB;}
+if(.@item$)=="Handcuffs" {goto S_WB;}
+if(.@item$)=="Skull_" {goto S_WB;}
+if(.@item$)=="Handgun" {goto S_WB;}
+if(.@item$)=="M9" {goto S_WB;}
+if(.@item$)=="Shotgun" {goto S_WB;}
+if(.@item$)=="M1014" {goto S_WB;}
+if(.@item$)=="Semi-Automatic Rifle" {goto S_WB;}
+if(.@item$)=="M16" {goto S_WB;}
+if(.@item$)=="Sniper Rifle" {goto S_WB;}
+if(.@item$)=="M82" {goto S_WB;}
+//============================================================
+	else {
+		mes "Sorry, you cannot create or dismatle this item at the moment.";
+		close;
+		end;
+		}
+//============================================================
+//= Menus
+//============================================================
+S_WB:
+	mes	"^0066FF" +.@item$+ "^000000 is feasible.";
+	mes	"Is this what you wanted?";
+	menu	"Yes.",Y_WB,"No, I want to select another item",L_Comp,"No, I'm done for now.",-;
+	close;
+//============================================================
+Y_WB:
+	next;
+	mes	"What would you like to do?";
+	menu	"Create",C_WB,"Dismantle",D_WB,"Go back",L_Comp,"Forget it",-;
+//============================================================
+C_WB:
+setarray .@resources[0],.@fabric,.@metal,.@plastic,.@latex,.@stone,.@wood,.@cyan,.@leather,.@sulfur,.@charcoal,.@salt,.@coal,.@ducttape,.@gunpowder,.@nails;
+
+// Resource name Array
+setarray .@resource_names$[0],.@fabric_name$,.@metal_name$,.@plastic_name$,.@latex_name$,.@stone_name$,.@wood_name$,.@cyan_name$,.@leather_name$,.@sulfur_name$,.@charcoal_name$,.@salt_name$,.@coal_name$,.@ducttape_name$,.@gunpowder_name$,.@nails_name$;
+
+// Resource Amounts
+setarray .@resource_nums[0],.@fabric_num,.@metal_num,.@plastic_num,.@latex_num,.@stone_num,.@wood_num,.@cyan_num,.@leather_num,.@sulfur_num,.@charcoal_num,.@salt_num,.@coal_num,.@ducttape_num,.@gunpowder_num,.@nails_num;
+
+callfunc("work_bench_create",.@resource_nums,.@item$,.@resources,.@resource_names$);
+//============================================================
+D_WB:
+setarray .@resources[0],.@fabric,.@metal,.@plastic,.@latex,.@stone,.@wood,.@cyan,.@leather,.@sulfur,.@charcoal,.@salt,.@coal,.@ducttape,.@gunpowder,.@nails;
+
+// Resource name Array
+setarray .@resource_names$[0],.@fabric_name$,.@metal_name$,.@plastic_name$,.@latex_name$,.@stone_name$,.@wood_name$,.@cyan_name$,.@leather_name$,.@sulfur_name$,.@charcoal_name$,.@salt_name$,.@coal_name$,.@ducttape_name$,.@gunpowder_name$,.@nails_name$;
+
+// Resource Amounts
+setarray .@resource_nums[0],.@fabric_num,.@metal_num,.@plastic_num,.@latex_num,.@stone_num,.@wood_num,.@cyan_num,.@leather_num,.@sulfur_num,.@charcoal_num,.@salt_num,.@coal_num,.@ducttape_num,.@gunpowder_num,.@nails_num;
+
+callfunc("work_bench_dismantle",.@resource_nums,.@item$,.@resources,.@resource_names$);
+//============================================================
+L_WBRefine:
+	mes "Sorry but this feature is currently being developed.";
+	close;
+	end;
+//============================================================
+}

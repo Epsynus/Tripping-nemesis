@@ -1,0 +1,110 @@
+function	script	cookmaker_formula	{
+	set @cookformula, (@cooktool+getskilllv(725)*10)+((readparam(bAGI)+readparam(bLUK)))/650;
+	return;
+	end;
+}
+
+function	script	cookmaker_level	{
+	set cookmaker_level,cookmaker_level+1;
+	if(cookmaker_level==10) goto cookmaker_level_2;
+	if(cookmaker_level==25) goto cookmaker_level_3;
+	if(cookmaker_level==50) goto cookmaker_level_4;
+	if(cookmaker_level==75) goto cookmaker_level_5;
+	if(cookmaker_level==100) goto cookmaker_level_6;
+	if(cookmaker_level==150) goto cookmaker_level_7;
+	if(cookmaker_level==250) goto cookmaker_level_8;
+	if(cookmaker_level==500) goto cookmaker_level_9;
+	if(cookmaker_level==1000) goto cookmaker_level_10;
+	return;
+	end;
+cookmaker_level_2:
+	skill 723,2,0;
+	return;
+	end;
+cookmaker_level_3:
+	skill 723,3,0;
+	return;
+	end;
+cookmaker_level_4:
+	skill 723,4,0;
+	return;
+	end;
+cookmaker_level_5:
+	skill 723,5,0;
+	return;
+	end;
+cookmaker_level_6:
+	skill 723,6,0;
+	return;
+	end;
+cookmaker_level_7:
+	skill 723,7,0;
+	return;
+	end;
+cookmaker_level_8:
+	skill 723,8,0;
+	return;
+	end;
+cookmaker_level_9:
+	skill 723,9,0;
+	return;
+	end;
+cookmaker_level_10:
+	skill 723,10,0;
+	return;
+	end;
+}
+
+function	script	cookmaker	{
+	mes "Select a food you would like to make:";
+	next;
+	menu "Scrambled Eggs",cook_scrambled,"Ham and Cheese Sandwich",cook_hamncheese,"Tuna Salad",cook_tunasalad,"Tuna Sandwich",cook_tunasandwich,
+"Egg and Cheese Sandwich",cook_eggncheese,"Potato Soup",cook_potato,"Hamburger",cook_hamburger,"Cake",
+cook_cake,"Chocolate Cake",cook_choccake,"French Fries",cook_frenchfries,"Smoothie",cook_smoothie,"Sushi",
+cook_sushi,"Dumpling",cook_dumpling,"Nevermind",-;
+	close;
+	end;
+cook_scrambled:
+	next;
+	mes "You'll need:";
+	mes "3 Eggs";
+	mes "1 Bread";
+	next;
+	if(countitem(509)<3) || (countitem(510)<1) goto cook_items;
+	delitem 509,3;
+	delitem 510,1;
+	callfunc "cookmaker_formula";
+	set @cookrand, rand(1,100);
+	if(@cookrand>@cookmakerformula) goto cook_failed;
+	mes "Food has been made.";
+	getitem 601,1;
+	callfunc "cookmaker_level";
+	close;
+	end;
+cook_hamncheese:
+	next;
+	mes "You'll need:";
+	mes "1 Pork";
+	mes "1 Cheese";
+	mes "1 Bread";
+	next;
+	if(countitem(526)<1) || (countitem(510)<1) || (countitem(522)<1) goto cook_items;
+	delitem 509,3;
+	delitem 510,1;
+	delitem 522,1;
+	callfunc "cookmaker_formula";
+	set @cookrand, rand(1,100);
+	if(@cookrand>@cookmakerformula) goto cook_failed;
+	mes "Food has been made.";
+	getitem 602,1;
+	callfunc "cookmaker_level";
+	close;
+	end;
+cook_noitems:
+	mes "Sorry, you do not have all of the required items.";
+	close;
+	end;
+cook_failed:
+	mes "Sorry, but you failed to make your trap.";
+	close;
+}

@@ -1,0 +1,121 @@
+//===== Oplex Origins Script =================================
+//= Survivor Wars (Lavive)
+//===== By: ==================================================
+//= Sigma
+//===== Current Version: =====================================
+//= 1
+//===== Compatible With: =====================================
+//= Oplex Origins
+//===== Description: =========================================
+//= NPCs that relate to Lavive Building 1
+//===== Additional Comments: =================================
+//============================================================
+// Guild Flag (Town)
+//============================================================
+lavive_01,25,25,1	script	Office Building#p1-1::office_building	722,{
+	end;
+
+OnRecvCastlelabld01:
+	FlagEmblem GetCastleData("la_bld01",1);
+	end;
+}
+
+// Guild Flag (Outside Castle)
+//============================================================
+lavive_02,71,14,1	script	Office Building#p1-2::office_building2	722,{
+	set .@GID, GetCastleData("la_bld01",1);
+	if (.@GID == 0) {
+		mes "[Lavive Energy Efficient Suites]";
+		mes " ";
+		mes "This building is well intact.";
+		mes "If we can get to the power room ";
+		mes "we might be able to get the power running.";
+	}
+	else {
+		if (getcharid(2) == .@GID) {
+			mes "Enter?";
+			next;
+			if (select("Return to HQ.:Quit.") == 1) {
+				if (getcharid(2) == GetCastleData("la_bld01",1)) {
+					warp "la_bld01",17,8;
+					end;
+				}
+			}
+			close;
+		}
+		mes "[Lavive Energy Efficient Suites]";
+		mes " ";
+		mes "This building is in";
+		mes "the private possession of the ^ff0000" + GetGuildName(.@GID) + "^000000 Alliance.";
+		mes "The Leader of the ^ff0000"+ GetGuildName(.@GID) + "^000000 Alliance is";
+		mes "^FF0000" + GetGuildMaster(.@GID) + "^000000";
+	}
+	close;
+
+OnRecvCastlelabld01:
+	FlagEmblem GetCastleData("la_bld01",1);
+	end;
+}
+
+prt_gld,138,68,6	duplicate(Kriemhild2)	Kriemhild#p1-3	722
+prt_gld,138,60,6	duplicate(Kriemhild2)	Kriemhild#p1-4	722
+prt_gld,135,60,6	duplicate(Kriemhild2)	Kriemhild#p1-5	722
+
+// Guild Flag (Inside Castle)
+//============================================================
+prtg_cas01,58,56,4	script	Office Building#p1-4::office_building3	722,{
+	end;
+
+OnRecvCastlelabld01:
+	FlagEmblem GetCastleData("la_bld01",1);
+	end;
+}
+
+prtg_cas01,64,56,4	duplicate(Kriemhild3)	Kriemhild#p1-7	722
+prtg_cas01,76,32,4	duplicate(Kriemhild3)	Kriemhild#p1-8	722
+prtg_cas01,84,32,4	duplicate(Kriemhild3)	Kriemhild#p1-9	722
+prtg_cas01,94,39,4	duplicate(Kriemhild3)	Kriemhild#p1-10	722
+prtg_cas01,94,24,4	duplicate(Kriemhild3)	Kriemhild#p1-11	722
+prtg_cas01,73,14,4	duplicate(Kriemhild3)	Kriemhild#p1-12	722
+prtg_cas01,73,6,4	duplicate(Kriemhild3)	Kriemhild#p1-13	722
+prtg_cas01,55,46,4	duplicate(Kriemhild3)	Kriemhild#p1-14	722
+prtg_cas01,45,46,4	duplicate(Kriemhild3)	Kriemhild#p1-15	722
+
+// AGIT Manager
+//============================================================
+la_bld01,17,14,0	duplicate(Gld_Agit_Manager)	Agit#la_bld01	-1
+
+// Safe House Terminal
+//============================================================
+la_bld01,81,85,0	duplicate(Gld_Mngr_Template)	Ahvray#prtg_cas01	111
+
+// Guardians
+//============================================================
+la_bld01,17,14,0	duplicate(Gld_Guard_Template)	Guardian#prtg_cas01	-1
+
+// Kafra Staff
+//============================================================
+la_bld01,17,14,0	duplicate(Gld_Kafra_Template)	Kafra Staff#prtg_cas01	117
+
+// Master's Room Exit
+//============================================================
+prtg_cas01,15,209,0	script	#switch_Pt01	111,{
+	mes " ";
+	mes "There's a small lever. Will you pull it? ";
+	next;
+	if(select("Pull.:Do not.") == 2) close;
+	warp "prtg_cas01",112,183;
+	end;
+}
+
+// Guild Treasure Protection
+//============================================================
+prtg_cas01,11,208,0	duplicate(Gld_Trea_Protect)	ban_warp#prtg_cas01	-1,6,6
+
+// Guild Treasure Spawns
+//============================================================
+prtg_cas01,11,208,0	duplicate(Gld_Trea_Spawn)	Treasure#prtg_cas01	-1
+
+// Guild Dungeon Switch
+//============================================================
+prtg_cas01,94,200,0	duplicate(Gld_Dun_Template)	#prtg_cas01	111

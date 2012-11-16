@@ -1,0 +1,5 @@
+//MercenryID,SkillID,SkillLevel
+// Archer Mercenaries Level 1-10.
+// MER_ARCHER01
+//6017,8207,2	//MA_DOUBLE
+//6017,8233,1	//MER_AUTOBERSERK

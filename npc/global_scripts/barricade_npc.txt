@@ -1,0 +1,33 @@
+//----======Mock up barricade script V1.0======----
+//-------------------------------------------------
+-	script	Barricade	-1,{
+
+OnSpawn:
+	getmapxy @playermap$,@playerx,@playery,0;
+
+	// Set permenent account variable as a counter.
+	set #name,#name + 1;
+
+	// Set a dynamic permenent global variable to keep track of WALL names.
+	set getd("$barricade_" + #name + "$"), strcharinfo(0) + "'s" + " " + strnpcinfo(0) + #name;
+
+	// Place MONSTER where character is.
+	monster @playermap$,@playerx,@playery,getd("$barricade_" + #name + "$"),1511,1,"Barricade::OnDie";
+	
+	// Place WALL where character is.
+	setwall @playermap$,@playerx,@playery,1,1,shootable,getd("$barricade_" + #name + "$");
+	
+	// Delete Wood
+	delitem 1007,10;
+	mes "Barricade has been built!";
+
+	close;
+	end;
+
+OnDie:	
+	// Destruction message + Test
+	message strcharinfo(0)," +getd("$barricade_" + #name + "$")+ " destroyed.";
+	delwall getd("$barricade_" + #name + "$");
+	close;
+	end;
+	}

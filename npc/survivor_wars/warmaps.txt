@@ -1,0 +1,121 @@
+//===== eAthena Script =======================================
+//= Survivor Wars Warp Script
+//===== By: ==================================================
+//= Sigma
+//===== Current Version: =====================================
+//= 1.0
+//===== Compatible With: =====================================
+//= Any Oplex Origins Version
+//===== Description: =========================================
+//= Warp Points for Lavive
+//===== Additional Comments: =================================
+//============================================================
+
+//============================================================
+//= Main Entrance & Exit
+//============================================================
+lavive_02,75,14,0	script	Warp::wpbld01	45,2,2,{
+end; // Disable Click
+OnTouch:
+warp "la_bld01",17,8;
+end;
+
+OnAgitEnd:
+disablenpc strnpcinfo(3);
+end;
+
+OnAgitStart:
+enablenpc strnpcinfo(3);
+end;
+}
+
+la_bld01,17,4,0	script	Warp::wpbld02	45,2,2,{
+end; // Disable Click
+OnTouch:
+warp "lavive_02",75,10;
+end;
+}
+
+//============================================================
+//= Power Room shortcut
+//============================================================
+la_bld01,6,32,0	script	Ladder::wpbld03	111,2,2,{
+end; // Disable Click
+	OnTouch:
+	set .@GID, GetCastleData("la_bld01",1);
+	if (.@GID == 0) {
+		mes "The ladder needs power to extend.";
+	}
+	else {
+		if (getcharid(2) == .@GID) {
+			if (getcharid(2) == GetCastleData("la_bld01",1)) {
+				warp "la_bld01",69,29;
+				end;
+				}
+			close;
+		}
+		mes "Members Only.";
+	}
+	close;
+
+}
+
+la_bld01,70,32,0	script	Ladder::wpbld04	111,2,2,{
+end; // Disable Click
+	OnTouch:
+	set .@GID, GetCastleData("la_bld01",1);
+	if (.@GID == 0) {
+		mes "The ladder needs power to extend.";
+	}
+	else {
+		if (getcharid(2) == .@GID) {
+			if (getcharid(2) == GetCastleData("la_bld01",1)) {
+				warp "la_bld01",6,26;
+				end;
+				}
+			close;
+		}
+		mes "Members Only.";
+	}
+	close;
+
+}
+
+//============================================================
+//= Elevator
+//============================================================
+la_bld01,94,92,0	script	Elevator::ElevatorDown	111,2,2,{
+end; // Disable Click
+
+OnTouch:
+	mes "The elevator doors are open.";
+	mes "Climb down?";
+	menu "Yes",ele_yes,"No",-;
+	close;
+	end;
+ele_yes:
+warp "la_bld01",94,24;
+end;
+}
+
+
+la_bld01,94,28,0	script	Elevator::ElevatorUp	111,2,2,{
+end; // Disable Click
+
+OnTouch:
+	mes "The elevator doors are open.";
+	mes "Climb up?";
+	menu "Yes",ele_yes,"No",-;
+	close;
+	end;
+ele_yes:
+warp "la_bld01",30,26;
+end;
+}
+//============================================================
+//= Lavive Survivor Wars Indoor Warps
+//============================================================
+la_bld01,12,30,0	warp	labld01	1,1,la_bld01,12,95
+la_bld01,15,94,0	warp	labld02	1,1,la_bld01,15,30
+la_bld01,18,93,0	warp	labld03	1,1,la_bld01,76,94
+la_bld01,79,93,0	warp	labld04	1,1,la_bld01,21,93

@@ -1,0 +1,158 @@
+//Lavive Town World Warps
+lavive_01,0,48,0	warp	lav001	1,1,lavive_02,92,47
+lavive_01,50,97,0	warp	lav002	1,1,lavive_08,50,6
+lavive_01,98,48,0	warp	lav003	1,1,lavive_06,5,48
+lavive_01,50,0,0	warp	lav004	1,1,lavive_04,50,93
+
+lavive_02,98,48,0	warp	lav005	1,1,lavive_01,4,48
+lavive_02,50,97,0	warp	lav006	1,1,lavive_09,50,6
+lavive_02,49,1,0	warp	lav007	1,1,lavive_03,50,92
+
+lavive_03,50,97,0	warp	lav008	1,1,lavive_02,50,6
+lavive_03,98,48,0	warp	lav009	1,1,lavive_04,4,49
+
+lavive_04,0,48,0	warp	lav011	1,1,lavive_03,94,48
+lavive_04,49,98,0	warp	lav012	1,1,lavive_01,50,6
+lavive_04,98,48,0	warp	lav013	1,1,lavive_05,4,48
+
+lavive_05,0,48,0	warp	lav014	1,1,lavive_04,94,49
+lavive_05,49,98,0	warp	lav015	1,1,lavive_06,50,6
+lavive_05,49,0,0	warp	lav100	1,1,lavive_10,49,94
+
+lavive_06,50,0,0	warp	lav016	1,1,lavive_05,49,92
+lavive_06,49,98,0	warp	lav017	1,1,lavive_07,50,6
+lavive_06,0,47,0	warp	lav018	1,1,lavive_01,94,48
+
+lavive_07,0,47,0	warp	lav019	1,1,lavive_08,94,48
+lavive_07,49,0,0	warp	lav020	1,1,lavive_06,49,92
+
+lavive_08,49,0,0	warp	lav021	1,1,lavive_01,49,92
+lavive_08,98,48,0	warp	lav022	1,1,lavive_07,5,47
+lavive_08,0,48,0	warp	lav023	1,1,lavive_09,94,48
+
+lavive_09,98,48,0	warp	lav024	1,1,lavive_08,5,47
+lavive_09,50,0,0	warp	lav025	1,1,lavive_02,50,91
+
+lavive_10,50,98,0	warp	lav041	1,1,lavive_05,50,5
+lavive_10,50,0,0	warp	lav0101	1,1,la_fild01,50,94
+
+la_fild01,50,98,0	warp	lav0102	1,1,lavive_10,50,5
+la_fild02,98,28,0	warp	lav048	1,1,la_fild03,4,12
+la_fild03,0,11,0	warp	lav049	1,1,la_fild02,94,28
+
+la_fild03,98,90,0	warp	lav050	1,1,la_fild04,4,43
+la_fild04,0,43,0	warp	lav051	1,1,la_fild03,96,92
+
+//Lavive Town World-Indoor Warps
+lavive_02,18,55,0	warp	lav026	1,1,la_church01,49,17
+la_church01,49,14,0	warp	lav027	1,1,lavive_02,18,51
+
+lavive_02,76,61,0	warp	llib01	1,1,la_lib01,19,8
+la_lib01,19,4,0	warp	llib02	1,1,lavive_02,76,58
+la_lib01,18,24,0	warp	llib03	1,1,la_lib01,20,83
+la_lib01,20,87,0	warp	llib04	1,1,la_lib01,18,27
+
+lavive_04,19,63,0	warp	lav032	1,1,la_office02,76,38
+la_office02,72,38,0	warp	lav033	1,1,lavive_04,19,59
+
+la_police,93,16,0	warp	lav035	1,1,lavive_08,32,17
+
+lavive_05,64,40,0	warp	lav036	1,1,la_market,110,31
+la_market,106,31,0	warp	lav037	1,1,lavive_05,61,40
+
+lavive_07, 24,64,0	warp	las50	1,1,la_eden,13,19
+la_eden, 13,16,0	warp	las51	1,1,lavive_07,24,60
+
+lavive_08,61,72,0	warp	lav038	1,1,la_hospital,98,19
+la_hospital,98,16,0	warp	lav039	1,1,lavive_08,61,69
+
+lavive_06,31,33,0	warp	lajk00	1,1,la_jack,9,9
+la_jack,9,6,0	warp	lajk01	1,1,lavive_06,30,37
+la_jack,20,17,0	warp	lajk02	1,1,la_jack,19,91
+la_jack,23,91,0	warp	lajk03	1,1,la_jack,22,16
+
+lavive_06,68,48,0	warp	lav078	1,1,la_police01,24,7
+la_police01,24,4,0	warp	lav079	1,1,lavive_06,64,48
+
+//Lavive House Warps
+lavive_03, 29,91,0	warp	lain01	1,1,la_in01,44,18
+la_in01, 44,16,0	warp	lain02	1,1,lavive_03,33,92
+
+lavive_03, 5,75,0	warp	lain03	1,1,la_in01,92,18
+la_in01, 92,16,0	warp	lain04	1,1,lavive_03,9,76
+
+lavive_03, 5,48,0	warp	lain05	1,1,la_in01,140,18
+la_in01, 140,16,0	warp	lain06	1,1,lavive_03,9,49
+
+lavive_03, 5,20,0	warp	lain07	1,1,la_in01,178,18
+la_in01, 178,16,0	warp	lain08	1,1,lavive_03,9,20
+
+lavive_03, 21,4,0	warp	lain09	1,1,la_in01,44,52
+la_in01, 44,50,0	warp	lain10	1,1,lavive_03,21,8
+
+lavive_03, 48,3,0	warp	lain11	1,1,la_in01,92,52
+la_in01, 92,50,0	warp	lain12	1,1,lavive_03,48,7
+
+lavive_03, 78,3,0	warp	lain13	1,1,la_in01,140,52
+la_in01, 140,50,0	warp	lain14	1,1,lavive_03,78,7
+
+lavive_03, 90,22,0	warp	lain15	1,1,la_in01,178,52
+la_in01, 178,50,0	warp	lain16	1,1,lavive_03,86,23
+
+lavive_03, 81,68,0	warp	lain17	1,1,la_in01,44,90
+la_in01, 44,88,0	warp	lain18	1,1,lavive_03,80,64
+
+lavive_03, 70,88,0	warp	lain19	1,1,la_in01,92,90
+la_in01, 92,88,0	warp	lain20	1,1,lavive_03,66,89
+
+lavive_03, 28,59,0	warp	lain21	1,1,la_in01,140,90
+la_in01, 140,88,0	warp	lain22	1,1,lavive_03,29,63
+
+lavive_03, 31,27,0	warp	lain23	1,1,la_in01,178,90
+la_in01, 178,88,0	warp	lain24	1,1,lavive_03,31,23
+
+lavive_03, 54,25,0	warp	lain25	1,1,la_in01,44,126
+la_in01, 44,124,0	warp	lain26	1,1,lavive_03,50,26
+
+la_sewer01, 49,98,0	warp	las01	1,1,la_sewer08,50,4
+la_sewer01, 98,47,0	warp	las02	1,1,la_sewer06,4,47
+la_sewer01, 50,0,0	warp	las03	1,1,la_sewer04,49,94
+la_sewer01, 0,47,0	warp	las04	1,1,la_sewer02,94,47
+
+la_sewer02, 49,98,0	warp	las05	1,1,la_sewer09,50,4
+la_sewer02, 98,47,0	warp	las06	1,1,la_sewer01,4,47
+la_sewer02, 50,0,0	warp	las07	1,1,la_sewer03,49,94
+
+la_sewer03, 49,98,0	warp	las09	1,1,la_sewer02,50,4
+la_sewer03, 98,47,0	warp	las10	1,1,la_sewer04,4,47
+
+la_sewer04, 49,98,0	warp	las13	1,1,la_sewer01,50,4
+la_sewer04, 98,47,0	warp	las14	1,1,la_sewer05,4,47
+la_sewer04, 0,47,0	warp	las16	1,1,la_sewer03,94,47
+
+la_sewer05, 49,98,0	warp	las17	1,1,la_sewer06,50,4
+la_sewer05, 0,47,0	warp	las20	1,1,la_sewer04,94,47
+
+la_sewer06, 49,98,0	warp	las21	1,1,la_sewer07,50,4
+la_sewer06, 50,0,0	warp	las23	1,1,la_sewer05,49,94
+la_sewer06, 0,47,0	warp	las24	1,1,la_sewer01,94,47
+
+la_sewer07, 50,0,0	warp	las27	1,1,la_sewer06,49,94
+la_sewer07, 0,47,0	warp	las28	1,1,la_sewer08,94,47
+
+la_sewer08, 98,47,0	warp	las30	1,1,la_sewer07,4,47
+la_sewer08, 50,0,0	warp	las31	1,1,la_sewer01,49,94
+la_sewer08, 0,47,0	warp	las32	1,1,la_sewer09,94,47
+
+la_sewer09, 98,47,0	warp	las34	1,1,la_sewer08,4,47
+la_sewer09, 50,0,0	warp	las35	1,1,la_sewer02,49,94
+
+//Lavive Mine Warps
+lavive_07, 51,97,0	warp	lam00	1,1,la_mfild00,48,6
+la_mfild00, 48,2,0	warp	lam01	1,1,lavive_07,51,93
+
+la_mfild00, 25,59,0	warp	lam02	1,1,la_mine00,25,20
+la_mine00, 25,16,0	warp	lam03	1,1,la_mfild00,25,55
+
+la_mfild00, 86,97,0	warp	lam04	1,1,la_mfild01,86,6
+la_mfild01, 86,2,0	warp	lam05	1,1,la_mfild00,86,93

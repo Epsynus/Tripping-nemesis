@@ -1,0 +1,1050 @@
+=== doc/script_commands.txt
+==================================================================
+--- doc/script_commands.txt	(revision 13395)
++++ doc/script_commands.txt	(local)
+@@ -4741,7 +4741,79 @@
+ the homunculus must be on at least 91000/100000 intimacy with it's owner.
+ 
+ ---------------------------------------
++------------------------------------------------
++//===========================================\\
++||         Mob Control Suit Commands         ||
++\\===========================================//
++------------------------------------------------
+ 
++---------------------------------------
++
++* mobspawn (<monster name>,<monster ID>,<mapname>,<x>,<y>)
++* mobRemove <GID>;
++
++This is used to spawn a monster and return it's Game ID, to be used
++in the unit/mobcontrol commands.
++
++Note, I will use the stuff here in the examples for the unitcontrol.
++
++Example(s):
++
++//Spawns a poring named poi poi and put's it's GID in .GID.
++	set .GID,mobspawn("Poi Poi",1002,"prontera",160,180);
++//would kill our poring.
++	mobRemove .GID;
++
++---------------------------------------
++
++* getmobdata (<GID>,<arrayname>)
++* setmobdata <GID>,<parameter>,<new value>;
++
++This is used to get and set special data related to the monster.
++With getmobdata, the array given will be filled with the current data. In setmobdata
++the indexes in the array would be used to set that data on the monster. 
++Parameters (indexes) are:
++
++0 = class (big, small, normal)			7  = y						14 = hair style		21 = weapon
++1 = level					8  = speed					15 = hair color		22 = shield (again)
++2 = HP						9  = mode (see doc/mob_db_mode_list.txt)	16 = head gear bottom	23 = looking dir
++3 = max HP					10 = special AI state (?)			17 = head gear middle	24 = killer state (1 or 0)
++4 = master ID (aid of the master, summon)	11 = SC option					18 = head gear top	25 = callback flag
++5 = map index					12 = sex					19 = cloth color	26 = no random walk (1 or 0)
++6 = x						13 = class (Monster ID, Job ID)			20 = shield		
++
++Example(s):
++
++//this will set all the mobdata in the @array variable. (@array[1] being level, @array[13] class etc)
++	getmobdata .GID,@array;
++	
++//set the max hp of our poring to 1000.
++	setmobdata .GID,3,1000;
++
++---------------------------------------
++
++* mobassist <GID>,<target id>;
++This will make the monster assist the Target ID as if it was a summon of it.
++Example(s):
++
++/this will make our poring assist the current attached player! >:3
++	mobassist .GID,getcharid(3);
++
++---------------------------------------
++
++* mobattach <GID>{,"<NPC Name>"};
++
++GID is the GID of a monster, NPC or account id. The NPC running or
++he NPC name given is used to attach the monster.
++
++By attaching a monster, the NPC to which it is attached is ran on special actions by the monster.
++The system will set specific data in the .ai_action variable array on the NPC invoked.
++The special AI actions types are set in the .ai_action at place AI_ACTION_TAR_TYPE
++
++More AI_ vars are set in const.txt, and you can also look at sample/monstercontroller.cpp:
++
++---------------------------------------
++
+ * unitwalk <GID>,<x>,<y>;
+ * unitwalk <GID>,<mapid>;
+ 
+@@ -4774,6 +4846,13 @@
+ 
+ ---------------------------------------
+ 
++------------------------------------------------
++//===========================================\\
++||      End of Mob Control Suit Commands     ||
++\\===========================================//
++------------------------------------------------
++---------------------------------------
++
+ *disablenpc "<NPC object name>";
+ *enablenpc "<NPC object name>";
+ 
+=== npc/custom/Lance/Sentry.cpp
+==================================================================
+--- npc/custom/Lance/Sentry.cpp	(revision 13395)
++++ npc/custom/Lance/Sentry.cpp	(local)
+@@ -0,0 +1,135 @@
++//(=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=)
++//(        (c)2006 eAthena Development Team presents        )
++//(       ______  __    __                                  )
++//(      /\  _  \/\ \__/\ \                     v 1.00.00   )
++//(    __\ \ \_\ \ \ ,_\ \ \___      __    ___      __      )
++//(  /'__`\ \  __ \ \ \/\ \  _ `\  /'__`\/' _ `\  /'__`\    )
++//( /\  __/\ \ \/\ \ \ \_\ \ \ \ \/\  __//\ \/\ \/\ \_\.\_  )
++//( \ \____\\ \_\ \_\ \__\\ \_\ \_\ \____\ \_\ \_\ \__/.\_\ )
++//(  \/____/ \/_/\/_/\/__/ \/_/\/_/\/____/\/_/\/_/\/__/\/_/ )
++//(   _   _   _   _   _   _   _     _   _   _   _   _   _   )
++//(  / \ / \ / \ / \ / \ / \ / \   / \ / \ / \ / \ / \ / \  )
++//( ( e | A | t | h | e | n | a ) ( S | c | r | i | p | t ) )
++//(  \_/ \_/ \_/ \_/ \_/ \_/ \_/   \_/ \_/ \_/ \_/ \_/ \_/  )
++//(                                                         )
++//(=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=)
++// Programmed by [Lance] ver. 1.1
++// ---------------------------------------------------------
++// [ Sentry System ]
++// - Guards main towns against aggresive monsters and bad
++//   players.
++// [ Customization ]
++// - See OnInit:
++// =========================================================
++
++-	script	sentry_system	-1,{
++	function spawn_guardian {
++		set .mob_id[getarg(0)], mobspawn("Guardian Sentry",1904,.mob_map$[getarg(0)],.mob_x[getarg(0)],.mob_y[getarg(0)]);
++		mobattach .mob_id[getarg(0)]; // Attach events to this script.
++		setmobdata .mob_id[getarg(0)], 24, 1; // Enable killer mode.
++		setmobdata .mob_id[getarg(0)], 25, 
++			AI_ACTION_TYPE_DETECT|
++			AI_ACTION_TYPE_KILL|
++			AI_ACTION_TYPE_UNLOCK|
++			AI_ACTION_TYPE_DEAD|
++			AI_ACTION_TYPE_ATTACK; // Define engine callback routines.
++		setmobdata .mob_id[getarg(0)], 26, 1; // Prevents random walking.
++		setmobdata .mob_id[getarg(0)], 10, 1; // Enable AI mode 1.
++		getmobdata .mob_id[getarg(0)], .@temp;
++		set .@temp[9], .@temp[9]^(0x400&.@temp[9]); // Check and remove MD_CHANGECHASE mode flag.
++		setmobdata .mob_id[getarg(0)], 9, .@temp[9];
++		return;
++	}
++
++	function search_entry {
++		set .@tmp, getarraysize(getarg(0));
++		for(set .@i, 0; .@i < .@tmp; set .@i, .@i + 1){
++			if(getelementofarray(getarg(0),.@i) == getarg(1))
++				break;
++		}
++		if(.@i == .@tmp)
++			return -1;
++		else
++			return .@i;
++	}
++
++	// Script Entry Point - When an event from the script engine is received.
++	if(getarraysize(.ai_action) == 4){ // Checks if the data is formatted correctly.
++		set .@tmp, search_entry(.mob_id, .ai_action[AI_ACTION_SRC]);
++		switch(.ai_action[AI_ACTION_TYPE]){
++			case AI_ACTION_TYPE_DETECT: // We see something...
++				if(.ai_busy[.@tmp] == 0){ // Not busy
++					switch(.ai_action[AI_ACTION_TAR_TYPE]){ // Check what have we here.
++							case AI_ACTION_TAR_TYPE_PC: // It's a player
++								if(Karma > .karma){ // pkarma is higher?
++									unittalk .ai_action[AI_ACTION_SRC], "Who goes there!";
++									unitemote .ai_action[AI_ACTION_SRC], e_gasp; // !
++									unitattack .ai_action[AI_ACTION_SRC],.ai_action[AI_ACTION_TAR];
++									// We're currently busy.
++									set .ai_busy[.@tmp], .ai_action[AI_ACTION_TAR];
++								}
++								break;
++							case AI_ACTION_TAR_TYPE_MOB: // It's a monster
++								if(.ai_action[AI_ACTION_TAR] != .ai_action[AI_ACTION_SRC]){
++									getmobdata .ai_action[AI_ACTION_TAR], .@temp;
++									if(.@temp[9]&0x804){ // In Aggressive mode?
++										unittalk .ai_action[AI_ACTION_SRC], "Protect the villagers we must!";
++										unitemote .ai_action[AI_ACTION_SRC], e_gasp; // !
++										unitattack .ai_action[AI_ACTION_SRC],.ai_action[AI_ACTION_TAR];
++										// We're currently busy.
++										set .ai_busy[.@tmp], .ai_action[AI_ACTION_TAR];
++									}
++								}
++								break;
++					}
++				}
++				break;
++			case AI_ACTION_TYPE_KILL: // We eliminated the criminal
++				if(.ai_action[AI_ACTION_TAR_TYPE] == AI_ACTION_TAR_TYPE_PC)
++					set Karma, 0;
++			case AI_ACTION_TYPE_UNLOCK: // Target lost :(
++				if(.@tmp != -1){
++					set .ai_busy[.@tmp], 0; // Remove him, we're free.
++				}
++				// Walk back to where we came from.
++				unitwalk .ai_action[AI_ACTION_SRC],.mob_x[.@tmp],.mob_y[.@tmp];
++				break;
++			case AI_ACTION_TYPE_DEAD: // We got killed :(
++				if(.ai_action[AI_ACTION_TAR_TYPE] == AI_ACTION_TAR_TYPE_PC){ // Attacker is a player?
++					if(Karma < 250)
++						set Karma, Karma + 5;
++					else
++						set Karma, 255;
++				}
++				sleep 10000; // 10 seconds until reinforcements arrive
++				spawn_guardian .@tmp;
++				break;
++			case AI_ACTION_TYPE_ATTACK: // Someone attacked us
++				if(.ai_action[AI_ACTION_TAR_TYPE] == AI_ACTION_TAR_TYPE_PC){ // Attacker is a player?
++					if(Karma < 250)
++						set Karma, Karma + 1;
++					else
++						set Karma, 255;
++				}
++				// The system's AI will auto attack any attackers. So we leave it here.
++				break;
++		}
++	}
++	deletearray .ai_action, getarraysize(.ai_action); // Cleans up and frees up memory
++	end;
++
++OnInit:
++	// Customization ---------------------------------------------------------------------
++	setarray .mob_map$, "prt_fild08", "prt_fild05", "prt_fild06", "prt_gld";
++	setarray .mob_x,176,369,29,165;
++	setarray .mob_y,372,201,187,37;
++	set .karma, 5;
++	// -----------------------------------------------------------------------------------
++	set .@tmp, getarraysize(.mob_map$);
++	for(set .@i, 0; .@i < .@tmp; set .@i, .@i + 1){
++		spawn_guardian .@i;
++	}
++	debugmes "[Sentry System] Spawned " + .@i + " guardians.";
++	end;
++
++}
+\ No newline at end of file
+
+Property changes on: npc/custom/Lance/Sentry.cpp
+___________________________________________________________________
+Name: svn:eol-style
+ +native
+
+=== npc/sample/monster_controller.txt
+==================================================================
+--- npc/sample/monster_controller.txt	(revision 13395)
++++ npc/sample/monster_controller.txt	(local)
+@@ -0,0 +1,198 @@
++// Variables Logging:
++// .mc_moblist[] - ID list of mobs
++prontera,180,200,4	script	Monster Controller	123,{
++	function display_info {
++		getmobdata getarg(0), .@mob_data;
++		set .@array_size, getarraysize(.@mob_data);
++		for(set .@i, 0; .@i < .@array_size; set .@i, .@i + 1){
++			mes .@i + " - " + .@mob_data[.@i];
++		}
++		return;
++	}
++
++	function remove_mob {
++		mobremove getarg(0);
++		set .@mob_size, getarraysize(.mc_moblist);
++		for(set .@i, 0; .@i < .@mob_size; set .@i, .@i + 1){
++			if(.mc_moblist[.@i] == getarg(0))
++				deletearray .mc_moblist[.@i], 1;
++		}
++	}
++
++	function make_menu {
++		set .@array_size, getarraysize(.mc_moblist);
++		set .@tmp_str$, "";
++		for(set .@i, 0; .@i < .@array_size; set .@i, .@i + 1){
++			set .@tmp_str$, .@tmp_str$ + .mc_moblist[.@i] + ":";
++		}
++		select .@tmp_str$;
++		return .mc_moblist[@menu-1];
++	}
++
++	function summon_mob {
++		set .@mob_size, getarraysize(.mc_moblist);
++		set .mc_moblist[.@mob_size], mobspawn("Slave - " + .@mob_size, getarg(0), "prontera", 180, 200);
++		mobattach .mc_moblist[.@mob_size];
++		setmobdata .mc_moblist[.@mob_size], 25, 
++			AI_ACTION_TYPE_ATTACK|
++			AI_ACTION_TYPE_DETECT|
++			AI_ACTION_TYPE_DEAD|
++			AI_ACTION_TYPE_ASSIST|
++			AI_ACTION_TYPE_KILL|
++			AI_ACTION_TYPE_UNLOCK|
++			AI_ACTION_TYPE_WALKACK|
++			AI_ACTION_TYPE_WARPACK;
++		return;
++	}
++
++	function list_mobs {
++		set .@mob_size, getarraysize(.mc_moblist);
++		for(set .@i, 0; .@i < .@mob_size; set .@i, .@i + 1){
++			mes "- " + .mc_moblist[.@i];
++		}
++		return;
++	}
++
++	if(getarraysize(.ai_action) == 4){
++		mapannounce "prontera", "[Mob Control] AI Action Received from " + .ai_action[AI_ACTION_SRC] + "!",16;
++		switch(.ai_action[AI_ACTION_TAR_TYPE]){
++			case AI_ACTION_TAR_TYPE_PC:
++				set .@action_from$, "Player";
++				set .@action_name$, rid2name(.ai_action[AI_ACTION_TAR]);
++				break;
++			case AI_ACTION_TAR_TYPE_MOB:
++				set .@action_from$, "Monster";
++				set .@action_name$, rid2name(.ai_action[AI_ACTION_TAR]);
++				break;
++			case AI_ACTION_TAR_TYPE_PET:
++				set .@action_from$, "Pet";
++				set .@action_name$, rid2name(.ai_action[AI_ACTION_TAR]);
++				break;
++			case AI_ACTION_TAR_TYPE_HOMUN:
++				set .@action_from$, "Homunculus";
++				set .@action_name$, rid2name(.ai_action[AI_ACTION_TAR]);
++				break;
++			default:
++				set .@action_from$, "Unknown";
++				set .@action_name$, ""+.ai_action[AI_ACTION_TAR];
++				break;
++		}
++
++		switch(.ai_action[AI_ACTION_TYPE]){
++			case AI_ACTION_TYPE_ATTACK:
++				set .@action_type$, "Attacked by";
++				break;
++			case AI_ACTION_TYPE_DETECT:
++				set .@action_type$, "Detected";
++				break;
++			case AI_ACTION_TYPE_DEAD:
++				set .@action_type$, "Killed by";
++				remove_mob .ai_action[AI_ACTION_SRC];
++				break;
++			case AI_ACTION_TYPE_ASSIST:
++				set .@action_type$, "Assisting";
++				break;
++			case AI_ACTION_TYPE_UNLOCK:
++				set .@action_type$, "Unlocked target";
++				break;
++			case AI_ACTION_TYPE_KILL:
++				set .@action_type$, "Killed";
++				break;
++			case AI_ACTION_TYPE_WALKACK:
++				set .@action_type$, "Completed Walking";
++				break;
++			case AI_ACTION_TYPE_WARPACK:
++				set .@action_type$, "Warped";
++				break;
++		}
++
++		mapannounce "prontera", "Details - " + .@action_type$ + " [" + .@action_from$ + "] " + .@action_name$ + "!", 16;
++		deletearray .ai_action, 4;
++		end;
++	}
++
++L_MainMenu:
++	mes "[Monster Controller]";
++	mes "Current active monsters:";
++	list_mobs;
++	switch(select("Summon","Remove","Information","Actions")){
++		case 1: // Summon
++			next;
++			mes "[Monster Controller]";
++			mes "Monster ID -";
++			input @mob_id;
++			next;
++			summon_mob @mob_id;
++			goto L_MainMenu;
++			break;
++		case 2: // Remove
++			remove_mob make_menu();
++			next;
++			goto L_MainMenu;
++			break;
++		case 3: // Information
++			set .@tmp, make_menu();
++			next;
++			mes "[Monster Info]";
++			display_info .@tmp;
++			next;
++            goto L_MainMenu;
++			break;
++		case 4: // Actions
++			goto L_AttackMenu;
++			break;
++	}
++
++L_AttackMenu:
++	switch(select("Walk","Follow","Attack","Stop","Defend","Talk","Emote","Random Walk","Callback","Back")){
++		case 1: // Walk
++			set .@src, make_menu();
++			input .@x;
++			input .@y;
++			unitwalk .@src,.@x,.@y; // Mode 1: Walk to location.
++			break;
++		case 2: // Follow
++			set .@src, make_menu();
++			input .@tar;
++			unitwalk .@src, .@tar; // Mode 2: Walk to target.
++			break;
++		case 3: // Attack
++			set .@src, make_menu();
++			input .@tar;
++			unitattack .@src, .@tar;
++			break;
++		case 4: // Stop
++			set .@src, make_menu();
++			unitstop .@src;
++			break;
++		case 5: // Defend/Assist
++			set .@src, make_menu();
++			input .@tar;
++			mobassist .@src, .@tar;
++			break;
++		case 6: // Talk
++			set .@src, make_menu();
++			input .@text$;
++			unittalk .@src, .@text$;
++			break;
++		case 7: // Emote
++			set .@src, make_menu();
++			input .@emote;
++			unitemote .@src, .@emote;
++			break;
++		case 8:
++			set .@src, make_menu();
++			input .@flag;
++			setmobdata .@src, 26, .@flag;
++			break;
++		case 9:
++			set .@src, make_menu();
++			input .@flag;
++			setmobdata .@src, 25, .@flag;
++			break;
++		case 10:
++			next;
++			goto L_MainMenu;
++	}
++	goto L_AttackMenu;
++}
+\ No newline at end of file
+
+Property changes on: npc/sample/monster_controller.txt
+___________________________________________________________________
+Name: svn:eol-style
+ +native
+
+=== npc/scripts_custom.conf
+==================================================================
+--- npc/scripts_custom.conf	(revision 13395)
++++ npc/scripts_custom.conf	(local)
+@@ -74,6 +74,7 @@
+ //npc: npc/custom/Lance/FR_WeatherController.c
+ //npc: npc/custom/Lance/FR_MailSystem.c
+ //npc: npc/sample/npc_dynamic_shop.txt
++//npc: npc/custom/Lance/Sentry.cpp
+ // --------------------------------------------------------------
+ 
+ // --------------------------------------------------------------
+=== src/map/battle.c
+==================================================================
+--- src/map/battle.c	(revision 13395)
++++ src/map/battle.c	(local)
+@@ -3234,6 +3234,9 @@
+ 			if( !((agit_flag || agit2_flag) && map[m].flag.gvg_castle) && md->guardian_data && md->guardian_data->guild_id )
+ 				return 0; // Disable guardians/emperium owned by Guilds on non-woe times.
+ 
++			if(md->state.killer/* || !(battle_config.mob_ai&0x400)*/)
++				state |= BCT_ENEMY; //By default everyone hates mobs.
++			else
+ 			if( !md->special_state.ai )
+ 			{ //Normal mobs.
+ 				if( t_bl->type == BL_MOB && !((TBL_MOB*)t_bl)->special_state.ai )
+=== src/map/clif.c
+==================================================================
+--- src/map/clif.c	(revision 13395)
++++ src/map/clif.c	(local)
+@@ -8242,8 +8242,9 @@
+ 	WFIFOSET(fd, WFIFOW(fd,2));
+ 
+ #ifdef PCRE_SUPPORT
+-	// trigger listening npcs
++	// trigger listening mobs/npcs
+ 	map_foreachinrange(npc_chat_sub, &sd->bl, AREA_SIZE, BL_NPC, text, textlen, &sd->bl);
++	map_foreachinrange(mob_chat_sub, &sd->bl, AREA_SIZE, BL_MOB, text, textlen, &sd->bl);
+ #endif
+ 
+ 	// check for special supernovice phrase
+@@ -8885,7 +8886,8 @@
+ 	if (!bl) return;
+ 	switch (bl->type) {
+ 		case BL_MOB:
+-			clif_parse_ActionRequest_sub(sd, 0x07, bl->id, gettick());
++			if (!((TBL_MOB *)bl)->nd || !mob_script_callback((TBL_MOB *)bl, &sd->bl, CALLBACK_NPCCLICK))
++				clif_parse_ActionRequest_sub(sd, 0x07, bl->id, gettick());
+ 			break;
+ 		case BL_PC:
+ 			clif_parse_ActionRequest_sub(sd, 0x07, bl->id, gettick());
+=== src/map/mob.c
+==================================================================
+--- src/map/mob.c	(revision 13395)
++++ src/map/mob.c	(local)
+@@ -907,6 +907,9 @@
+ 	if(battle_check_target(&md->bl,bl,BCT_ENEMY)<=0)
+ 		return 0;
+ 
++	if(md->nd && mob_script_callback(md, bl, CALLBACK_DETECT))
++		return 1; // We have script handling the work.
++
+ 	switch (bl->type)
+ 	{
+ 	case BL_PC:
+@@ -1087,6 +1090,8 @@
+ 					tbl = NULL;
+ 			}
+ 			if (tbl && status_check_skilluse(&md->bl, tbl, 0, 0)) {
++				if(md->nd)
++					mob_script_callback(md, bl, CALLBACK_ASSIST);
+ 				md->target_id=tbl->id;
+ 				md->min_chase=md->db->range3+distance_bl(&md->bl, tbl);
+ 				if(md->min_chase>MAX_MINCHASE)
+@@ -1108,6 +1113,9 @@
+ {
+ 	nullpo_retr(0, md);
+ 
++	if(md->nd)
++		mob_script_callback(md, map_id2bl(md->target_id), CALLBACK_UNLOCK);
++
+ 	switch (md->state.skillstate) {
+ 	case MSS_WALK:
+ 		if (md->ud.walktimer != -1)
+@@ -1152,6 +1160,7 @@
+ 	nullpo_retr(0, md);
+ 
+ 	if(DIFF_TICK(md->next_walktime,tick)>0 ||
++	   md->state.no_random_walk ||
+ 	   !unit_can_move(&md->bl) ||
+ 	   !(status_get_mode(&md->bl)&MD_CANMOVE))
+ 		return 0;
+@@ -1505,7 +1514,7 @@
+ 
+ 	tick = va_arg(args,unsigned int);
+ 
+-	if (battle_config.mob_ai&0x20 && map[md->bl.m].users>0)
++	if (md->nd || (battle_config.mob_ai&0x20 && map[md->bl.m].users>0))
+ 		return (int)mob_ai_sub_hard(md, tick);
+ 
+ 	if (md->bl.prev==NULL || md->status.hp == 0)
+@@ -1696,6 +1705,34 @@
+ 	return 0;
+ }
+ 
++int mob_convertslave_sub(struct block_list *bl,va_list ap)
++{
++	struct mob_data *md, *md2 = NULL;
++
++	nullpo_retr(0, bl);
++	nullpo_retr(0, ap);
++	nullpo_retr(0, md = (struct mob_data *)bl);
++
++	md2=va_arg(ap,TBL_MOB *);
++
++	if(md->master_id > 0 && md->master_id == md2->bl.id){
++		md->state.killer = md2->state.killer;
++		md->special_state.ai = md2->special_state.ai;
++		md->nd = md2->nd;
++		md->callback_flag = md2->callback_flag;
++	}
++
++	return 0;
++}
++
++int mob_convertslave(struct mob_data *md)
++{
++	nullpo_retr(0, md);
++
++	map_foreachinmap(mob_convertslave_sub, md->bl.m, BL_MOB, md);
++	return 0;
++}
++
+ /*==========================================
+  *
+  *------------------------------------------*/
+@@ -1866,6 +1903,9 @@
+ 	if (!src)
+ 		return;
+ 	
++	if(md->nd)
++		mob_script_callback(md, src, CALLBACK_ATTACK);
++	
+ 	if(md->special_state.ai==2/* && md->master_id == src->id*/)
+ 	{	//LOne WOlf explained that ANYONE can trigger the marine countdown skill. [Skotlex]
+ 		md->state.alchemist = 1;
+@@ -2323,6 +2363,16 @@
+ 		if( sd && sd->md && src && src->type != BL_HOM && mob_db(md->class_)->lv > sd->status.base_level/2 )
+ 			mercenary_kills(sd->md);
+ 
++	 	if( src && src->type == BL_MOB )
++		{
++	 		struct mob_data *smd = (struct mob_data *)src;
++	 		if( smd->nd )
++	 			mob_script_callback(smd, &md->bl, CALLBACK_KILL);
++	 	}
++
++	 	if( md->nd )
++	 		mob_script_callback(md, src, CALLBACK_DEAD);
++	 	else
+ 		if( md->npc_event[0] && !md->state.npc_killmonster )
+ 		{
+ 			if( sd && battle_config.mob_npc_event_type )
+@@ -2358,7 +2408,11 @@
+ 
+ 	if(pcdb_checkid(md->vd->class_))
+ 	{	//Player mobs are not removed automatically by the client.
+-		clif_clearunit_delayed(&md->bl, tick+3000);
++		if(md->nd){
++			md->vd->dead_sit = 1;
++			return 1; // Let the dead body stay there.. we have something to do with it :D
++		} else
++			clif_clearunit_delayed(&md->bl, tick+3000);
+ 	}
+ 
+ 	if(!md->spawn) //Tell status_damage to remove it from memory.
+@@ -2380,7 +2434,10 @@
+ 	md->tdmg = 0;
+ 	if (!md->bl.prev)
+ 		map_addblock(&md->bl);
+-	clif_spawn(&md->bl);
++	if(pcdb_checkid(md->vd->class_) && md->nd)
++		md->vd->dead_sit = 0;
++	else
++		clif_spawn(&md->bl);
+ 	skill_unit_move(&md->bl,tick,1);
+ 	mobskill_use(md, tick, MSC_SPAWN);
+ 	if (battle_config.show_mob_info&3)
+@@ -2652,7 +2709,10 @@
+ 		md= mob_spawn_dataset(&data);
+ 		if(skill_id == NPC_SUMMONSLAVE){
+ 			md->master_id=md2->bl.id;
++			md->state.killer = md2->state.killer;
+ 			md->special_state.ai = md2->special_state.ai;
++			md->nd = md2->nd;
++			md->callback_flag = md2->callback_flag;
+ 		}
+ 		mob_spawn(md);
+ 		
+@@ -3227,6 +3287,26 @@
+ 	return 0;
+ }
+ 
++int mob_script_callback(struct mob_data *md, struct block_list *target, short action_type)
++{
++	// DEBUG: Uncomment these if errors occur. ---
++	// nullpo_retr(md, 0);
++	// nullpo_retr(md->nd, 0);
++	// -------------------------------------------
++	if(md->callback_flag&action_type){
++		int regkey = add_str(".ai_action");
++		linkdb_replace(&md->nd->u.scr.script->script_vars,(void *)regkey, (void *)(int)action_type);
++		if(target){
++			linkdb_replace(&md->nd->u.scr.script->script_vars,(void *)(regkey+(1<<24)), (void *)(int)target->type);
++			linkdb_replace(&md->nd->u.scr.script->script_vars,(void *)(regkey+(2<<24)), (void *)target->id);
++		}
++		linkdb_replace(&md->nd->u.scr.script->script_vars,(void *)(regkey+(3<<24)), (void *)md->bl.id);
++		run_script(md->nd->u.scr.script, 0, 0, md->nd->bl.id);
++		return 1;
++	}
++	return 0;
++}
++
+ //
+ // ‰Šú‰»
+ //
+=== src/map/mob.h
+==================================================================
+--- src/map/mob.h	(revision 13395)
++++ src/map/mob.h	(local)
+@@ -49,6 +49,19 @@
+ 	MSS_ANYTARGET,
+ };
+ 
++// Scripted Mob AI Constants
++#define CALLBACK_NPCCLICK	0x100
++#define CALLBACK_ATTACK		0x80
++#define CALLBACK_DETECT		0x40
++#define CALLBACK_DEAD		0x20
++#define	CALLBACK_ASSIST		0x10
++#define CALLBACK_KILL		0x08
++#define CALLBACK_UNLOCK		0x04
++#define CALLBACK_WALKACK	0x02
++#define CALLBACK_WARPACK	0x01
++
++int mob_script_callback(struct mob_data *md, struct block_list *target, short action_type);
++
+ struct mob_skill {
+ 	enum MobSkillState state;
+ 	short skill_id,skill_lv;
+@@ -107,6 +120,8 @@
+ 		unsigned steal_coin_flag : 1;
+ 		unsigned soul_change_flag : 1; // Celest
+ 		unsigned alchemist: 1;
++		unsigned no_random_walk: 1;
++		unsigned killer: 1;
+ 		unsigned spotted: 1;
+ 		unsigned char attacked_count; //For rude attacked.
+ 		int provoke_flag; // Celest
+@@ -136,6 +151,9 @@
+ 	int deletetimer;
+ 	int master_id,master_dist;
+ 
++	struct npc_data *nd;
++	unsigned short callback_flag;
++	
+ 	short skillidx;
+ 	unsigned int skilldelay[MAX_MOBSKILL];
+ 	char npc_event[50];
+@@ -246,6 +264,7 @@
+ int mobskill_castend_pos( int tid, unsigned int tick, int id,int data );
+ int mob_summonslave(struct mob_data *md2,int *value,int amount,int skill_id);
+ int mob_countslave(struct block_list *bl);
++int mob_convertslave(struct mob_data *md);
+ 
+ int mob_is_clone(int class_);
+ 
+=== src/map/npc.h
+==================================================================
+--- src/map/npc.h	(revision 13395)
++++ src/map/npc.h	(local)
+@@ -80,6 +80,7 @@
+ 
+ #ifdef PCRE_SUPPORT
+ void npc_chat_finalize(struct npc_data* nd);
++int mob_chat_sub(struct block_list* bl, va_list ap);
+ #endif
+ 
+ //Script NPC events.
+=== src/map/npc_chat.c
+==================================================================
+--- src/map/npc_chat.c	(revision 13395)
++++ src/map/npc_chat.c	(local)
+@@ -403,6 +403,15 @@
+ 	return 0;
+ }
+ 
++int mob_chat_sub(struct block_list* bl, va_list ap)
++{
++	struct mob_data *md = (struct mob_data *)bl;
++	if(md->nd)
++		npc_chat_sub(&md->nd->bl, ap);
++	
++	return 0;
++}
++
+ // Various script builtins used to support these functions
+ 
+ int buildin_defpattern(struct script_state* st)
+=== src/map/pc.c
+==================================================================
+--- src/map/pc.c	(revision 13395)
++++ src/map/pc.c	(local)
+@@ -5168,6 +5168,9 @@
+ 			status_percent_heal(src,10,0);
+ 		}
+ 		src = battle_get_master(src); // Maybe Player Summon
++
++		if(md->nd)
++			mob_script_callback(md, &sd->bl, CALLBACK_KILL);
+ 	}
+ 	break;
+ 	case BL_PET: //Pass on to master...
+=== src/map/script.c
+==================================================================
+--- src/map/script.c	(revision 13395)
++++ src/map/script.c	(local)
+@@ -12444,6 +12444,221 @@
+ // [zBuffer] List of mob control commands --->
+ //## TODO always return if the request/whatever was successfull [FlavioJS]
+ 
++BUILDIN_FUNC(mobspawn)
++{
++	int class_,x,y,id;
++	const char *str,*map;
++
++	// Who?
++	str		=script_getstr(st,2);
++	// What?
++	class_	=script_getnum(st,3);
++	// Where?
++	map		=script_getstr(st,4);
++	x		=script_getnum(st,5);
++	y		=script_getnum(st,6);
++
++	id = mob_once_spawn(map_id2sd(st->rid),map_mapname2mapid(map),x,y,str,class_,1,"");
++	script_pushint(st,id);
++
++	return 0;
++}
++
++BUILDIN_FUNC(mobremove)
++{
++	int id;
++	struct block_list *bl = NULL;
++	id = script_getnum(st,2);
++
++	bl = map_id2bl(id);
++	if (bl && bl->type == BL_MOB)
++		unit_free(bl,0);
++
++	return 0;
++}
++
++BUILDIN_FUNC(getmobdata)
++{
++	int num, id;
++	char *name;
++	struct mob_data *md = NULL;
++	TBL_PC *sd = st->rid?map_id2sd(st->rid):NULL;
++	id = script_getnum(st,2);
++	
++	if(!(md = (struct mob_data *)map_id2bl(id)) || md->bl.type != BL_MOB || !data_isreference(script_getdata(st,3)) ){
++		ShowWarning("buildin_getmobdata: Error in argument!\n");
++		return -1;
++	}
++	
++	num=st->stack->stack_data[st->start+3].u.num;
++	name=(char *)(str_buf+str_data[num&0x00ffffff].str);
++	setd_sub(st,sd,name,0,(void *)(int)md->class_,script_getref(st,3));
++	setd_sub(st,sd,name,1,(void *)(int)md->level,script_getref(st,3));
++	setd_sub(st,sd,name,2,(void *)(int)md->status.hp,script_getref(st,3));
++	setd_sub(st,sd,name,3,(void *)(int)md->status.max_hp,script_getref(st,3));
++	setd_sub(st,sd,name,4,(void *)(int)md->master_id,script_getref(st,3));
++	setd_sub(st,sd,name,5,(void *)(int)md->bl.m,script_getref(st,3));
++	setd_sub(st,sd,name,6,(void *)(int)md->bl.x,script_getref(st,3));
++	setd_sub(st,sd,name,7,(void *)(int)md->bl.y,script_getref(st,3));
++	setd_sub(st,sd,name,8,(void *)(int)md->status.speed,script_getref(st,3));
++	setd_sub(st,sd,name,9,(void *)(int)md->status.mode,script_getref(st,3));
++	setd_sub(st,sd,name,10,(void *)(int)md->special_state.ai,script_getref(st,3));
++	setd_sub(st,sd,name,11,(void *)(int)md->sc.option,script_getref(st,3));
++	setd_sub(st,sd,name,12,(void *)(int)md->vd->sex,script_getref(st,3));
++	setd_sub(st,sd,name,13,(void *)(int)md->vd->class_,script_getref(st,3));
++	setd_sub(st,sd,name,14,(void *)(int)md->vd->hair_style,script_getref(st,3));
++	setd_sub(st,sd,name,15,(void *)(int)md->vd->hair_color,script_getref(st,3));
++	setd_sub(st,sd,name,16,(void *)(int)md->vd->head_bottom,script_getref(st,3));
++	setd_sub(st,sd,name,17,(void *)(int)md->vd->head_mid,script_getref(st,3));
++	setd_sub(st,sd,name,18,(void *)(int)md->vd->head_top,script_getref(st,3));
++	setd_sub(st,sd,name,19,(void *)(int)md->vd->cloth_color,script_getref(st,3));
++	setd_sub(st,sd,name,20,(void *)(int)md->vd->shield,script_getref(st,3));
++	setd_sub(st,sd,name,21,(void *)(int)md->vd->weapon,script_getref(st,3));
++	setd_sub(st,sd,name,22,(void *)(int)md->vd->shield,script_getref(st,3));
++	setd_sub(st,sd,name,23,(void *)(int)md->ud.dir,script_getref(st,3));
++	setd_sub(st,sd,name,24,(void *)(int)md->state.killer,script_getref(st,3));
++	setd_sub(st,sd,name,25,(void *)(int)md->callback_flag,script_getref(st,3));
++	setd_sub(st,sd,name,26,(void *)(int)md->state.no_random_walk, script_getref(st,3));
++	return 0;
++}
++
++/// Changes the data of a mob
++///
++/// setmobdata <mob unit id>,<type>,<value>;
++BUILDIN_FUNC(setmobdata)
++{
++	struct block_list* mob_bl;
++
++	mob_bl = map_id2bl(script_getnum(st,2));
++
++	if( mob_bl != NULL && mob_bl->type == BL_MOB )
++	{
++		TBL_MOB* md = (TBL_MOB*)mob_bl;
++		int type;
++		int value;
++
++		type = script_getnum(st,3);
++		value = script_getnum(st,4);
++
++		switch( type )
++		{
++		case 0:  md->class_ = (short)value; break;
++		case 1:  md->level = (unsigned short)value; break;
++		case 2:  md->status.hp = (unsigned int)value; break;
++		case 3:  md->status.max_hp = (unsigned int)value; break;
++		case 4:  md->master_id = value; break;
++		case 5:  md->bl.m = (short)value; break;
++		case 6:  md->bl.x = (short)value; break;
++		case 7:  md->bl.y = (short)value; break;
++		case 8:  md->status.speed = (unsigned short)value; break;
++		case 9:  md->status.mode = (unsigned short)value; break;
++		case 10: md->special_state.ai = (unsigned int)value; break;
++		case 11: md->sc.option = (unsigned short)value; break;
++		case 12: md->vd->sex = (char)value; break;
++		case 13: md->vd->class_ = (unsigned short)value; break;
++		case 14: md->vd->hair_style = (unsigned short)value; break;
++		case 15: md->vd->hair_color = (unsigned short)value; break;
++		case 16: md->vd->head_bottom = (unsigned short)value; break;
++		case 17: md->vd->head_mid = (unsigned short)value; break;
++		case 18: md->vd->head_top = (unsigned short)value; break;
++		case 19: md->vd->cloth_color = (unsigned short)value; break;
++		case 20: md->vd->shield = (unsigned short)value; break;
++		case 21: md->vd->weapon = (unsigned short)value; break;
++		case 22: md->vd->shield = (unsigned short)value; break;
++		case 23: md->ud.dir = (unsigned char)value; break;
++		case 24: md->state.killer = value > 0 ? 1 : 0; break;
++		case 25: md->callback_flag = (short)value; break;
++		case 26: md->state.no_random_walk = value > 0 ? 1 : 0; break;
++		default:
++			ShowError("script:setmobdata: unknown data identifier %d\n", type);
++			return 1;
++		}
++	}
++
++	return 0;
++}
++
++/// Makes the mob assist the target unit as a slave
++///
++/// mobassist <mob unit id>,"<player name>";
++/// mobassist <mob unit id>,<target id>;
++BUILDIN_FUNC(mobassist)
++{
++	struct block_list* mob_bl;
++
++	// get mob
++	mob_bl = map_id2bl(script_getnum(st,2));
++	if( mob_bl != NULL && mob_bl->type == BL_MOB )
++	{
++		TBL_MOB* md = (TBL_MOB*)mob_bl;
++		struct block_list* target_bl = NULL;
++		struct script_data* data;
++
++		// get target
++		data = script_getdata(st, 3);
++		get_val(st, data);
++		if( data_isstring(data) )
++		{
++			TBL_PC* sd = map_nick2sd(conv_str(st, data));
++			if( sd != NULL )
++				target_bl = &sd->bl;
++		}
++		if( target_bl == NULL )
++			target_bl = map_id2bl(conv_num(st, data));
++
++		// set mob as slave
++		if( target_bl != NULL )
++		{
++			struct unit_data* ud;
++
++			md->master_id = target_bl->id;
++			md->state.killer = 1;
++			mob_convertslave(md);
++			ud = unit_bl2ud(mob_bl);
++			if( ud != NULL )
++			{
++				if( ud->target != 0 )
++					md->target_id = ud->target;
++				else if( ud->skilltarget != 0 )
++					md->target_id = ud->skilltarget;
++				if( md->target_id != 0 )
++					unit_walktobl(&md->bl, map_id2bl(md->target_id), 65025, 2);
++			}
++		}
++	}
++
++	return 0;
++}
++
++/// Attaches the current npc or the target npc to the mob unit
++///
++/// mobattach <mob unit id>{,"<npc name>"};
++BUILDIN_FUNC(mobattach)
++{
++	struct block_list* mob_bl;
++
++	mob_bl = map_id2bl(script_getnum(st,2));
++	if( mob_bl != NULL && mob_bl->type == BL_MOB )
++	{
++		TBL_MOB* md = (TBL_MOB*)mob_bl;
++		TBL_NPC* nd = NULL;
++
++		if( script_hasdata(st,3) )
++			nd = npc_name2id(script_getstr(st, 3));
++		else
++		{
++			struct block_list* npc_bl = map_id2bl(st->oid);
++			if( npc_bl != NULL && npc_bl->type == BL_NPC )
++				nd = (TBL_NPC*)npc_bl;
++		}
++
++		if( nd != NULL )
++			md->nd = nd;
++	}
++
++	return 0;
++}
++
+ /// Makes the unit walk to target position or map
+ /// Returns if it was successfull
+ ///
+@@ -12559,6 +12774,7 @@
+ 		script_pushint(st, 1);
+ 		return 0;
+ 	case BL_MOB:
++		((TBL_MOB *)unit_bl)->state.killer = 1;
+ 		((TBL_MOB *)unit_bl)->target_id = target_bl->id;
+ 		break;
+ 	case BL_PET:
+@@ -13528,6 +13744,12 @@
+ 	BUILDIN_DEF(pcblockmove,"ii"),
+ 	// <--- [zBuffer] List of player cont commands
+ 	// [zBuffer] List of mob control commands --->
++	BUILDIN_DEF(mobspawn,"*"),
++	BUILDIN_DEF(mobremove,"i"),
++	BUILDIN_DEF(getmobdata,"i*"),
++	BUILDIN_DEF(setmobdata,"iii"),
++	BUILDIN_DEF(mobassist,"i?"),
++	BUILDIN_DEF(mobattach,"i?"),
+ 	BUILDIN_DEF(unitwalk,"ii?"),
+ 	BUILDIN_DEF(unitkill,"i"),
+ 	BUILDIN_DEF(unitwarp,"isii"),
+=== src/map/unit.c
+==================================================================
+--- src/map/unit.c	(revision 13395)
++++ src/map/unit.c	(local)
+@@ -253,6 +253,8 @@
+ 	else {	//Stopped walking. Update to_x and to_y to current location [Skotlex]
+ 		ud->to_x = bl->x;
+ 		ud->to_y = bl->y;
++		if(md && md->nd) // Tell the script engine we've finished walking (for AI pathfinding)
++			mob_script_callback(md, NULL, CALLBACK_WALKACK);
+ 	}
+ 	return 0;
+ }
+@@ -625,6 +627,11 @@
+ 	clif_spawn(bl);
+ 	skill_unit_move(bl,gettick(),1);
+ 
++	if(bl->type == BL_MOB){
++		TBL_MOB *md = (TBL_MOB *)bl;
++		if(md->nd) // Tell the script engine we've warped
++			mob_script_callback(md, NULL, CALLBACK_WARPACK);
++	}
+ 	return 0;
+ }
+ 

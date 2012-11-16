@@ -1,0 +1,29 @@
+-	script	ingame_clock	-1,{
+
+OnMinute00:
+	day;
+	set survival, survival + 1;
+//Begin with the SQL check for how long player has survived
+	set @char_id, getcharid(0);
+	query_sql("SELECT survival from `char` where account_id = " + getcharid(0), @survival);
+	if(@survival > survival) {
+	query_sql "UPDATE `char` SET `survival` = "+survival+" WHERE `char_id` = "+@char_id;
+	}
+	end;
+OnMinute15:
+	night;
+	end;
+OnMinute30:
+	day;
+	set survival, survival + 1;
+//Begin with the SQL check for how long player has survived
+	set @char_id, getcharid(0);
+	query_sql("SELECT survival from `char` where account_id = " + getcharid(0), @survival);
+	if(@survival > survival) {
+	query_sql "UPDATE `char` SET `survival` = "+survival+" WHERE `char_id` = "+@char_id;
+	end;
+OnMinute45:
+	night;
+	end;
+
+}

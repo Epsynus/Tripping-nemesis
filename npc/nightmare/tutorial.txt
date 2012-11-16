@@ -1,0 +1,445 @@
+op_tut01,42,37,5	script	The Guide	62,{
+	set @npcname$, "[The Guide]";
+if(tutoriallvl==10) goto dead_respawn;
+if(tutoriallvl==5) goto tutorial_finish;
+	mes @npcname$;
+	mes "-Grumbles-";
+	next;
+	emotion 0;
+	next;
+	mes @npcname$;
+	mes "Oh! Hello there...you're that kid that begged for adventure, aye?";
+	next;
+	mes "["+strcharinfo(0)+"]";
+	mes "Yes sir!";
+	next;
+	mes @npcname$;
+	mes "Hm...let's see...";
+	next;
+	mes @npcname$;
+	mes "Your name must be..."+strcharinfo(0)+"...correct?";
+	next;
+	mes "["+strcharinfo(0)+"]";
+	mes "That's me, alright.";
+	next;
+	mes @npcname$;
+	mes "Ah, excellent. There's just a problem.";
+	next;
+	mes @npcname$;
+	mes "We simply cannot let you enter the world without some information!";
+	next;
+	mes @npcname$;
+	mes "So. I'm going to ask you to fill out a survey. I also want you to take your time.";
+	next;
+	mes @npcname$;
+	mes "It'll help us understand what kind of person you are.";
+	next;
+	mes @npcname$;
+	mes "Are you ready?";
+	menu "Yes!",tutorial_survey,"No...",-;
+	next;
+	mes @npcname$;
+	mes "Ok, talk to me later when you are ready.";
+	close;
+
+tutorial_survey:
+	set statstr,0;
+	set statint,0;
+	set statagi,0;
+	set statvit,0;
+	set statdex,0;
+	set statluk,0;
+	next;
+	mes @npcname$;
+	mes "Alright.";
+	next;
+	mes @npcname$;
+	mes "A person is about to get shot by a gunsman. What is your first reaction?";
+	mes "A. Run towards the person and take the bullet.";
+	mes "B. Throw something to knock out the gunsman before he can shoot, but with the risk of missing.";
+	if(select("A:B")==1) set statvit,statvit+1;
+		else { set statagi,statagi+1;
+			}
+	next;
+	mes @npcname$;
+	mes "It's three in the morning and your friends want to go eat McDonalds. Would you:";
+	mes "A. Tell them that it's late and suggest that they go to bed.";
+	mes "B. Or join in on their late night adventure, only to find that McDonald's ran out of chicken nuggets for the night.";
+	if(select("A:B")==1) set statstr,statstr+1;
+		else { set statint,statint+1;
+			}
+	next;
+	mes @npcname$;
+	mes "Do you believe Apple Jacks taste like apples?";
+	mes "A. WTF?!";
+	mes "B. Yes, they do. That's why they call them Apple Jacks!";
+	if(select("A:B")==1) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "During a dramatic scene in a romantic-action-scifi-zombie apocalyptic movie, you accidentally fart and everyone hears it. How do you feel?";
+	mes "A. Embarassed! Now no one will go out with me. :(";
+	mes "B. Me gusta.";
+	if(select("A:B")==2) set statagi,statagi+1;
+		else { set statvit,statvit+1;
+			}
+	next;
+	mes @npcname$;
+	mes "You enter a cave. What do you do?";
+	mes "A. Go in and explore it";
+	mes "B. Play safe and stay out of it.";
+	if(select("A:B")==1) set statstr,statstr+1;
+		else { set statint,statint+1;
+			}
+	next;
+	mes @npcname$;
+	mes "If someone dared you to eat live worms from the soil for a million dollars, would you do it?";
+	mes "A. Yes, why not?";
+	mes "B. Hell no!";
+	if(select("A:B")==2) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "An awkward friend of yours invites you to his mystery murder party. Do you:";
+	mes "A. Decline the invitation and tell him that you have to study.";
+	mes "B. Or accept his invitation, hoping that the party will be the bomb diggity.";
+	if(select("A:B")==1) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "You buy a sandwich at a local bakery with the last of your money in your wallet. You exit the bakery and a poor man asks for some food. What would you do?";
+	mes "A. Give him your sandwich.";
+	mes "B. Try to find a local bank to get more money to buy him a sandwich.";
+	if(select("A:B")==1) set statvit,statvit+1;
+		else { set statagi,statagi+1;
+			}
+	next;
+	mes @npcname$;
+	mes "You are sick with cancer and only have a year to live. However, there is a treatment that could cure your sickness, but there is a chance it might fail and result in your death. Would you:";
+	mes "A. Play it safe and enjoy your last year.";
+	mes "B. Undergo the treatment in hopes that you get cured for life.";
+	if(select("A:B")==1) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "There's a picnic that your friends invited you to attend for the weekend. What do you bring?";
+	mes "A. Enough hamburger patties and buns to satisfy almost all the attendees.";
+	mes "B. BACON. But only enough for yourself, because you're a scumbag.";
+	if(select("A:B")==2) set statint,statint+1;
+		else { set statstr,statstr+1;
+			}
+	next;
+	mes @npcname$;
+	mes "Do you want a soulmate that is courageous or reliable?";
+	mes "A. Courage!";
+	mes "B. Reliability!";
+	if(select("A:B")==2) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "If someone punches you in the face and wants to pick a fight with you, would you:";
+	mes "A. Get into a fight with him and punch him back.";
+	mes "B. Ignore it and walk away.";
+	if(select("A:B")==1) set statstr,statstr+1;
+		else { set statint,statint+1;
+			}
+	next;
+	mes @npcname$;
+	mes "Your friend is trapped in a building that is surrounded by zombies. What do you do?";
+	mes "A. Formulate a plan to rescue your friend even though the odds of saving him/her are very slim.";
+	mes "B. Leave your friend behind; after all, he/she is distracting the zombie horde, so might as well gather supplies.";
+	if(select("A:B")==1) set statstr,statstr+1;
+		else { set statint,statint+1;
+			}
+	next;
+	mes @npcname$;
+	mes "You are about to embark on a journey into the desert, but you want a mount since you don't want to go on foot. You encounter a merchant, but he only has two animals that he could offer you. What would you choose?";
+	mes "A. A strong, but slow elephant.";
+	mes "B. A quick, but weak ostrich.";
+	if(select("A:B")==1) set statvit,statvit+1;
+		else { set statagi,statagi+1;
+			}
+	next;
+	mes @npcname$;
+	mes "There is a pie on the counter and you and your brother call it at the same time. Would you:";
+	mes "A. Compromise with him and get half the pie.";
+	mes "B. Flip a coin to see who gets the whole thing.";
+	if(select("A:B")==1) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "Do you like believing in something because:";
+	mes "A. It is backed up by facts.";
+	mes "B. It is something you feel is right regardless of what anyone else thinks.";
+	if(select("A:B")==1) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "You are given a present before Christmas and tempted to know what's inside. What would you do?";
+	mes "A. Open it up right away!";
+	mes "B. Be patient and wait until Christmas.";
+	if(select("A:B")==1) set statagi,statagi+1;
+		else { set statvit,statvit+1;
+			}
+	next;
+	mes @npcname$;
+	mes "You decide to audition for a hip-hop dance team. However, you completely mess up during the audition process and forget the choreography. What do you do?";
+	mes "A. Freestyle and hope that the judges would be impressed by your amazing style.";
+	mes "B. Stand there and accept defeat. GG uninstall.";
+	if(select("A:B")==2) set statdex,statdex+1;
+		else { set statluk,statluk+1;
+			}
+	next;
+	mes @npcname$;
+	mes "Your roommate is addicted to playing trading cards and doesn't focus on his organic chemistry homework. Would you:";
+	mes "A. Burn the trading cards, forcing him to study organic molecules and how they work.";
+	mes "B. Let him continue playing cards, but comfort him when he fails his midterm and says 'But I studied so hard!'";
+	if(select("A:B")==2) set statstr,statstr+1;
+		else { set statint,statint+1;
+			}
+	next;
+	mes @npcname$;
+	mes "Well...that's it. Give us a few minutes to process the information! If you don't know the controls to this game yet, talk to THE CAPTAIN for help with controls!";
+	set tutoriallvl, 5;
+	close;
+
+tutorial_finish:
+	set @npcname$, "[The Guide]";
+	mes @npcname$;
+	mes "Oh hi there, we've processed your survey and application. You can enter the world now!";
+	next;
+	mes @npcname$;
+	mes "Remember to be vigilant; it's a dangerous place out there.";
+	next;
+	mes @npcname$;
+	mes "Good luck!";
+	statusup2 bStr, 2*statstr;
+	statusup2 bInt, 2*statint;
+	statusup2 bAgi, 2*statagi;
+	statusup2 bVit, 2*statvit;
+	statusup2 bDex, 2*statdex;
+	statusup2 bLuk, 2*statluk;
+	set statstr,0;
+	set statint,0;
+	set statagi,0;
+	set statvit,0;
+	set statdex,0;
+	set statluk,0;
+	skill 142,1,0;
+	skill 411,1,0;
+	skill 108,1,0;
+	skill 150,1,0;
+	skill 152,1,0;
+	skill 124,1,0;
+	skill 8,1,0;
+//	skill 115,1,0;
+//	skill 116,1,0;
+//	skill 117,1,0;
+//	skill 118,1,0;
+//	skill 119,1,0;
+//	skill 120,1,0;
+//	skill 121,1,0;
+	set trapmaker_level, 0;
+	set chemmaker_level, 0;
+	set cookmaker_level, 0;
+	percentheal 100,100;
+	warp "lavive_01",0,0;
+	addtimer 500,"survival_mechanic::OnTimeCheck";
+	addtimer 500,"vitality_timer::OnTimeCheck";
+	set lastsavedmap$, "lavive_01";
+	set lastsavedx, 49;
+	set lastsavedy, 48;
+	set tutoriallvl, 10;
+	end;
+
+dead_respawn:
+	set @npcname$, "[The Guide]";
+	mes @npcname$;
+	mes "Oh no! What happened out there?!";
+	next;
+	mes "["+strcharinfo(0)+"]";
+	mes "Bleh...";
+	next;
+	mes @npcname$;
+	mes "Oh, tsk tsk. You didn't even last out there!";
+	next;
+	mes @npcname$;
+	mes "Are you sure you want to return to the world? You will be warped back to your last save spot.";
+	next;
+	menu "Yes!",dead_respawn_yes,"No...",-;
+	mes @npcname$;
+	mes "Alright. Take your time to rest up. Maybe meet some new friends. Let me know when you're ready!";
+	close;
+	end;
+dead_respawn_yes:
+	mes @npcname$;
+	mes "Alright. Be careful out there...";
+	next;
+	percentheal 100,100;
+	warp "lavive_01",0,0;
+	addtimer 500,"survival_mechanic::OnTimeCheck";
+	addtimer 500,"vitality_timer::OnTimeCheck";
+	end;
+
+}
+
+op_tut01,43,50,5	script	The Captain	66,{
+	set @npcname$, "[The Captain]";
+	mes @npcname$;
+	mes "Hello there!";
+	next;
+	mes @npcname$;
+	mes "What would you like to know?";
+	menu "What is Oplex?",know_about,"How do I play?",know_controls,"What do I do?",know_purpose,"Do you have any advice on surviving?",know_survive,"I'm okay, thank you.",-;
+	next;
+	mes @npcname$;
+	mes "Well, okay, let me know if you need to know anything!";
+	close;
+	end;
+know_about:
+	next;
+	mes @npcname$;
+	mes "What is Oplex?";
+	mes "Oplex is a survival horror MMO made from the eAthena engine (for Ragnarok Online, hence the art style and similar interface - yet different gameplay and mechanics, of course) that aims to emphasize the 'survival' portion of horror games. Nowadays, too many games focus on action gameplay and not so much on trying to let the character survive. In addition, MMORPGs tend to be very mechanical; players are thrown into a world where they perform meaningless and menial tasks, such as hunting down x amounts of items for no reason. Oplex wants to change all of that; survivors, such as yourself, are thrown into a cruel world where resources are scarce, zombies rule the world, and other survivors are not to be trusted. Of course, cooperation will allow bands of survivors to thrive, but how long will that last when resources dwindle?";
+	next;
+	mes @npcname$;
+	mes "The gameplay mechanics of Oplex works differently than many MMOs. First of all, let's highlight stats:";
+	mes "Where as stats and leveling up are important in other games (RPGs), they are not in Oplex. Or well, not in the traditional sense. The first thing you need to know is that there is no TRUE leveling in Oplex. You will remain at level one in the game the entire game.";
+	next;
+	mes @npcname$;
+	mes "That has always been Oplex's first distinct feature. Secondly, many stats do not affect your combat skills - rather, they are there to assist you in dealing with the environment (which will be added in the near future); for example, survivors with high strength may move boulders while survivors with low strength may not; another example could be that survivors with high intelligence will spend less time hacking computers or rewiring things than survivors with lower intelligence.";
+	next;
+	mes @npcname$;
+	mes "This leads to the emphasis on equipment. In a post-apocalyptic world, what matters most is what you have. If you have a gun over the other survivor with a pocket knife, you are far more likely to deal more damage to him than he is to you; of course, factoring in the importance of talent is crucial, but there will be more information regarding that in the near future.";
+	next;
+	mes @npcname$;
+	mes "To summarize, Oplex is not your average MMO. Your goal is to survive as long as you can and to outcompete others. There are many mysteries in Oplex and your goal is to uncover them.";
+	next;
+	mes @npcname$;
+	mes "What else would you like to know?";
+	menu "What is Oplex?",know_about,"How do I play?",know_controls,"What do I do?",know_purpose,"Do you have any advice on surviving?",know_survive,"I'm okay, thank you.",-;
+	next;
+	mes @npcname$;
+	mes "Well, okay, let me know if you need to know anything!";
+	close;
+	end;
+know_controls:
+	next;
+	mes @npcname$;
+	mes "How do I play?";
+	mes "If you've ever played Ragnarok Online, many of the controls work the same way. For those of you who have not played Ragnarok, here are some basic controls that you will find handy:";
+	next;
+	mes @npcname$;
+	mes "Left clicking on a square in the map will allow you to move to that destination. In addition, it will let you attack monsters or players and interact with NPCs.";
+	next;
+	mes @npcname$;
+	mes "Right clicking on items and skills will bring up a description/info box; right clicking players will enable several options regarding the individual.";
+	next;
+	mes @npcname$;
+	mes "ALT + Q will bring up your equipment window.";
+	next;
+	mes @npcname$;
+	mes "ALT + O will bring up your options window.";
+	next;
+	mes @npcname$;
+	mes "ALT + A will bring up your stats window, which is determined by the survey you took with The Guide.";
+	next;
+	mes @npcname$;
+	mes "ALT + S will bring up your skills window, which is a list of skills you can use";
+	next;
+	mes @npcname$;
+	mes "F11 will bring up your hotkey bar, where you can place items, equipment, or skills for quick usage (using keys F1 to F9). TIP: If you have a gun, it is highly recommended that you place the bullets and bullet cases in two hotkey spots for quick reloading.";
+	next;
+	mes @npcname$;
+	mes "Finally, mouse scroll will allow you to zoom in/out of the map.";
+	next;
+	mes @npcname$;
+	mes "...that should be the basics, or things you will need to know to get your started. Just practice moving around and getting used to the controls before moving into the real world!";
+	next;
+	mes @npcname$;
+	mes "You can also type in '/help' for some more assistance.";
+	next;
+	mes @npcname$;
+	mes "What else would you like to know?";
+	menu "What is Oplex?",know_about,"How do I play?",know_controls,"What do I do?",know_purpose,"Do you have any advice on surviving?",know_survive,"I'm okay, thank you.",-;
+	next;
+	mes @npcname$;
+	mes "Well, okay, let me know if you need to know anything!";
+	close;
+	end;
+know_purpose:
+	next;
+	mes @npcname$;
+	mes "What do I do?";
+	mes "In Oplex, your goal is to survive for as long as you can. Players that survive the longest will have their scores recorded on the control panel. Each in-game day is about 20 minutes of game time, and that twenty minutes corresponds to the time you spend in-game.";
+	next;
+	mes @npcname$;
+	mes "In order to survive, you need resources. Your body will tire over time and your health and skill points (hunger and body maintenence) will decrease due to fatique. In addition, not moving around (or encountering other survivors) may result in hallucinations due to insanity.";
+	next;
+	mes @npcname$;
+	mes "To obtain resources, you need to make a risk - venture out into the cruel world and destroy crates. You can break crates up with your hands (or weapons, if you choose to do so); crates will result in random resources that will be of use to you.";
+	next;
+	mes @npcname$;
+	mes "In addition, you might want to interact with other survivors (in a positive way) to survive. Banding together will help you survive and deal with rogue players and hordes of zombies. So find a buddy!";
+	next;
+	mes @npcname$;
+	mes "What else would you like to know?";
+	menu "What is Oplex?",know_about,"How do I play?",know_controls,"What do I do?",know_purpose,"Do you have any advice on surviving?",know_survive,"I'm okay, thank you.",-;
+	next;
+	mes @npcname$;
+	mes "Well, okay, let me know if you need to know anything!";
+	close;
+	end;
+know_survive:
+	next;
+	mes @npcname$;
+	mes "Do you have any advice on surviving?";
+	next;
+	mes @npcname$;
+	mes "As time goes by, you will gain more knowledge on how to survive in the game. Here are some basic tips to get you started:";
+	next;
+	mes @npcname$;
+	mes "1. Do not engage a large army of zombies, unless you're asking for a death wish.";
+	mes "Should be self explanatory. Unless you have friends to back you up, there's no need to engage the undead.";
+	next;
+	mes @npcname$;
+	mes "2. Be wary of who you trust.";
+	mes "Be careful with who you trust; it's a good thing to rely on people, but relying on everyone might just be the end of you. Some people will kill others to survive (cannibals). Others will kill you for your items (raiders). And still others will kill you just because they want to (psychopaths).";
+	next;
+	mes @npcname$;
+	mes "3. Have a partner with you at all times, if possible.";
+	mes "This is somewhat contradictory to what was stated earlier, but having a partner reduces the risk of being 'snatched' by an undead, or being assaulted by a rogue survivor.";
+	next;
+	mes @npcname$;
+	mes "4. Establish your own safe zone early on.";
+	mes "There are buildings that you can camp out in to avoid the masses of survivors that linger in the Outpost. These buildings may periodically provide you with crates, which can help you survive.";
+	next;
+	mes @npcname$;
+	mes "5. Look for crates, your source of survival.";
+	mes "Crates are essential for survival. Period.";
+	next;
+	mes @npcname$;
+	mes "What else would you like to know?";
+	menu "What is Oplex?",know_about,"How do I play?",know_controls,"What do I do?",know_purpose,"Do you have any advice on surviving?",know_survive,"I'm okay, thank you.",-;
+	next;
+	mes @npcname$;
+	mes "Well, okay, let me know if you need to know anything!";
+	close;
+	end;
+
+}
+
+op_tut01,88,39,0	script	tutorial_heal_001::tutorial_heals_001	-1,40,0,{
+OnTouch:
+	percentheal 100,100;
+	}
+op_tut01,94,44,0	duplicate(tutorial_heals_001)	tutorial_heal_001	-1,40,0
+op_tut01,94,36,0	duplicate(tutorial_heals_001)	tutorial_heal_002	-1,40,0
+op_tut01,88,44,0	duplicate(tutorial_heals_001)	tutorial_heal_003	-1,40,0

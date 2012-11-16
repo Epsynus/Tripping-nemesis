@@ -1,0 +1,37 @@
+lavive_01,27,74,5	script	Survivor	100,{
+
+	bg_monster .team, .map$, .x, .y,"--ja--",1123,"";
+	end;
+
+OnInit:
+	waitingroom "Survivor",1, strnpcinfo(0) +"::Ona",1;
+	getmapxy .map$, .x, .y, 1;
+	end;
+
+Ona:
+	set .team, waitingroom2bg( .map$, .x, .y, "", "", strnpcinfo(0) );
+	bg_warp .team, .map$, .x, .y ;
+	end;
+}
+
+lavive_01,19,74,5	script	Raider	100,{
+
+
+OnInit:
+	waitingroom "Raider",1, strnpcinfo(0) +"::Ona",1;
+	getmapxy .map$, .x, .y, 1;
+	end;
+
+Ona:
+	set .team, waitingroom2bg( .map$, .x, .y, "", "", strnpcinfo(0) );
+	bg_warp .team, .map$, .x, .y ;
+	end;
+
+OnWhisperGlobal:
+	bg_leave;
+	bg_destroy .team;
+	dispbottom "done";
+	end;
+}
+
+lavive_01	mapflag	battleground

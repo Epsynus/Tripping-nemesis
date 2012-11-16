@@ -1,0 +1,44 @@
+// WoE Setter 3 Plug-in
+// Player - Change Guild Master
+// By: [GM]Xeon
+// Version: 1.0.0
+
+-	script	WoES3Pl_RGMaster	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_playermenu$[getarraysize($@woes3_pl_gmmenu$)], "Change Guild Master";
+	set $@woes3_pl_player$[getarraysize($@woes3_pl_gm$)], "GMaster";
+	set $@woes3_gmaster_fee, 25000; //The fee in zeny of changing the guild master
+	end;
+}
+
+function	script	WoES3Pl_GMaster	{
+	mes "[Change Guild Master]";
+	if (getguildmasterid(getcharid(2)) != getcharid(0)) {
+		mes "You must be in a guild and be the owner of it!";
+		return;
+	}
+	if ($@woes3_gmaster_fee) mes "To change the Guild Master there is a fee of "+$@woes3_gmaster_fee+" zeny.";
+	mes "^FF0000Are you sure you wish to change the guild ownership to another member? You will no longer have direct control over the guild!^000000";
+	next;
+	if (select("No","^FF0000Yes^000000")==2) {
+		mes "[Change Guild Master]";
+		mes "Enter the name of the character to change ownership to, carefully.";
+		next;
+		input @temp$;
+		mes "[Change Guild Master]";
+		if (Zeny < $@woes3_gmaster_fee) {
+			mes "You don't have enough zeny!";
+		} else if (!query_sql("select `name` from `char` where `name` = '"+escape_sql(@temp$)+"', `guild_id` = "+getcharid(2)+", `online` = 1",.@ignore$)) {
+			mes "The character name '"+@temp$+"' is invalid, either they don't exist, are offline, or are not in your guild!";
+		} else {
+			atcommand "@changegm "+@temp$;
+			sleep2 250;
+			if (getguildmasterid(getcharid(2)) != getcharid(0)) {
+				mes "Guild Master changed successfully!";
+				set Zeny, Zeny-$@woes3_gmaster_fee;
+			} else mes "Failed to change Guild Master, please retry later!";
+		}
+	}
+	return;
+}

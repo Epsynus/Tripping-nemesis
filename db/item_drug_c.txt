@@ -1,0 +1,11 @@
+// Ore Discovery Obtainable Items Database
+//
+// Structure of Database:
+// GroupID,ItemID,Rate
+
+4,505,50	//Celerity
+4,506,50	//StamiNax
+4,507,50	//Fix8
+
+
+

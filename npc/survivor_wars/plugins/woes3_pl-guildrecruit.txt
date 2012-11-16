@@ -1,0 +1,102 @@
+// WoE Setter 3 Plug-in
+// Player - Guild Recruit Advertiser
+// By: [GM]Xeon
+// Version: 1.0.1
+
+-	script	WoES3Pl_RGuildRecruit	-1,{
+end;
+OnCheck:
+	set .@i, 0;
+	while (.@i < $@woe_gr_enlisted) {
+		if ($@woe_gr_expiration[.@i]<=gettimetick(2)) {
+			deletearray $@woe_gr_name$[.@i], 1;
+			deletearray $@woe_gr_id[.@i], 1;
+			deletearray $@woe_gr_expiration[.@i], 1;
+			deletearray $@woe_gr_id[.@i], 1;
+			set $@woe_gr_enlisted, $@woe_gr_enlisted-1;
+		} else { set .@i, .@i+1; }
+	}
+	sleep 60000-(gettime(1)*1000);
+	goto OnCheck;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_playermenu$[getarraysize($@woes3_pl_playermenu$)], "Guild Recruitment";
+	set $@woes3_pl_player$[getarraysize($@woes3_pl_player$)], "GuildRecruit";
+	set $@woe_gr_feeperhr, 10000; //THE FEE PER HOUR FOR ENLISTMENT!!
+	set $@woe_gr_maxhrs, 24; //THE MAXIMUM NUMBER OF HOURS GUIDL MAStERS CAN REGISTER FOR!!
+	donpcevent "WoES3_Plugin_RGuildRecruit::OnCheck";
+	end;
+}
+
+function	script	WoES3Pl_GuildRecruit	{
+	if (getcharid(2)) {
+		if (strcharinfo(0) != getguildmaster(getcharid(2))) {
+			mes "[Guild Recruitement]";
+			mes "You are already a member of a guild; what are you coming to guild recruitement for?";
+			return;
+		} else { goto L_Master; }
+	}
+L_User:
+	if (!$@woe_gr_enlisted) {
+		mes "[Guild Recruitement]";
+		mes "There are currently no guilds registered to the recruitement bulletin...";
+		return;
+	}
+	set @temp$, "";
+	for (set @i, 0; @i<$@woe_gr_enlisted; set @i, @i+1) {
+		set @temp$, @temp$+":"+$@woe_gr_name$[@i];
+	}
+	menu @temp$,-,"Back",L_Return;
+	set .@menu, @menu;
+	query_sql("select char_id,account_id from `char` where `name` = '"+getguildmaster($@woe_gr_id[.@menu-2])+"'", @id, @aid);
+	mes "Guild master message: "+$@woe_gr_mes$[.@menu-2];
+	mes "Are you sure you wish to request to join this guild?";
+	if (select("Yes:No")==2) { next; goto L_User; }
+	query_sql("insert into `mail` (send_name,send_id,dest_name,dest_id,title,message,time) values ('"+escape_sql(strcharinfo(0))+"','"+getcharid(0)+"','"+getguildmaster($@woe_gr_id[.@menu-2])+"','"+@id+"','Guild Recruitment Request','The player "+escape_sql(strcharinfo(0))+" (BLV: "+BaseLevel+", JLV: "+JobLevel+") has requested to join your guild through the guild recruitement bulletin.','"+gettimetick(2)+"')");
+	set .@reattach, getcharid(3); set .@name$, strcharinfo(0);
+	if (attachrid(@id)) { dispbottom "A guild recruitment request has been sent from "+.@name$+", check your inbox for more information."; }
+	attachrid(.@reattach);
+	mes "A recruitement request has been sent to "+getguildmaster($@woe_gr_id[.@menu-2])+" for approval.";
+	next; goto L_User;
+
+L_Master:
+	set @listed, 0;
+	for (set @i, 0; @i < getarraysize($@woe_gr_enlisted); set @i, @i+1) {
+		if ($@woe_gr_id[@i]==getcharid(2)) set @listed, @i+1;
+	}
+	if (@listed) {
+		set @time, $@woe_gr_expiration[@listed-1]-gettimetick(2);
+		set @hrs, 0; set @mins, 0;
+		while (@time >= 3600) { set @hrs, @hrs+1; set @time, @time-3600; }
+		while (@time >= 60) { set @mins, @mins+1; set @time, @time-60; }
+		mes "[Guild Recruitement]";
+		mes "Your guild is still listed for "+@hrs+" hours, "+@mins+" minutes and "+@time+" seconds!";
+		mes "When a player wants to join your guild off the bulletin, you will receive a mail message.";
+		return;
+	} else {
+		mes "[Guild Recruitement]";
+		mes "Would you like to register your guild to the recruitment bulletin? Note there is a fee of "+$@woe_gr_feeperhr+" per hour you register.";
+		if(select("Yes:No")==1) {
+			mes "Enter the number of hours to register for. There is currently a maximum of "+$@woe_gr_maxhrs+"!";
+			input @n;
+			if (@n > $@woe_gr_maxhrs) { mes "Uhh, I just said there's a MAXIMUM of "+$@woe_gr_maxhrs+" hours..."; next; goto L_Master; }
+			if (@n == 0) { mes "Since you said 0 hours, I assume you don't want to register your guild right now. Come back whenever you want to!"; return; }
+			mes "Enter a message to display to people looking for a guild...";
+			input @mes$;
+			if (Zeny >= $@woe_gr_feeperhr*@n) {
+				if ($@woe_gr_enlisted>=32) { mes "Sorry, the maximum number of registered guilds has been reached. Please come back and try again later!"; return; }
+				set Zeny, Zeny-($@woe_gr_feeperhr*@n);
+				set $@woe_gr_name$[$@woe_gr_enlisted], getguildname(getcharid(2));
+				set $@woe_gr_mes$[$@woe_gr_enlisted], @mes$;
+				set $@woe_gr_id[$@woe_gr_enlisted], getcharid(2);
+				set $@woe_gr_expiration[$@woe_gr_enlisted], gettimetick(2)+(3600*@n+gettime(1));
+				set $@woe_gr_enlisted, $@woe_gr_enlisted+1;
+				mes "Congratulations! You have just registered your guild to the recruitement bulletin. You should receive mail from members who are interested in joining!"; return;
+			} else {
+				mes "You don't appear to have enough zeny..."; next; goto L_Master;
+			}
+		} else { mes "Come back whenever you feel like registering!"; return; }
+	}
+
+L_Return:
+	return;
+}

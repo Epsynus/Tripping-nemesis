@@ -1,0 +1,61 @@
+//JobNo,Skill-ID,MaxLV,Prerequisite Skill-ID-1,Prerequisite Skill-ID-1-Lv,PrereqSkill-ID-2,PrereqSkill-ID-2-Lv,PrereqSkill-ID-3,PrereqSkill-ID-3-Lv,PrereqSkill-ID-4,PrereqSkill-ID-4-Lv,PrereqSkill-ID-5,PrereqSkill-ID-5-Lv//CLASS_SKILLNAME#Skill Name#
+//Novice
+
+//0,36,10,0,0,0,0,0,0,0,0,0,0 //MC_INCCARRY#Enlarge Weight Limit#
+//0,154,1,0,0,0,0,0,0,0,0,0,0 //MC_CHANGECART#Change Cart#
+//0,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+0,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+0,39,7,0,0,0,0,0,0,0,0,0,0 //MC_PUSHCART#Pushcart#
+
+//Life skills
+0,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+0,411,1,0,0,0,0,0,0,0,0,0,0 //TK_RUN#Running#
+0,108,1,0,0,0,0,0,0,0,0,0,0 //BS_REPAIRWEAPON#Weapon Repair#
+0,150,1,0,0,0,0,0,0,0,0,0,0 //TF_BACKSLIDING#Back Sliding#
+0,152,1,0,0,0,0,0,0,0,0,0,0 //TF_THROWSTONE#Stone Fling#
+0,124,1,0,0,0,0,0,0,0,0,0,0 //HT_REMOVETRAP#Remove Trap#
+//0,8,1,0,0,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+//Trained Blow
+0,545,1,0,0,0,0,0,0,0,0,0,0
+//Wide Swing
+0,546,1,0,0,0,0,0,0,0,0,0,0
+//Disarm
+0,547,1,0,0,0,0,0,0,0,0,0,0
+//Cripple
+0,548,1,0,0,0,0,0,0,0,0,0,0
+//3-Round Burst
+//0,549,1,0,0,0,0,0,0,0,0,0,0 //Guns Only
+//Single Fire
+//0,550,1,0,0,0,0,0,0,0,0,0,0 //Guns Only
+//Trained Shot
+//0,551,1,0,0,0,0,0,0,0,0,0,0 //Guns Only
+//M203
+//0,552,1,0,0,0,0,0,0,0,0,0,0 //Guns Only
+//M26
+//0,553,1,0,0,0,0,0,0,0,0,0,0 //Guns Only
+//Ignite
+0,554,1,0,0,0,0,0,0,0,0,0,0
+//Chemistry
+0,555,1,0,0,0,0,0,0,0,0,0,0
+//Smithery
+0,556,1,0,0,0,0,0,0,0,0,0,0
+//Culinery
+0,557,1,0,0,0,0,0,0,0,0,0,0
+//Trap
+0,558,1,0,0,0,0,0,0,0,0,0,0
+
+//Trap skills
+//0,115,5,0,0,0,0,0,0,0,0,0,0 //HT_SKIDTRAP#Skid Trap#
+//0,116,5,0,0,0,0,0,0,0,0,0,0 //HT_LANDMINE#Land Mine#
+//0,117,5,0,0,0,0,0,0,0,0,0,0 //HT_ANKLESNARE#Ankle Snare#
+//0,118,5,0,0,0,0,0,0,0,0,0,0 //HT_SHOCKWAVE#Shockwave Trap#
+//0,119,5,0,0,0,0,0,0,0,0,0,0 //HT_SANDMAN#Sandman#
+//0,120,5,0,0,0,0,0,0,0,0,0,0 //HT_FLASHER#Flasher#
+//0,121,5,0,0,0,0,0,0,0,0,0,0 //HT_FREEZINGTRAP#Freezing Trap#
+//0,122,5,0,0,0,0,0,0,0,0,0,0 //HT_BLASTMINE#Blast Mine#
+//0,123,5,0,0,0,0,0,0,0,0,0,0 //HT_CLAYMORETRAP#Claymore Trap#
+//0,125,1,0,0,0,0,0,0,0,0,0,0 //HT_TALKIEBOX#Talkie Box#
+
+//Bomb skills
+//0,229,5,0,0,0,0,0,0,0,0,0,0 //AM_DEMONSTRATION#Bomb#
+//0,230,5,0,0,0,0,0,0,0,0,0,0 //AM_ACIDTERROR#Acid Terror#

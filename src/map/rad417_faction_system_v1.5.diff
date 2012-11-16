@@ -1,0 +1,608 @@
+Index: db/const.txt
+===================================================================
+--- db/const.txt	(revision 13948)
++++ db/const.txt	(working copy)
+@@ -223,6 +223,7 @@
+ mf_nochat	43
+ mf_noexppenalty	44
+ mf_guildlock	45
++mf_hostile	46 //rad417's Faction Mod
+ 
+ cell_walkable	0
+ cell_shootable	1
+Index: src/common/mmo.h
+===================================================================
+--- src/common/mmo.h	(revision 13948)
++++ src/common/mmo.h	(working copy)
+@@ -278,6 +278,7 @@
+ 	short hair,hair_color,clothes_color;
+ 	int party_id,guild_id,pet_id,hom_id,mer_id;
+ 	int fame;
++	int aura; // [faction aura]
+ 
+ 	// Mercenary Guilds Rank
+ 	int arch_faith, arch_calls;
+Index: src/map/atcommand.c
+===================================================================
+--- src/map/atcommand.c	(revision 13948)
++++ src/map/atcommand.c	(working copy)
+@@ -8508,6 +8508,138 @@
+ }
+ 
+ /*==========================================
++*@changefaction Allows GM or players
++*to change their Faction [rad417]
++*------------------------------------------*/
++int atcommand_changefaction(const int fd, struct map_session_data* sd, const char* command, const char* message)
++{
++      nullpo_retr(-1, sd);
++
++if (pc_getfaction(sd)==1){
++	pc_setregistry(sd, "##faction", 2, 1);
++	clif_displaymessage(fd, "You are now in faction2.");
++		sd->status.aura = 2;
++	pc_setregistry(sd,"##USERAURA",2, 1);
++
++	pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, 3);
++}
++else {
++	pc_setregistry(sd, "##faction", 1, 1);
++	clif_displaymessage(fd, "You are now in faction1.");
++	sd->status.aura = 1;
++	pc_setregistry(sd,"##USERAURA",1, 1);
++
++	pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, 3);
++}
++
++return 0;
++}
++
++/*==========================================
++*@faction1 Allows GM or players
++*to change their Faction [rad417]
++*------------------------------------------*/
++int atcommand_faction1(const int fd, struct map_session_data* sd, const char* command, const char* message)
++{
++      char output[256];
++      struct map_session_data* target_sd;
++
++if( !message || !*message ) {
++	clif_displaymessage(fd, "Please fill in all fields for the @faction1 command.");
++	clif_displaymessage(fd, "@faction1 <char_name>");
++	return -1;
++}
++
++if( (target_sd = map_nick2sd((char*)message)) == NULL ) {
++	clif_displaymessage(fd, "Invalid or non-existant character name entered.");
++	return -1;
++}
++
++if (pc_getfaction(target_sd)==1)
++	clif_displaymessage(fd, "This character is already in faction1");
++else {
++	pc_setregistry(target_sd, "##faction", 1, 1);
++	clif_displaymessage(target_sd->fd, "You are now in faction1.");
++
++	target_sd->status.aura = 1;
++	pc_setregistry(target_sd,"##USERAURA",1,1);
++
++	pc_setpos(target_sd, target_sd->mapindex, target_sd->bl.x, target_sd->bl.y, 3);
++}
++
++return 0;
++}
++
++/*==========================================
++*@faction2 Allows GM or players
++*to change their dFaction [rad417]
++*------------------------------------------*/
++int atcommand_faction2(const int fd, struct map_session_data* sd, const char* command, const char* message)
++{
++      char output[256];
++      struct map_session_data* target_sd;
++
++if( !message || !*message ) {
++	clif_displaymessage(fd, "Please fill in all fields for the @faction2 command.");
++	clif_displaymessage(fd, "@faction2 <char_name>");
++	return -1;
++}
++
++if( (target_sd = map_nick2sd((char*)message)) == NULL ) {
++	clif_displaymessage(fd, "Invalid or non-existant character name entered.");
++	return -1;
++}
++
++if (pc_getfaction(target_sd)==2)
++	clif_displaymessage(fd, "This character is already in faction2");
++else {
++	pc_setregistry(target_sd, "##faction", 2, 1);
++	clif_displaymessage(target_sd->fd, "You are now in faction2.");
++
++	target_sd->status.aura = 2;
++	pc_setregistry(target_sd,"##USERAURA",2,1);
++
++	pc_setpos(target_sd, target_sd->mapindex, target_sd->bl.x, target_sd->bl.y, 3);
++}
++
++return 0;
++}
++
++int atcommand_hostileon(const int fd, struct map_session_data* sd, const char* command, const char* message)
++{
++	nullpo_retr(-1, sd);
++
++	if (map[sd->bl.m].flag.hostile) {
++		clif_displaymessage(fd, "This map already set to a hostile environment");
++		return -1;
++	}
++	map[sd->bl.m].flag.pvp = 1;
++	map[sd->bl.m].flag.hostile = 1;
++	clif_displaymessage(fd, "Map set to a hostile environment");
++
++	return 0;
++}
++
++/*==========================================
++ *
++ *------------------------------------------*/
++int atcommand_hostileoff(const int fd, struct map_session_data* sd, const char* command, const char* message)
++{
++	nullpo_retr(-1, sd);
++
++	if (!map[sd->bl.m].flag.hostile) {
++		clif_displaymessage(fd, "This map already set to a non-hostile environment");
++		return -1;
++	}
++		
++	map[sd->bl.m].flag.hostile = 0;
++	map[sd->bl.m].flag.pvp = 0;
++	clif_displaymessage(fd, "Map set to a non-hostile environment");
++
++	return 0;
++}
++
++/*==========================================
+  * Custom Fonts
+  *------------------------------------------*/
+ int atcommand_font(const int fd, struct map_session_data *sd, const char *command, const char *message)
+@@ -8637,6 +8769,11 @@
+ 	{ "guildlvup",         60,60,     atcommand_guildlevelup },
+ 	{ "guildlevel",        60,60,     atcommand_guildlevelup },
+ 	{ "guildlvlup",        60,60,     atcommand_guildlevelup },
++	{ "changefaction",     60,60,     atcommand_changefaction }, //rad417's Faction Mod (changes to a different faction)
++	{ "faction1",          60,60,     atcommand_faction1 }, //rad417's Faction Mod (joins faction1)
++	{ "faction2",          60,60,     atcommand_faction2 }, //rad417's Faction Mod (joins faction2)
++	{ "hostileon",         60,60,     atcommand_hostileon }, //rad417's Faction Mod (hostileon)
++	{ "hostileoff",        60,60,     atcommand_hostileoff }, //rad417's Faction Mod (hostileon)
+ 	{ "makeegg",           60,60,     atcommand_makeegg },
+ 	{ "hatch",             60,60,     atcommand_hatch },
+ 	{ "petfriendly",       40,40,     atcommand_petfriendly },
+Index: src/map/battle.c
+===================================================================
+--- src/map/battle.c	(revision 13948)
++++ src/map/battle.c	(working copy)
+@@ -3242,12 +3242,14 @@
+ 				state |= BCT_ENEMY; // Everything can kill it
+ 				strip_enemy = 0;
+ 			}
++			if(map[m].flag.hostile && s_bl != t_bl && s_bl->type == BL_PC && pc_getfaction(sd) == pc_getfaction((TBL_PC*)s_bl)) //rad417's Faction mod
++				return 0;
+ 			break;
+ 		}
+ 		case BL_MOB:
+ 		{
+ 			struct mob_data *md = BL_CAST(BL_MOB, t_bl);
+-
++			
+ 			if( !((agit_flag || agit2_flag) && map[m].flag.gvg_castle) && md->guardian_data && md->guardian_data->guild_id )
+ 				return 0; // Disable guardians/emperiums owned by Guilds on non-woe times.
+ 			break;
+@@ -3312,6 +3314,9 @@
+ 			struct mob_data *md = BL_CAST(BL_MOB, s_bl);
+ 			if( !((agit_flag || agit2_flag) && map[m].flag.gvg_castle) && md->guardian_data && md->guardian_data->guild_id )
+ 				return 0; // Disable guardians/emperium owned by Guilds on non-woe times.
++				
++			if(md->master_id==pc_getfaction((TBL_PC*)target)) //rad417's Faction Mod
++				return 0;
+ 
+ 			if( !md->special_state.ai )
+ 			{ //Normal mobs.
+Index: src/map/clif.c
+===================================================================
+--- src/map/clif.c	(revision 13948)
++++ src/map/clif.c	(working copy)
+@@ -1066,6 +1066,7 @@
+ 				clif_font_area(sd);
+ 			if( sd->state.bg_id && map[sd->bl.m].flag.battleground )
+ 				clif_sendbgemblem_area(sd);
++			clif_sendauras((TBL_PC*)bl, AREA);
+ 		}
+ 		break;
+ 	case BL_MOB:
+@@ -1357,6 +1358,84 @@
+ }
+ 
+ /*==========================================
++* @aura
++*------------------------------------------*/
++static int auraTable[][3] = {
++{ -1, -1, -1 },
++// Reserved for PK Mode
++{ 240, 486, 362 },
++{ 239, 418, 362 }
++};
++
++int aura_getSize()
++{
++return sizeof(auraTable)/(sizeof(int) * 3) - 1;
++}
++
++int aura_getAuraEffect(struct map_session_data *sd, short pos)
++{
++int aura = sd->status.aura;
++
++if (pos < 0 || pos > 2)
++return -1;
++
++if (aura > aura_getSize() || aura < 0)
++return -1;
++
++return auraTable[aura][pos];
++}
++
++int clif_specialeffecttoone(struct block_list *bl, struct block_list *dst, int type)
++{
++struct map_session_data *sd = (struct map_session_data *)dst;
++
++WFIFOW(sd->fd,0) = 0x1f3;
++WFIFOL(sd->fd,2) = bl->id;
++WFIFOL(sd->fd,6) = type;
++WFIFOSET(sd->fd, packet_len(0x1f3));
++
++return 0;
++}
++
++void clif_sendaurastoone(struct map_session_data *sd, struct map_session_data *dsd)
++{
++int effect1, effect2, effect3;
++
++if (pc_ishiding(sd))
++return;
++
++effect1 = aura_getAuraEffect(sd, 0);
++effect2 = aura_getAuraEffect(sd, 1);
++effect3 = aura_getAuraEffect(sd, 2);
++
++if (effect1 >= 0)
++clif_specialeffecttoone(&sd->bl, &dsd->bl, effect1);
++if (effect2 >= 0)
++clif_specialeffecttoone(&sd->bl, &dsd->bl, effect2);
++if (effect3 >= 0)
++clif_specialeffecttoone(&sd->bl, &dsd->bl, effect3);
++}
++
++void clif_sendauras(struct map_session_data *sd, enum send_target type)
++{
++int effect1, effect2, effect3;
++
++if (pc_ishiding(sd))
++return;
++
++effect1 = aura_getAuraEffect(sd, 0);
++effect2 = aura_getAuraEffect(sd, 1);
++effect3 = aura_getAuraEffect(sd, 2);
++
++if (effect1 >= 0)
++clif_specialeffect(&sd->bl, effect1, type);
++if (effect2 >= 0)
++clif_specialeffect(&sd->bl, effect2, type);
++if (effect3 >= 0)
++clif_specialeffect(&sd->bl, effect3, type);
++}
++
++/*==========================================
+  * Tells the client to connect to another map-server
+  *------------------------------------------*/
+ void clif_changemapserver(struct map_session_data* sd, unsigned short map_index, int x, int y, uint32 ip, uint16 port)
+@@ -3448,7 +3527,8 @@
+ 
+ 	if( (sd->status.party_id && dstsd->status.party_id == sd->status.party_id) || //Party-mate, or hpdisp setting.
+ 		(sd->state.bg_id && sd->state.bg_id == dstsd->state.bg_id) || //BattleGround
+-		(battle_config.disp_hpmeter && (gmlvl = pc_isGM(sd)) >= battle_config.disp_hpmeter && gmlvl >= pc_isGM(dstsd)) )
++		((battle_config.disp_hpmeter && (gmlvl = pc_isGM(sd)) >= battle_config.disp_hpmeter && gmlvl >= pc_isGM(dstsd))) ||
++		(pc_getfaction(sd) && (pc_getfaction(sd) == pc_getfaction(dstsd)) && map[sd->bl.m].flag.hostile)) //rad417's Faction Mod
+ 		clif_hpmeter_single(sd->fd, dstsd->bl.id, dstsd->battle_status.hp, dstsd->battle_status.max_hp);
+ 
+ 	// display link (sd - dstsd) to sd
+@@ -3487,13 +3567,14 @@
+ 			TBL_PC* tsd = (TBL_PC*)bl;
+ 			clif_getareachar_pc(sd, tsd);
+ 			if(tsd->state.size==2) // tiny/big players [Valaris]
+-				clif_specialeffect_single(bl,423,sd->fd);
++				clif_specialeffecttoone(bl, &sd->bl, 423);
+ 			else if(tsd->state.size==1)
+-				clif_specialeffect_single(bl,421,sd->fd);
++				clif_specialeffecttoone(bl, &sd->bl, 421);
+ 			if( tsd->state.user_font )
+ 				clif_font_single(sd->fd,tsd);
+ 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
+ 				clif_sendbgemblem_single(sd->fd,tsd);
++			clif_sendaurastoone(tsd, sd);
+ 		}
+ 		break;
+ 	case BL_MER: // Devotion Effects
+@@ -3527,6 +3608,37 @@
+ 	}
+ }
+ 
++int clif_insight2(struct block_list *bl,va_list ap)
++{
++struct block_list *tbl;
++struct map_session_data *sd, *tsd;
++int flag;
++
++tbl = va_arg(ap,struct block_list*);
++flag = va_arg(ap,int);
++
++if (bl == tbl && !flag)
++return 0;
++
++sd=BL_CAST(BL_PC, bl);
++tsd=BL_CAST(BL_PC, tbl);
++
++if (sd && sd->fd)
++{
++if (bl == tbl)
++clif_sendaurastoone(sd, tsd);
++else
++clif_getareachar_unit(sd, tbl);
++}
++
++return 0;
++}
++
++void clif_getareachar_char(struct block_list *bl, short flag)
++{
++map_foreachinarea(clif_insight2, bl->m, bl->x-AREA_SIZE, bl->y-AREA_SIZE, bl->x+AREA_SIZE, bl->y+AREA_SIZE,BL_PC, bl, flag);
++}
++
+ //Modifies the type of damage according to status changes [Skotlex]
+ //Aegis data specifies that: 4 endure against single hit sources, 9 against multi-hit.
+ #define clif_calc_delay(type,div,damage,delay) ((delay)==0&&(damage)>0?((div)>1?9:4):type)
+Index: src/map/clif.h
+===================================================================
+--- src/map/clif.h	(revision 13948)
++++ src/map/clif.h	(working copy)
+@@ -443,6 +443,10 @@
+ int do_final_clif(void);
+ int do_init_clif(void);
+ 
++// [faction]
++void clif_sendauras(struct map_session_data *sd, enum send_target type);
++void clif_getareachar_char(struct block_list *bl, short flag);
++
+ #ifndef TXT_ONLY
+ // MAIL SYSTEM
+ void clif_Mail_window(int fd, int flag);
+Index: src/map/map.h
+===================================================================
+--- src/map/map.h	(revision 13948)
++++ src/map/map.h	(working copy)
+@@ -463,6 +463,7 @@
+ 		unsigned nochat :1;
+ 		unsigned partylock :1;
+ 		unsigned guildlock :1;
++		unsigned hostile : 1; //rad417's Faction Mod
+ 	} flag;
+ 	struct point save;
+ 	struct npc_data *npc[MAX_NPC_PER_MAP];
+Index: src/map/mob.c
+===================================================================
+--- src/map/mob.c	(revision 13948)
++++ src/map/mob.c	(working copy)
+@@ -1091,7 +1091,9 @@
+ 
+ 	bl=map_id2bl(md->master_id);
+ 
++	
+ 	if (!bl || status_isdead(bl)) {
++		if(md->master_id >2)
+ 		status_kill(&md->bl);
+ 		return 1;
+ 	}
+Index: src/map/mob.h
+===================================================================
+--- src/map/mob.h	(revision 13948)
++++ src/map/mob.h	(working copy)
+@@ -116,6 +116,7 @@
+ 		unsigned npc_killmonster: 1; //for new killmonster behavior
+ 		unsigned rebirth: 1; // NPC_Rebirth used
+ 		unsigned int bg_id; // BattleGround System
++		int faction; //faction for mobs
+ 	} state;
+ 	struct guardian_data* guardian_data; 
+ 	struct {
+Index: src/map/npc.c
+===================================================================
+--- src/map/npc.c	(revision 13948)
++++ src/map/npc.c	(working copy)
+@@ -2897,6 +2897,8 @@
+ 		map[m].flag.partylock=state;
+ 	else if (!strcmpi(w3,"guildlock"))
+ 		map[m].flag.guildlock=state;
++	else if (!strcmpi(w3,"hostile")) //rad417's Faction Mod
++		map[m].flag.hostile=state; 
+ 	else
+ 		ShowError("npc_parse_mapflag: unrecognized mapflag '%s' (file '%s', line '%d').\n", w3, filepath, strline(buffer,start-buffer));
+ 
+Index: src/map/pc.c
+===================================================================
+--- src/map/pc.c	(revision 13948)
++++ src/map/pc.c	(working copy)
+@@ -972,6 +972,9 @@
+ 	
+ 	sd->change_level = pc_readglobalreg(sd,"jobchange_level");
+ 	sd->die_counter = pc_readglobalreg(sd,"PC_DIE_COUNTER");
++	
++	// faction aura
++	sd->status.aura = pc_readregistry(sd,"##USERAURA",1);
+ 
+ 	// Cash shop
+ 	sd->cashPoints = pc_readaccountreg(sd,"#CASHPOINTS");
+@@ -6458,6 +6461,11 @@
+ 	return ( i < max ) ? atoi(sd_reg[i].value) : 0;
+ }
+ 
++int pc_getfaction(struct map_session_data *sd) //rad417's Faction Mod
++{
++	return pc_readregistry(sd,"##faction",1);
++}
++
+ char* pc_readregistry_str(struct map_session_data *sd,const char *reg,int type)
+ {
+ 	struct global_reg *sd_reg;
+Index: src/map/pc.h
+===================================================================
+--- src/map/pc.h	(revision 13948)
++++ src/map/pc.h	(working copy)
+@@ -646,6 +646,7 @@
+ int pc_readreg(struct map_session_data*,int);
+ int pc_setreg(struct map_session_data*,int,int);
+ char *pc_readregstr(struct map_session_data *sd,int reg);
++int pc_getfaction(struct map_session_data *sd); //rad417's Faction Mod
+ int pc_setregstr(struct map_session_data *sd,int reg,const char *str);
+ 
+ #define pc_readglobalreg(sd,reg) pc_readregistry(sd,reg,3)
+Index: src/map/script.c
+===================================================================
+--- src/map/script.c	(revision 13948)
++++ src/map/script.c	(working copy)
+@@ -334,7 +334,8 @@
+ 	MF_LOADEVENT,
+ 	MF_NOCHAT,
+ 	MF_NOEXPPENALTY,
+-	MF_GUILDLOCK
++	MF_GUILDLOCK,
++	MF_HOSTILE //rad417's Faction Mod
+ };
+ 
+ const char* script_op2name(int op)
+@@ -9140,6 +9141,7 @@
+ 			case MF_NOCHAT:			script_pushint(st,map[m].flag.nochat); break;
+ 			case MF_PARTYLOCK:		script_pushint(st,map[m].flag.partylock); break;
+ 			case MF_GUILDLOCK:		script_pushint(st,map[m].flag.guildlock); break;
++			case MF_HOSTILE:        script_pushint(st,map[m].flag.hostile); break; //rad417's Faction Mod
+ 		}
+ 	}
+ 
+@@ -9204,6 +9206,7 @@
+ 			case MF_NOCHAT:        map[m].flag.nochat=1; break;
+ 			case MF_PARTYLOCK:     map[m].flag.partylock=1; break;
+ 			case MF_GUILDLOCK:     map[m].flag.guildlock=1; break;
++			case MF_HOSTILE:    map[m].flag.hostile=1; break; //rad417's Faction Mod
+ 		}
+ 	}
+ 
+@@ -9265,6 +9268,7 @@
+ 			case MF_NOCHAT:        map[m].flag.nochat=0; break;
+ 			case MF_PARTYLOCK:     map[m].flag.partylock=0; break;
+ 			case MF_GUILDLOCK:     map[m].flag.guildlock=0; break;
++			case MF_HOSTILE:    map[m].flag.hostile=0; break; //rad417's Faction Mod
+ 		}
+ 	}
+ 
+@@ -11538,6 +11542,41 @@
+ 	return 0;
+ }
+ 
++BUILDIN_FUNC(factionguardian)
++{
++	int _class, timeout=0;
++	const char *str,*event="";
++	TBL_PC *sd;
++	struct mob_data *md;
++	int tick = gettick();
++
++	sd=script_rid2sd(st);
++	if (!sd) return 0;
++	
++	str	=script_getstr(st,2);
++	_class=script_getnum(st,3);
++	if( script_hasdata(st,4) )
++		timeout=script_getnum(st,4);
++	if( script_hasdata(st,5) ){
++		event=script_getstr(st,5);
++		check_event(st, event);
++	}
++
++	clif_skill_poseffect(&sd->bl,AM_CALLHOMUN,1,sd->bl.x,sd->bl.y,tick);
++
++	md = mob_once_spawn_sub(&sd->bl, sd->bl.m, sd->bl.x, sd->bl.y, str, _class, event);
++	if (md) {
++		md->master_id=pc_getfaction(sd);
++		md->special_state.ai=1;
++		//if( md->deletetimer != INVALID_TIMER )
++		//	delete_timer(md->deletetimer, mob_timer_delete);
++		//md->deletetimer = add_timer(tick+(timeout>0?timeout*1000:60000),mob_timer_delete,md->bl.id,0);
++		mob_spawn (md); //Now it is ready for spawning.
++		clif_misceffect2(&md->bl,344);
++		sc_start4(&md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE, 0, 60000);
++	}
++	return 0;
++}
+ /*==========================================
+  * Checks whether it is daytime/nighttime
+  *------------------------------------------*/
+@@ -14380,6 +14419,7 @@
+ 	BUILDIN_DEF(guildchangegm,"is"),
+ 	BUILDIN_DEF(logmes,"s"), //this command actls as MES but rints info into LOG file either SQL/TXT [Lupus]
+ 	BUILDIN_DEF(summon,"si*"), // summons a slave monster [Celest]
++	BUILDIN_DEF(factionguardian,"si*"),
+ 	BUILDIN_DEF(isnight,""), // check whether it is night time [Celest]
+ 	BUILDIN_DEF(isday,""), // check whether it is day time [Celest]
+ 	BUILDIN_DEF(isequipped,"i*"), // check whether another item/card has been equipped [Celest]
+Index: src/map/status.c
+===================================================================
+--- src/map/status.c	(revision 13948)
++++ src/map/status.c	(working copy)
+@@ -5085,7 +5085,7 @@
+ 
+ 	vd = status_get_viewdata(bl);
+ 	calc_flag = StatusChangeFlagTable[type];
+-	if(!(flag&4)) //&4 - Do not parse val settings when loading SCs
++	if(!(flag&4)){ //&4 - Do not parse val settings when loading SCs
+ 	switch(type)
+ 	{
+ 		case SC_DECREASEAGI:
+@@ -5934,7 +5934,16 @@
+ 				ShowError("UnknownStatusChange [%d]\n", type);
+ 				return 0;
+ 			}
++// faction
++	if (sd && sd->status.aura > 0 &&
++		(type == SC_HIDING || type == SC_CLOAKING || type == SC_CHASEWALK))
++			{
++				sd->status.aura *= -1;
++				clif_clearunit_area(&sd->bl, 0);
++				clif_getareachar_char(&sd->bl, 0);
++			}
+ 	}
++	}
+ 	else //Special considerations when loading SC data.
+ 	switch( type )
+ 	{
+@@ -6749,6 +6758,14 @@
+ 	default:
+ 		opt_flag = 0;
+ 	}
++	
++ // faction
++ if (sd && sd->status.aura < 0 &&
++ (type == SC_HIDING || type == SC_CLOAKING || type == SC_CHASEWALK))
++ {
++ sd->status.aura *= -1;
++ clif_sendauras(sd, AREA_WOS);
++ }
+ 
+ 	if (calc_flag&SCB_DYE)
+ 	{	//Restore DYE color

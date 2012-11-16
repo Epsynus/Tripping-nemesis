@@ -1,0 +1,33 @@
+// Weapons Common Database
+//
+// Structure of Database:
+// GroupID,ItemID,Rate
+
+//Knives
+10,1201,50
+10,1202,15
+10,1205,50
+10,1206,10
+
+//Axes
+10,1300,20
+10,1301,10
+10,1302,10
+
+//Pickaxes
+10,1303,20
+10,1304,10
+10,1305,10
+
+//Hammers
+10,1351,15
+
+//Guns
+10,13100,15
+10,13152,1
+
+
+
+
+
+

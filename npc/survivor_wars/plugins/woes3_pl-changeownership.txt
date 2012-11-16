@@ -1,0 +1,65 @@
+// WoE Setter 3 Plug-in
+// GM - Castle Ownership Change
+// By: [GM]Xeon
+// Version: 1.0.1
+
+-	script	WoES3Pl_RChangeOwnership	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_gmmenu$[getarraysize($@woes3_pl_gmmenu$)], "Change Castle Ownership";
+	set $@woes3_pl_gm$[getarraysize($@woes3_pl_gm$)], "ChangeOwnership";
+	end;
+}
+
+function	script	WoES3Pl_ChangeOwnership	{
+L_Select:
+	dispbottom "Select castle(s) to change the ownership of, enter the guild ID to change it when selected, otherwise enter 0 to release the castle(s).";
+	menu $woe_towns$[1]+":"+$woe_towns$[2]+":"+$woe_towns$[3]+":"+$woe_towns$[4]+":"+$woe_towns$[5]+":"+$woe_towns$[6]+":"+$woe_towns$[7],-,"^FF0000Change all",-,"^000000Back",L_Return;
+	if (@menu==8) { dispbottom "Are you positive you wish to change ownership for ALL castles for ALL towns?"; if (select("No","Yes")==2) { input .@gid; callsub(S_Change,127,31,.@gid); } goto L_Select; }
+	set @temp, 64;
+	for (set .@i, 7; .@i>0; set .@i,.@i-1) { if (.@i==@menu) { set @town, @temp; set @town_, .@i; } set @temp, @temp/2; }
+L_SelectCastles:
+	menu getd("$woe_cas"+@town_+"_1$[1]")+":"+getd("$woe_cas"+@town_+"_1$[2]")+":"+getd("$woe_cas"+@town_+"_1$[3]")+":"+getd("$woe_cas"+@town_+"_1$[4]")+((@set_town!=5)?":"+getd("$woe_cas"+@town_+"_1$[5]"):""),-,"Change all",-,"Back",L_Select;
+	if (@menu==6) { dispbottom "Are you positive you wish to change ownership for ALL castles for this town?"; if (select("No","Yes")==2) { input .@gid; callsub(S_Change,@town,31,.@gid); } goto L_Select; }
+	set @temp, 16;
+	for (set .@i, 5; .@i>0; set .@i,.@i-1) { if (.@i==@menu) { set @cas, @temp; set @cas_,.@i; } set @temp, @temp/2; }
+	input .@gid;
+	callsub(S_Change,@town,@cas,.@gid);
+	goto L_SelectCastles;
+L_Return:
+	return;
+
+//Sub that sets castle ownership castles
+//arg0=Town(s) bitmask, 127=All
+//arg1=Castle(s) bitmask, 31=All
+//arg2=Guild ID
+S_Change:
+	if (!getarg(2)||getguildname(getarg(2))=="null") { set .@ownerid, 0; set .@ownername$, "No Owner"; } else { set .@ownername$, getguildname(getarg(2)); set .@ownerid, getarg(2); }
+	set .@tcode, getarg(0); set .@tcurrent, 64;
+	for (set .@i_, 7; .@i_>0; set .@i_,.@i_-1) {
+		if (.@tcode>=.@tcurrent) {
+			set .@temp$, ""; set .@ccode, getarg(1); set .@ccurrent, 16;
+			for (set .@i, 5; .@i>0; set .@i,.@i-1) {
+				if (.@ccode>=.@ccurrent) {
+					setcastledata(getd("$woe_cas"+.@i_+"_3$["+.@i+"]"),1,.@ownerid); set .@temp$, .@temp$+getd("$woe_cas"+.@i_+"_1$["+.@i+"]")+((.@ccode>.@ccurrent)?", ":" ");
+					if (.@i_<5) { disablenpc "Kafra Staff#"+getd("$woe_cas"+.@i_+"_3$["+.@i+"]"); GetCastleData getd("$woe_cas"+.@i_+"_3$["+.@i+"]"),0,"::OnRecvCastle"; } //Some OnRecvCastle label in a guild script is spitting out 'Map "" not found' debugs =(
+					if (.@i_>5) { disablenpc "Kafra Employee#"+((.@i==6)?"sch":"aru")+"0"+.@i; GetCastleData getd("$woe_cas"+.@i_+"_3$["+.@i+"]"),0,"::OnRecvCastle"+((.@i==6)?"sc":"Ar")+"0"+.@i; }
+					for( set .@n, 4; .@n <= 9; set .@n, .@n+1 ) {
+						SetCastleData getd("$woe_cas"+.@i_+"_3$["+.@i+"]"), .@n, 0;
+					}
+					set .@ccode, .@ccode-.@ccurrent;
+				}
+				set .@ccurrent, .@ccurrent/2;
+			}
+			if (getarg(0)!=127&&.@tcurrent!=16) announce "Castle ownership changed to [ "+.@ownername$+" ] for "+$woe_towns$[.@i_]+" ( Castle(s): "+((getarg(1)==31)?"All":.@temp$)+" )!",bc_all|bc_yellow;
+			set .@tcode, .@tcode-.@tcurrent;
+		}
+		set .@tcurrent,.@tcurrent/2;
+	}
+	if (getarg(0)==127) {
+		set .@temp$, ""; set .@ccode, getarg(1); set .@ccurrent, 16;
+		for (set .@i, 5; .@i>0; set .@i,.@i-1) { if (.@ccode>=.@ccurrent) set .@temp$, .@temp$+.@i+((.@ccode>.@ccurrent)?", ":" "); set .@ccode, .@ccode-.@ccurrent; set .@ccurrent, .@ccurrent/2; }
+		announce "Castle ownership changed to [ "+.@ownername$+" ] for All Towns ( Castle(s): "+((getarg(1)==31)?"All":.@temp$)+" )!",bc_all|bc_yellow;
+	}
+	return;
+}

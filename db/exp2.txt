@@ -1,0 +1,5 @@
+//This is a custom Experience table with support for up to level 1000.
+//To use it, replace exp.txt with this file and edit the max level
+//accordingly.
+//Experience tables format:
+//Max Level,Class list,Type (0 - Base Exp / 1 - Job Exp),Exp 1,2,3,...

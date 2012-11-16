@@ -1,0 +1,20 @@
+
+// Cookie Bag Obtainable Items Database
+//
+// Structure of Database:
+// GroupID,ItemID,Rate
+
+//3,514,10	//Fruit Juice
+3,515,10	//Tea
+//3,516,10	//Lettuce
+3,517,10	//Bread
+3,518,10	//Rice
+3,519,10	//Can of Soup
+3,520,10	//Egg
+3,523,10	//Milk
+3,501,10		//Uncooked Meat
+3,550,10		//Cooked Meat
+3,551,10		//Hot Soup
+3,552,10		//Sandwich
+3,553,10		//Cooked Eggs
+3,554,10		//Salad

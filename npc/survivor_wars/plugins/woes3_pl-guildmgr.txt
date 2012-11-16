@@ -1,0 +1,38 @@
+// WoE Setter 3 Plug-in
+// GM - Talk to Guild Manager
+// By: [GM]Xeon
+// Version: 1.0.0
+
+-	script	WoES3Pl_RTTGMgr	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_gmmenu$[getarraysize($@woes3_pl_gmmenu$)], "Talk to Guild Manager";
+	set $@woes3_pl_gm$[getarraysize($@woes3_pl_gm$)], "TTGMgr";
+	setarray $@woe_cas1_gmgr$[1], "Alfredo", "Chenchenlie", "Nahzarf", "Brymhensen", "Blemhemsen";
+	setarray $@woe_cas2_gmgr$[1], "Gnahcher", "Esmarehk", "Jean", "Kellvahni", "Byohre";
+	setarray $@woe_cas3_gmgr$[1], "Kurunnadi", "Cherieos", "Gheriot", "DJ", "Nahzarf";
+	setarray $@woe_cas4_gmgr$[1], "Ahvray", "Roy", "Sttick", "Van Dreth", "Raynor";
+	setarray $@woe_cas5_gmgr$[1], "", "", "", "";
+	setarray $@woe_cas6_gmgr$[1], "Brace", "Yumenes", "Yehsus", "Nios", "Eeos";
+	setarray $@woe_cas7_gmgr$[1], "Ef", "Endeef", "Elzee", "Ef", "Ef";
+	end;
+}
+
+function	script	WoES3Pl_TTGMgr	{
+L_Select:
+	menu $woe_towns$[1]+":"+$woe_towns$[2]+":"+$woe_towns$[3]+":"+$woe_towns$[4]+":"+$woe_towns$[5]+":"+$woe_towns$[6]+":"+$woe_towns$[7],-,"^000000Back",L_Return;
+	set @town, @menu;
+L_SelectCastles:
+	menu getd("$woe_cas"+@town+"_1$[1]")+":"+getd("$woe_cas"+@town+"_1$[2]")+":"+getd("$woe_cas"+@town+"_1$[3]")+":"+getd("$woe_cas"+@town+"_1$[4]")+((@town!=5)?":"+getd("$woe_cas"+@town+"_1$[5]"):""),-,"Back",L_Select;
+	close2;
+	if (@town <= 5) {
+		atcommand "@tonpc "+getd("$@woe_cas"+@town+"_gmgr$["+@menu+"]")+"#"+getd("$woe_cas"+@town+"_3$["+@menu+"]");
+		//doevent getd("$@woe_cas"+@town+"_gmgr$["+@menu+"]")+"#"+getd("$woe_cas"+@town+"_3$["+@menu+"]")+"::OnTalk";
+	} else {
+		atcommand "@tonpc "+getd("$@woe_cas"+@town+"_gmgr$["+@menu+"]")+"#"+((@town==6)?"sch":"aru")+"0"+@menu+"_01";
+		//doevent getd("$@woe_cas"+@town+"_gmgr$["+@menu+"]")+"#"+((@town==6)?"sch":"aru")+"0"+@menu+"_01::OnTalk";
+	}
+	end;
+L_Return:
+	return;
+}

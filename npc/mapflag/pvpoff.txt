@@ -1,0 +1,2 @@
+op_tut01	mapflag	pvp	off
+lavive_01	mapflag	pvp	off

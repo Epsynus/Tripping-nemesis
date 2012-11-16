@@ -1,0 +1,19 @@
+//===== Oplex Origins Script ======================================= 
+//= Traveling Merchant
+//===== By: ================================================== 
+//= Epsynus
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= A Npc that appears randomly once a day and walks around aswell as announce where he is.
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//============================================================
+blank_01,0,0,0	script	placeholder::uniqueplaceholder	000,{
+// we all love placeholder
+}
+
+// Here you put all the clones for this script use the format below
+//la_in01,174,138,0	duplicate(uniqueplaceholder)	placeholder::uniqueplaceholder	000

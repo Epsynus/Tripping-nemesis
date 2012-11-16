@@ -1,0 +1,48 @@
+// WoE Setter 3 Plug-in
+// Player - Emperium Breaker Ladder
+// By: [GM]Xeon
+// Version: 1.0.0
+
+-	script	WoES3Pl_REmpBL	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	query_sql("CREATE TABLE IF NOT EXISTS `woe_gbreaks` (`guild_id` INTEGER UNSIGNED NOT NULL DEFAULT 0,`name` VARCHAR(60) NOT NULL,`breaks` INTEGER UNSIGNED NOT NULL DEFAULT 0,PRIMARY KEY (`guild_id`)) ENGINE = MyISAM;",.@ignore);
+	query_sql("CREATE TABLE IF NOT EXISTS `woe_pbreaks` (`char_id` INTEGER UNSIGNED NOT NULL DEFAULT 0,`name` VARCHAR(60) NOT NULL,`breaks` INTEGER UNSIGNED NOT NULL DEFAULT 0,PRIMARY KEY (`char_id`)) ENGINE = MyISAM;",.@ignore);
+	set $@woes3_breaker, 1;
+	set $@woes3_pl_playermenu$[getarraysize($@woes3_pl_playermenu$)], "Emperium Breaker Ladder";
+	set $@woes3_pl_player$[getarraysize($@woes3_pl_player$)], "EmpBL";
+	end;
+}
+
+function	script	WoES3Pl_EmpBL	{
+L_Main:
+	if (!query_sql("show tables like 'woe_pbreaks'",@ignore) || !query_sql("show tables like 'woe_gbreaks'",@ignore)) { mes "There was a critical database error. Please report this to a GM!"; return; }
+	query_sql("select `breaks` from `woe_pbreaks` where `char_id` = '"+getcharid(0)+"'",@player);
+	query_sql("select `breaks` from `woe_gbreaks` where `guild_id` = '"+getcharid(2)+"'",@guild);
+	mes "[Emperium Ladder]";
+	mes "You have broke emperium "+@player+" times.";
+	mes "Your guild has broke emperium "+@guild+" times.";
+	deletearray @name$[0], 128; deletearray @breaks[0], 128;
+	next;
+	switch(select("View top 10 players","View top 10 guilds","Back")) {
+		case 1:
+			mes "[Emperium Ladder]";
+			mes "The top 10 players:";
+			query_sql("select `name`,`breaks` from `woe_pbreaks` order by `breaks` DESC limit 10",@name$,@breaks);
+			for (set @i, 0; @i < getarraysize(@breaks); set @i, @i+1) {
+				mes (@i+1)+":"+@name$[@i]+", "+@breaks[@i];
+			}
+			break;
+		case 2:
+			mes "[Emperium Ladder]";
+			mes "The top 10 guilds:";
+			query_sql("select `name`,`breaks` from `woe_gbreaks` order by `breaks` DESC limit 10",@name$,@breaks);
+			for (set @i, 0; @i < getarraysize(@breaks); set @i, @i+1) {
+				mes (@i+1)+":"+@name$[@i]+", "+@breaks[@i];
+			}
+			break;
+		case 3: return;
+	}
+	next;
+	goto L_Main;
+}

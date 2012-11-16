@@ -1,0 +1,119 @@
+// WoE Setter 3 Plug-in
+// Player - View Guild Information
+// By: [GM]Xeon
+// Version: 1.0.0
+
+//Known bug: When viewing owned castles, aldebaran castle 1 (Castle ID: 0) may not show in the list if it's the only castle owned...
+
+-	script	WoES3Pl_RGuildInfo	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_gmmenu$[getarraysize($@woes3_pl_gmmenu$)], "View Guild Information";
+	set $@woes3_pl_gm$[getarraysize($@woes3_pl_gm$)], "GuildInfo";
+	end;
+}
+
+function	script	WoES3Pl_GuildInfo	{
+	mes "[Guild Info Viewer]";
+	mes "What would you like to search by?";
+	dispbottom "	Results format:";
+	dispbottom "NAME (ID: #, Level: #)";
+	dispbottom "Castles Owned: Name1 (Town #,Castle #), Name2 (Town #,Castle #), etc.";
+	dispbottom "--";
+	dispbottom "Leader: Name (AID/CID)";
+	dispbottom "Members (Online/Total): Name1, Name2, etc.";
+	next;
+L_Main:
+	deletearray @gids[0], 128;
+	deletearray @names$[0], 128;
+	switch(select("Guild Name/ID","Player Name/CID","Back")) {
+		case 1:
+			switch(select("Partial Guild Name","Guild ID","Back")) {
+				case 1:
+					input @temp$;
+					query_sql("select guild_id,name from `guild` where `name` like '"+@temp$+"' order by name ASC", @gids, @names$);
+					goto L_Listing;
+				case 2: input @gid; callsub(S_View,@gid); break;
+				case 3: goto L_Main;
+			}
+			break;
+		case 2:
+			switch(select("Partial Player Name","Character ID","Back")) {
+				case 1:
+					input @temp$;
+					query_sql("select name,guild_id from `char` where `name` like '"+@temp$+"' and guild > '0' order by name ASC", @names$, @gids);
+					goto L_Listing;
+				case 2:
+					input @cid;
+					if (!query_sql("select guild_id from `char` where `char_id` = '"+@cid+"' and guild > '0'",@gid)) goto L_Listing;
+					callsub(S_View,@gid);
+					break;
+				case 3: goto L_Main;
+			}
+			break;
+		case 3:
+			return;
+	}
+	goto L_Main;
+
+L_Listing:
+	if (!getarraysize(@names$)) {
+		mes "[Guild Info Viewer]";
+		mes "No results found or the player wasn't in a guild!";
+		next;
+		goto L_Main;
+	}
+	set @temp$, "";
+	for (set @i, 0; @i < getarraysize(@names$); set @i, @i+1) {
+		set @temp$, @temp$+@names$[@i]+((@i < getarraysize(@names$)-1)?":":"");
+	}
+	menu @temp$,-,"Back",L_Main;
+	callsub(S_View,@gids[@menu-1]);
+	goto L_Main;
+
+S_View:
+	set @gid, getarg(0);
+	if (!@gid) {
+		mes "[Guild Info Viewer]";
+		mes "Invalid guild ID, cannot be 0... if you were searching by player they aren't in a guild!";
+		next;
+		return;
+	}
+	set @guildexists, query_sql("select name,char_id,master,guild_lv,connect_member from `guild` where `guild_id` = '"+@gid+"'",@gname$,@gmastercid,@gmaster$,@glv,@gonlmembers);
+	if (!@guildexists) {
+		mes "[Guild Info Viewer]";
+		mes "There was an unexpected error when querying for the guild information, please try again later or verify the guild still exists!";
+		next;
+		return;
+	}
+	query_sql("select account_id from `char` where `char_id` = '"+@gmastercid+"'",@gmasteraid);
+	deletearray @gcastle[0], 128;
+	query_sql("select castle_id from `guild_castle` where `guild_id` = '"+@gid+"' order by `castle_id` ASC",@gcastle);
+	set @gcastles$, ((getarraysize(@gcastle))?"":"None.");
+	for (set @i, 0; @i < getarraysize(@gcastle); set @i, @i+1) {
+		set @gcastle[@i], @gcastle[@i]+1;
+		if (@gcastle[@i]<6) { set @town, 1; set @castle, @gcastle[@i]; set @color$, "^FF9900"; }
+		else if (@gcastle[@i]>5 && @gcastle[@i]<11) { set @town, 2; set @castle, @gcastle[@i]-5; set @color$, "^0066FF"; }
+		else if (@gcastle[@i]>10 && @gcastle[@i]<16) { set @town, 3; set @castle, @gcastle[@i]-10; set @color$, "^339900"; }
+		else if (@gcastle[@i]>15 && @gcastle[@i]<21) { set @town, 4; set @castle, @gcastle[@i]-15; set @color$, "^808080"; }
+		else if (@gcastle[@i]>20 && @gcastle[@i]<25) { set @town, 5; set @castle, @gcastle[@i]-20; set @color$, "^9900CC"; }
+		else if (@gcastle[@i]>24 && @gcastle[@i]<30) { set @town, 6; set @castle, @gcastle[@i]-24; set @color$, "^FF0000"; }
+		else if (@gcastle[@i]>29 && @gcastle[@i]<35) { set @town, 7; set @castle, @gcastle[@i]-29; set @color$, "^FFFF00"; }
+		else { set @town, 0; set @castle, 0; }
+		if (@town) set @gcastles$, @gcastles$+@color$+getd("$woe_cas"+@town+"_1$["+@castle+"]")+" ("+@town+"/"+@castle+")"+((@i<getarraysize(@gcastle)-1)?"^000000, ":"^000000.");
+	}
+	deletearray @gmemnames$[0], 128;
+	deletearray @gaid[0], 128;
+	deletearray @gcid[0], 128;
+	query_sql("select name,account_id,char_id from guild_member where guild_id = '"+@gid+"' order by name ASC",@gmemnames$,@gaid,@gcid);
+	set @gmembers$, "";
+	for (set @i, 0; @i < getarraysize(@gmemnames$); set @i, @i+1) { set @gmembers$, @gmembers$+((isloggedin(@gaid[@i],@gcid[@i]))?"^339900":"^FF0000")+@gmemnames$[@i]+((@i<getarraysize(@gmemnames$)-1)?"^000000, ":"^000000."); }
+	mes @gname$+" (ID: "+@gid+", Level: "+@glv+")";
+	mes "Castles Owned: "+@gcastles$;
+	mes "--";
+	mes "Leader: "+((isloggedin(@gmasteraid,@gmastercid))?"^339900":"^FF0000")+@gmaster$+" ^000000("+@gmasteraid+"/"+@gmastercid+")";
+	mes "Members ("+@gonlmembers+"/"+getarraysize(@gmemnames$)+"): "+@gmembers$;
+	next;
+	return;
+
+}

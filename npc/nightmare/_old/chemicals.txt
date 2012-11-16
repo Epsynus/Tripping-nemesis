@@ -1,0 +1,130 @@
+function	script	chemicalmaker_formula	{
+	set @chemicalformula, (getskilllv(724)*10)+((readparam(bINT)+readparam(bDEX)))/750;
+	return;
+	end;
+}
+
+function	script	chemmaker_level	{
+	set chemmaker_level,chemmaker_level+1;
+	if(chemmaker_level==10) goto chemmaker_level_2;
+	if(chemmaker_level==25) goto chemmaker_level_3;
+	if(chemmaker_level==50) goto chemmaker_level_4;
+	if(chemmaker_level==75) goto chemmaker_level_5;
+	if(chemmaker_level==100) goto chemmaker_level_6;
+	if(chemmaker_level==150) goto chemmaker_level_7;
+	if(chemmaker_level==250) goto chemmaker_level_8;
+	if(chemmaker_level==500) goto chemmaker_level_9;
+	if(chemmaker_level==1000) goto chemmaker_level_10;
+	return;
+	end;
+chemmaker_level_2:
+	skill 723,2,0;
+	return;
+	end;
+chemmaker_level_3:
+	skill 723,3,0;
+	return;
+	end;
+chemmaker_level_4:
+	skill 723,4,0;
+	return;
+	end;
+chemmaker_level_5:
+	skill 723,5,0;
+	return;
+	end;
+chemmaker_level_6:
+	skill 723,6,0;
+	return;
+	end;
+chemmaker_level_7:
+	skill 723,7,0;
+	return;
+	end;
+chemmaker_level_8:
+	skill 723,8,0;
+	return;
+	end;
+chemmaker_level_9:
+	skill 723,9,0;
+	return;
+	end;
+chemmaker_level_10:
+	skill 723,10,0;
+	return;
+	end;
+}
+
+function	script	chemicalmaker	{
+	mes "Select a chemical you would like to make:";
+	next;
+	menu "Toxic Gas",chem_toxic,"Red Mixture",chem_red,"Blue Mixture",chem_blue,"Green Mixture",chem_green,"Nevermind",-;
+	close;
+	end;
+chem_toxic:
+	callfunc "chemmaker_formula";
+	set @chemrand, rand(1,100);
+	if(@chemrand>@chemicalformula) goto chem_failed;
+	mes "Chemical has been made.";
+	getitem 7062,1;
+	callfunc "chemmaker_level";
+	close;
+	end;
+chem_green:
+	next;
+	mes "You'll need:";
+	mes "1 Aloe";
+	mes "1 Hinalle";
+	next;
+	if(countitem(7065)<1) || (countitem(7066)<1) goto chem_items;
+	delitem 7065,1;
+	delitem 7066,1;
+	callfunc "chemmaker_formula";
+	set @chemrand, rand(1,100);
+	if(@chemrand>@chemicalformula) goto chem_failed;
+	mes "Chemical has been made.";
+	getitem 1017,1;
+	callfunc "chemmaker_level";
+	close;
+	end;
+chem_blue:
+	next;
+	mes "You'll need:";
+	mes "1 Hinalle";
+	mes "1 Ment";
+	next;
+	if(countitem(7068)<1) || (countitem(7066)<1) goto chem_items;
+	delitem 7066,1;
+	delitem 7068,1;
+	callfunc "chemmaker_formula";
+	set @chemrand, rand(1,100);
+	if(@chemrand>@chemicalformula) goto chem_failed;
+	mes "Chemical has been made.";
+	getitem 1018,1;
+	callfunc "chemmaker_level";
+	close;
+	end;
+chem_red:
+	next;
+	mes "You'll need:";
+	mes "1 Illusion Flower";
+	next;
+	if(countitem(7067)<1) goto chem_items;
+	delitem 7067,1;
+	callfunc "chemmaker_formula";
+	set @chemrand, rand(1,100);
+	if(@chemrand>@chemicalformula) goto chem_failed;
+	mes "Chemical has been made.";
+	getitem 1019,1;
+	callfunc "chemmaker_level";
+	close;
+	end;
+chem_noitems:
+	mes "Sorry, you do not have all of the required items.";
+	close;
+	end;
+chem_failed:
+	mes "Sorry, but you failed to make your chemical.";
+	close;
+}
+

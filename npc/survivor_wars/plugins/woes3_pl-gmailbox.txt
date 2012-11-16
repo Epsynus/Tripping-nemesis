@@ -1,0 +1,121 @@
+// WoE Setter 3 Plug-in
+// Player -  Guild Mailbox
+// By: [GM]Xeon
+// Version: 1.0.1
+
+-	script	WoES3Pl_RGMail	-1,{
+end;
+OnPCLoginEvent:
+	if (!getcharid(2)) end;
+	if (getcharid(0) == getguildmasterid(getcharid(2))) { query_sql("select count(*) from `guild_mail` where `to` = '"+getcharid(2)+"' and `read` = '0'",.@cnt); dispbottom "You have "+.@cnt+" unread guild messages"; }
+	end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	if (!query_sql("show columns from `guild` like 'gmail_pos'",.@ignore,.@ignore,.@ignore,.@ignore,.@ignore,.@ignore)) query_sql("ALTER TABLE `guild` ADD COLUMN `gmail_pos` INTEGER UNSIGNED NOT NULL DEFAULT 3 AFTER `emblem_data`",.@ignore);
+	query_sql("CREATE TABLE IF NOT EXISTS `guild_mail` (`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,`from` INTEGER UNSIGNED NOT NULL,`from_name` VARCHAR(30) NOT NULL,`to` INTEGER UNSIGNED NOT NULL,`title` VARCHAR(60) NOT NULL,`mes` VARCHAR(300) NOT NULL,`read` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,PRIMARY KEY (`id`)) ENGINE = MyISAM;",.@ignore);
+	set $@woes3_pl_playermenu$[getarraysize($@woes3_pl_playermenu$)], "Guild Mailbox";
+	set $@woes3_pl_player$[getarraysize($@woes3_pl_player$)], "GMail";
+	end;
+}
+
+function	script	WoES3Pl_GMail	{
+	if (!query_sql("show tables like 'guild_mail'",@ignore) || !query_sql("show columns from `guild` like 'gmail_pos'",.@ignore,.@ignore,.@ignore,.@ignore,.@ignore,.@ignore)) { mes "There was a critical database error. Please report this to a GM!"; return; }
+	if (!getcharid(2)) { mes "[Guild Mailbox]"; mes "You must be in a guild to use this function!"; return; }
+	query_sql("select gmail_pos from `guild` where `guild_id` = '"+getcharid(2)+"'",@minpos);
+	if (getcharid(0) == getguildmasterid(getcharid(2))) { goto L_MasterMes;
+	} else {
+		query_sql("select position from `guild_member` where `char_id` = '"+getcharid(0)+"'",@gpos);
+		if (@gpos <= @minpos) { goto L_MailMes;
+		} else {
+			mes "[Guild Mailbox]";
+			mes "You are not authorized by the Guild Master to access this function!";
+			return;
+		}
+	}
+L_MasterMes:
+	mes "[Guild Mailbox]";
+	mes "Welcome to your guild mailbox Guild Master!";
+L_Master:
+	//Access mail, Change minimum position to use function, Back
+	menu "Access mail",L_Mail,"Change min. position for access",-,"Back",L_Return;
+	mes "[Guild Mailbox]";
+	mes "Enter the maximum position allowed to access the mailbox, 1=you, 20='lowest' position. Current position: "+@minpos;
+	input @pos;
+	if (@pos < 1) set @pos, 1;
+	if (@pos > 20) set @pos, 20;
+	set @minpos, @pos;
+	query_sql "update `guild` set `gmail_pos` = '"+@pos+"' where `guild_id` = '"+getcharid(2)+"'";
+	mes "Position set!";
+	next;
+	goto L_Master;
+L_MailMes:
+	mes "[Guild Mailbox]";
+	mes "Welcome to the Guild mailbox, through here you can send mail to other guilds!";
+L_Mail:
+	switch(select("Send mail","Read mail","Back")) {
+		case 1:
+			set @valid, 0;
+			set @gid, 0;
+			while (@valid == 0) {
+				mes "[Guild Mailbox]";
+				mes "What guild would you like to mail the message to? Enter one space to cancel.";
+				next;
+				input @gname$;
+				if (@gname$==" ") goto L_Main;
+				query_sql("select guild_id from `guild` where `name` = '"+escape_sql(@gname$)+"'",@gid);
+				if (@gid) { set @valid, 1; } else { if (@valid==0) { mes "Invalid guild name..."; set @valid, -1; next; } }
+			}
+			mes "[Guild Mailbox]";
+			mes "Enter the title for the new message";
+			next;
+			input @title$;
+			mes "[Guild Mailbox]";
+			mes "Enter the message";
+			next;
+			input @mes$;
+			mes "[Guild Mailbox]";
+			mes "Enter more?";
+			while (@menu==1) {
+				menu "Yes",-,"No",-;
+				if (@menu==1) { input @mes_$; set @mes$, @mes$+@mes_$; }
+			}
+			query_sql("insert into `guild_mail` (`from`,`from_name`,`to`,`title`,`mes`) values ('"+escape_sql(getcharid(2))+"','"+escape_sql(strcharinfo(0))+"','"+@gid+"','"+escape_sql(@title$)+"','"+escape_sql(@mes$)+"')",.@ignore);
+			mes "Mail sent!";
+			next;
+			goto L_Mail;
+		case 2:
+			mes "[Guild Mailbox]";
+			set @mail, query_sql("select * from `guild_mail` where `to` = '"+getcharid(2)+"'",@mid,@mfrom,@mfrom$,@ignore,@mtitle$,@mmes$,@mread);
+			if (@mail) { set @done, 0; } else { mes "No messages..."; set @done, 1; }
+			while (!@done) {
+				set @menuitems$, "";
+				for (set @i, 0; @i < @mail; set @i, @i+1) set @menuitems$, @menuitems$+((@read[@i])?"":"!")+@mtitle$[@i]+((@i<@mail-1)?":":"");
+				menu @menuitems$,-,"Finish",L_Mail;
+				mes "From: "+getguildname(@mfrom[@menu-1])+" (Member: "+@mfrom$[@menu-1]+")";
+				mes "Title: "+@mtitle$[@menu-1];
+				mes "Content: "+@mmes$[@menu-1];
+				set @delid, @menu-1;
+				if (!@mread[@menu-1]) query_sql("update `guild_mail` set `read` = '1' where `id` = '"+@mid[@menu-1]+"'");
+				menu "Delete message",-,"Read another",-;
+				if (@menu==1) {
+					query_sql("delete from `guild_mail` where `id` = '"+@mid[@delid]+"'");
+					deletearray @mid[@delid], 1;
+					deletearray @mfrom[@delid], 1;
+					deletearray @mfrom$[@delid], 1;
+					deletearray @mtitle$[@delid], 1;
+					deletearray @mmes$[@delid], 1;
+					deletearray @mread[@delid], 1;
+					set @mail, @mail-1;
+					mes "Message deleted!";
+				}
+				next;
+			}
+			break;
+		case 3:
+			if (getcharid(0) == getguildmasterid(getcharid(2))) { goto L_Master; } else { return; }
+	}
+	goto L_Mail;
+L_Return: return;
+}
+
+
+//table (guild_mail): id from from_name to title mes read

@@ -1,0 +1,3 @@
+5,508,25	//Celerity DX
+5,509,25	//StamiNax DX
+5,510,25	//Fix8 DX

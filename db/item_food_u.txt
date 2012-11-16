@@ -1,0 +1,19 @@
+// Old Card Album Obtainable Items Database
+//
+// Structure of Database:
+// GroupID,ItemID,Rate
+
+//2,514,10	//Fruit Juice
+2,515,10	//Tea
+//2,516,10	//Lettuce
+2,517,10	//Bread
+2,518,10	//Rice
+2,519,10	//Can of Soup
+2,520,10	//Egg
+2,523,10	//Milk
+2,501,4		//Uncooked Meat
+2,550,4		//Cooked Meat
+2,551,5		//Hot Soup
+2,552,5		//Sandwich
+2,553,5		//Cooked Eggs
+2,554,5		//Salad

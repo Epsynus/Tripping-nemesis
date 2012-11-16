@@ -1,0 +1,583 @@
+function	script	func_bullet_9mm	{
+	message strcharinfo(0), "Reloading!";
+	delitem 1101, countitem(1101);
+	delitem 1102, 1;
+	sleep2 100;
+	getitem 1101, 15;
+	soundeffect "reload.wav",0;
+	return;
+	end;
+}
+
+function	script	func_bullet_12gauge	{
+	message strcharinfo(0), "Reloading!";
+	delitem 1103, countitem(1103);
+	delitem 1104, 1;
+	getitem 1103, 10;
+	soundeffect "reload.wav",0;
+	return;
+	end;
+}
+
+function	script	func_bullet_556mm	{
+	message strcharinfo(0), "Reloading!";
+	delitem 1105, countitem(1105);
+	delitem 1106, 1;
+	getitem 1105, 5;
+	soundeffect "reload.wav",0;
+	return;
+	end;
+}
+
+
+//Item Functions
+
+function	script	func_watch	{
+	message strcharinfo(0),"The current time is: " + gettime(3) + ":" + gettime(2) + ":" + gettime(1);
+	if (isday()) 	message strcharinfo(0),"It is currently day time.";
+	if (isnight()) 	message strcharinfo(0),"It is currently night time.";
+	message strcharinfo(0),"You have survived for a total of " + survival + " days.";
+	set @break, rand(1,100);
+	if (@break>99) goto clock_broke;
+	close;
+	end;
+
+clock_broke:
+	next;
+	message strcharinfo(0),"The clock stopped working..."; 
+	delitem 605,1;
+	end;
+}
+
+function	script	func_flashlight	{
+	set .@battery,1012;
+	if (countitem(.@battery) < 1) { dispbottom "Needs batteries..."; end;}
+	delitem .@battery,1;
+	dispbottom "You used a battery.";
+	atcommand"@refresh";
+	soundeffect "_stonecurse.wav",0;
+	sleep2 300000;
+	if (isnight()) { atcommand"@effect 334"; }
+	dispbottom "Lights out...";
+	end;
+}
+
+function	script	func_megaphone	{
+	message strcharinfo(0),"You decide to yell into a megaphone...";
+	set @announce1$, strcharinfo(0);
+	input @announce2$;
+	announce @announce1$ + " : " + @announce2$,bc_area;
+	end;
+}
+
+
+function	script	func_radio	{
+	mes "Select an option:";
+	menu "Send a message",func_radio_send,"Check messages",func_radio_recieve,"Nevermind",-;
+	close;
+	end;
+func_radio_send:
+	callfunc "func_radio_send";
+	close;
+	end;
+func_radio_recieve:
+	callfunc "func_radio_recieve";
+	close;	
+	end;
+}
+
+
+function	script	func_radio_send	{
+	mes "Select a channel (1-10):";
+	input @channel;
+	if (@channel < 1 || @channel > 10) goto send_mes_fail;
+	mes "Input your message :";
+	next;
+	set $message_name$[@channel], strcharinfo(0);
+	input $message_text$[@channel];
+	next;
+	mes "Radio transmission complete.";
+	close;
+	end;
+
+send_mes_fail:
+	next;
+	mes ". . .";
+	next;
+	mes "Radio transmition failed to connect. Transmission failed.";
+	close;
+	end;
+}
+
+function	script	func_radio_recieve	{
+	mes "Radio has been connected.";
+	next;
+	mes "Channel 1: " + $message_name$[1] + ": " + $message_text$[1];
+	mes "Channel 2: " + $message_name$[2] + ": " + $message_text$[2];
+	mes "Channel 3: " + $message_name$[3] + ": " + $message_text$[3];
+	mes "Channel 4: " + $message_name$[4] + ": " + $message_text$[4];
+	mes "Channel 5: " + $message_name$[5] + ": " + $message_text$[5];
+	next;
+	mes "Channel 6: " + $message_name$[6] + ": " + $message_text$[6];
+	mes "Channel 7: " + $message_name$[7] + ": " + $message_text$[7];
+	mes "Channel 8: " + $message_name$[8] + ": " + $message_text$[8];
+	mes "Channel 9: " + $message_name$[9] + ": " + $message_text$[9];
+	mes "Channel 10: " + $message_name$[10] + ": " + $message_text$[10];
+	next;
+	mes "Radio has disconnected.";
+	close;
+	end;
+
+send_mes_fail:
+	next;
+	mes ". . .";
+	next;
+	mes "Radio transmition failed to connect. Transmission failed.";
+	end;
+}
+
+function	script	sleep_func	{
+	mes "How long would you like to sleep for?";
+	next;
+	menu "30 seconds",sleep_30sec,"1 minute",sleep_1min,"Nevermind",-;
+	close;
+	end;
+sleep_30sec:
+	mes "It's time to get some rest...";
+	sc_start SC_SLEEP,30000,0;
+	cutin "sleep.bmp",1;
+	sleep2 3000;
+	mes "[|---------]";
+	sleep2 3000;
+	mes "[||--------]";
+	sleep2 3000;
+	mes "[|||-------]";
+	sleep2 3000;
+	mes "[||||------]";
+	sleep2 3000;
+	mes "[|||||-----]";
+	sleep2 3000;
+	mes "[||||||----]";
+	sleep2 3000;
+	mes "[|||||||---]";
+	sleep2 3000;
+	mes "[||||||||--]";
+	sleep2 3000;
+	mes "[|||||||||-]";
+	sleep2 3000;
+	percentheal 12,30;
+	cutin "",255;
+	close;
+	end;
+sleep_1min:
+	mes "It's time to get some rest...";
+	sc_start SC_SLEEP,60000,0;
+	cutin "sleep.bmp",1;
+	sleep2 6000;
+	mes "[|---------]";
+	sleep2 6000;
+	mes "[||--------]";
+	sleep2 6000;
+	mes "[|||-------]";
+	sleep2 6000;
+	mes "[||||------]";
+	sleep2 6000;
+	mes "[|||||-----]";
+	sleep2 6000;
+	mes "[||||||----]";
+	sleep2 6000;
+	mes "[|||||||---]";
+	sleep2 6000;
+	mes "[||||||||--]";
+	sleep2 6000;
+	mes "[|||||||||-]";
+	sleep2 6000;
+	percentheal 25,75;
+	cutin "",255;
+	close;
+	end;
+}
+
+function	script	fishing_func	{
+	setarray .@failrate[0],70,80,90;
+	setarray .@fishingrodIDs[0],1056,1057,1058;
+	for(set .@i,getarraysize(.@fishingrodIDs) - 1; .@i >= 0; set .@i,.@i-1) {
+    		if(countitem(.@fishingrodIDs[.@i]) > 0) {
+        		set .@failrate2,.@failrate[.@i];
+        		set .@rodindex,.@i;
+        		break;
+    		}
+	}
+	if(.@i >= 0) {
+		mes "How long would you like to fish for?";
+		next;
+		menu "15 seconds",fish_15sec,"30 seconds",fish_30sec,"Nevermind",-;
+		close;
+		end;
+		}
+	if(.@i < 0)
+	dispbottom "Might be able to fish with a rod...";
+	end;
+
+fish_15sec:
+	mes "Here goes nothing...";
+	soundeffect "splash.wav",0;
+	sc_start SC_SLEEP,15000,0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "splash.wav",0;
+	setarray .@catch[0],536,536,536,536,536,536,536,536,536;
+	set .@rand,rand(0,8);
+	getitem .@catch[.@rand],1;
+	set @superrand, rand(1,100);
+	if(@superrand > .@failrate2) {	delitem .@fishingrodIDs[.@rodindex],1; message strcharinfo(0), "Crap... The rod broke.";}
+	close;
+	end;
+
+fish_30sec:
+	mes "Here goes nothing...";
+	soundeffect "splash.wav",0;
+	sc_start SC_SLEEP,30000,0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "splash.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "splash.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "splash.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "splash.wav",0;
+	setarray .@catch[0],536,536,536,536,536,536,536,536,536;
+	set .@rand,rand(0,8);
+	getitem .@catch[.@rand],2;
+	set @superrand, rand(1,100);
+	if(@superrand > .@failrate2) {	delitem .@fishingrodIDs[.@rodindex],1; message strcharinfo(0), "Crap... The rod broke.";}
+	close;
+	end;
+}
+
+function	script	countdown_func	{
+if($@timeritem != 0) { end; }
+	set $@timeritem,1;
+	if(getmapxy(@mapname$,@mapx,@mapy,0) !=0 ) goto Notfound;
+	mes "...";
+	announce "[Event Timer]: 5!!!",bc_self,0xCC0033;
+	sleep2 2000;
+	announce "[Event Timer]: 4!!!",bc_self,0xFF3333;
+	sleep2 2000;
+	announce "[Event Timer]: 3!!!",bc_self,0xFF9933;
+	sleep2 2000;
+	announce "[Event Timer]: 2!!!",bc_self,0xCCFF33;
+	sleep2 2000;
+	announce "[Event Timer]: 1!!!",bc_self,0xCCFF99;
+	sleep2 2000;
+	announce "[Event Timer]: GO!!!",bc_self,0x00FF00;
+	close;
+	end;
+Notfound:
+	end;
+}
+
+function	script	loading_func	{
+//This function lasts a total of one (1) second.
+	cutin "loading.bmp",4;
+	sleep2 125;
+	cutin "loading1.bmp",4;
+	sleep2 125;
+	cutin "loading2.bmp",4;
+	sleep2 125;
+	cutin "loading3.bmp",4;
+	sleep2 125;
+	cutin "loading4.bmp",4;
+	sleep2 125;
+	cutin "loading5.bmp",4;
+	sleep2 125;
+	cutin "loading6.bmp",4;
+	sleep2 125;
+	cutin "loading7.bmp",4;
+	sleep2 125;
+	cutin "",255;
+	return; // Return to initial script.
+}
+
+function	script	lumber_func	{
+	setarray .@failrate[0],70,80,90;
+	setarray .@axeIDs[0],1300,1301,1302;
+	for(set .@i,getarraysize(.@axeIDs) - 1; .@i >= 0; set .@i,.@i-1) {
+    		if(countitem(.@axeIDs[.@i]) > 0) {
+        		set .@failrate2,.@failrate[.@i];
+        		set .@axeindex,.@i;
+        		break;
+    		}
+	}
+	if(.@i >= 0) {
+		mes "How long would you like to lumber for?";
+		next;
+		menu "15 seconds",lum_15sec,"30 seconds",lum_30sec,"Nevermind",-;
+		close;
+		end;
+		}
+	if(.@i < 0)
+	dispbottom "Might be able to get some wood with an axe...";
+	end;
+
+lum_15sec:
+	mes "Here goes nothing...";
+	soundeffect "wood_chopping.wav",0;
+	sc_start SC_SLEEP,15000,0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "wood_chopping.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	setarray .@catch[0],1007,1007,1007,1007,1007,1007,1007,1007,1007;
+	set .@rand,rand(0,8);
+	getitem .@catch[.@rand],1;
+	getitem 1005, rand(1,5);
+	set @superrand, rand(1,100);
+	if(@superrand > .@failrate2) {	delitem .@axeIDs[.@axeindex],1; message strcharinfo(0), "Crap... The axe broke.";}
+	close;
+	end;
+
+lum_30sec:
+	mes "Here goes nothing...";
+	soundeffect "wood_chopping.wav",0;
+	sc_start SC_SLEEP,30000,0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "wood_chopping.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "wood_chopping.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "wood_chopping.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	setarray .@catch[0],1007,1007,1007,1007,1007,1007,1007,1007,1007;
+	set .@rand,rand(0,8);
+	getitem .@catch[.@rand],2;
+	getitem 1005, rand(1,3);
+	set @superrand, rand(1,100);
+	if(@superrand > .@failrate2) {	delitem .@axeIDs[.@axeindex],1; message strcharinfo(0), "Crap... The axe broke.";}
+	close;
+	end;
+}
+
+function	script	mining_func	{
+	setarray .@failrate[0],70,80,90;
+	setarray .@axeIDs[0],1303,1304,1305;
+	for(set .@i,getarraysize(.@axeIDs) - 1; .@i >= 0; set .@i,.@i-1) {
+    		if(countitem(.@axeIDs[.@i]) > 0) {
+        		set .@failrate2,.@failrate[.@i];
+        		set .@axeindex,.@i;
+        		break;
+    		}
+	}
+	if(.@i >= 0) {
+		mes "How long would you like to mine for?";
+		next;
+		menu "15 seconds",mine_15sec,"30 seconds",mine_30sec,"Nevermind",-;
+		close;
+		end;
+		}
+	if(.@i < 0)
+	dispbottom "Might be able to mine minerals with a pickaxe...";
+	end;
+
+mine_15sec:
+	mes "Here goes nothing...";
+	soundeffect "mining.wav",0;
+	sc_start SC_SLEEP,15000,0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "mining.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	setarray .@catch[0],1019,1017,1003;
+	set .@rand,rand(0,2);
+	getitem 1011, rand(1,5);
+	getitem .@catch[.@rand],2;
+	set @superrand, rand(1,100);
+	if(@superrand > .@failrate2) {	delitem .@axeIDs[.@axeindex],1; message strcharinfo(0), "Crap... The pickaxe broke.";}
+	close;
+	end;
+
+mine_30sec:
+	mes "Here goes nothing...";
+	soundeffect "mining.wav",0;
+	sc_start SC_SLEEP,30000,0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "mining.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "mining.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	soundeffect "mining.wav",0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	setarray .@catch[0],1019,1017,1003;
+	set .@rand,rand(0,2);
+	getitem 1011, rand(1,3);
+	getitem .@catch[.@rand],4;
+	set @superrand, rand(1,100);
+	if(@superrand > .@failrate2) {	delitem .@axeIDs[.@axeindex],1; message strcharinfo(0), "Crap... The pickaxe broke.";}
+	close;
+	end;
+}
+
+function	script	barricade_func	{
+
+if (countitem(1007) >= 10)	{
+	mes "Building barricade...";
+	sc_start SC_SLEEP,5000,0;
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	callfunc "loading_func";
+	doevent "Barricade::OnSpawn";
+} else {
+	mes "You need more Wood.";
+	close;
+	end;
+	}
+}
+
+
+function	script	horde_func	{
+// calls aggro to area when needed
+//I.E. Firearms shot, Bomb, ect.
+//--------------------------------
+
+//---this line get's players position
+getmapxy @playermap$,@playerx,@playery,0;
+
+//---this line calls a random zombie from
+//the db and put's them close enough to the 
+//player to become a problem
+set @randx, rand(10,14);
+set @randy, rand(10,14);
+set @side, rand(0,1);
+set @zombeh, rand(1078, 1084);
+if(@side == 0){
+@side = -1;
+}
+
+@randx == @randx * side;
+@randy == @randy * side;
+
+monster @playermap$,@playerx + @randx,@playery + @randy,Zombie,@zombeh,1;
+
+
+
+
+
+
+}

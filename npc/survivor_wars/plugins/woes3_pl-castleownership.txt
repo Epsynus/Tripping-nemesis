@@ -1,0 +1,29 @@
+// WoE Setter 3 Plug-in
+// Player - View Castle Ownership
+// By: [GM]Xeon
+// Version: 1.0.1
+
+-	script	WoES3Pl_RCastleOwnership	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_playermenu$[getarraysize($@woes3_pl_playermenu$)], "View Castle Ownership";
+	set $@woes3_pl_player$[getarraysize($@woes3_pl_player$)], "CastleOwnership";
+	end;
+}
+
+function	script	WoES3Pl_CastleOwnership	{
+	mes "[Castle Ownership]";
+	mes "The current castle owners are as follows...";
+	set @town, 0;
+	for (set .@i, 0; .@i<34; set .@i,.@i+1) {
+		if (!.@i||.@i==5||.@i==10||.@i==15||.@i==20||.@i==24||.@i==29) { set @town, @town+1; set @temp, 1; mes "  ^0066FF"+$woe_towns$[@town]+":^000000"; }
+		set @gid, 0; set @good, query_sql("select `guild_id` from `guild_castle` where `castle_id` = '"+.@i+"'",@gid);
+		if (@good&&@gid) query_sql("select name,master from `guild` where `guild_id` = '"+@gid+"'",@gname$,@gowner$);
+		mes getd("$woe_cas"+@town+"_1$["+@temp+"]")+"-"+((@good&&@gid)?@gname$+" ("+@gowner$+")":"No owner");
+		set @temp, @temp+1;
+	}
+	dispbottom "      Listing format:";
+	dispbottom "  {Town name}:";
+	dispbottom "{Castle name}-{Guild who owns it} ({Owner of that guild})";
+	return;
+}

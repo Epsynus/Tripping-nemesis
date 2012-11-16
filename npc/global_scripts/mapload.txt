@@ -1,0 +1,44 @@
+//===== Oplex Origins Script =================================
+//= OnMapLoad | OnPCLoadmapEvent
+//===== By: ================================================== 
+//= Sigma
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Since OnPCLoadmapEvent doesn't want to work, I made my own.
+//= Simply runs the script when the player comes into contact
+//= with the NPC.
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//============================================================
+
+-	script	OnMapLoad	-1,{
+end;	// Disable Click
+
+OnTouch:	//Your OnMapLoad Scripts Below
+	if (isnight()) { atcommand"@effect 334"; }	else {	end; }
+
+}
+
+//============================================================
+//= NPC Duplicates Below.
+//============================================================
+lavive_01,1,1,0	duplicate(OnMapLoad)	mapload#01	111,100000,100000,
+lavive_02,1,1,0	duplicate(OnMapLoad)	mapload#02	111,100000,100000,
+lavive_03,1,1,0	duplicate(OnMapLoad)	mapload#03	111,100000,100000,
+lavive_04,1,1,0	duplicate(OnMapLoad)	mapload#04	111,100000,100000,
+lavive_05,1,1,0	duplicate(OnMapLoad)	mapload#05	111,100000,100000,
+lavive_06,1,1,0	duplicate(OnMapLoad)	mapload#06	111,100000,100000,
+lavive_07,1,1,0	duplicate(OnMapLoad)	mapload#07	111,100000,100000,
+lavive_08,1,1,0	duplicate(OnMapLoad)	mapload#08	111,100000,100000,
+lavive_09,1,1,0	duplicate(OnMapLoad)	mapload#09	111,100000,100000,
+lavive_10,1,1,0	duplicate(OnMapLoad)	mapload#10	111,100000,100000,
+la_fild01,1,1,0	duplicate(OnMapLoad)	mapload#11	111,100000,100000,
+la_fild02,1,1,0	duplicate(OnMapLoad)	mapload#12	111,100000,100000,
+la_fild03,1,1,0	duplicate(OnMapLoad)	mapload#13	111,100000,100000,
+la_fild04,1,1,0	duplicate(OnMapLoad)	mapload#14	111,100000,100000,
+la_mfild00,1,1,0	duplicate(OnMapLoad)	mapload#15	111,100000,100000,
+la_mfild01,1,1,0	duplicate(OnMapLoad)	mapload#16	111,100000,100000,
+la_mfild02,1,1,0	duplicate(OnMapLoad)	mapload#17	111,100000,100000,

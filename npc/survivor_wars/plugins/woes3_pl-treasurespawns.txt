@@ -1,0 +1,25 @@
+// WoE Setter 3 Plug-in
+// GM - Treasure Spawn Enable/Disable
+// By: [GM]Xeon
+// Version: 1.0.0
+
+-	script	WoES3Pl_RTSED	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_gmmenu$[getarraysize($@woes3_pl_gmmenu$)], "Treasure Spawn Enable/Disable";
+	set $@woes3_pl_gm$[getarraysize($@woes3_pl_gm$)], "TSED";
+	end;
+}
+
+function	script	WoES3Pl_TSED	{
+L_Select:
+	//Add checks (red+green) for the towns too
+	menu $woe_towns$[1]+":"+$woe_towns$[2]+":"+$woe_towns$[3]+":"+$woe_towns$[4]+":"+$woe_towns$[5]+":"+$woe_towns$[6]+":"+$woe_towns$[7],-,"^000000Back",L_Return;
+	set @town, @menu;
+L_SelectCastles:
+	menu ((getd("$woe_cas"+@town+"_tdisable[1]"))?"^FF0000":"^339900")+getd("$woe_cas"+@town+"_1$[1]")+":"+((getd("$woe_cas"+@town+"_tdisable[2]"))?"^FF0000":"^339900")+getd("$woe_cas"+@town+"_1$[2]")+":"+((getd("$woe_cas"+@town+"_tdisable[3]"))?"^FF0000":"^339900")+getd("$woe_cas"+@town+"_1$[3]")+":"+((getd("$woe_cas"+@town+"_tdisable[4]"))?"^FF0000":"^339900")+getd("$woe_cas"+@town+"_1$[4]")+((@town!=5)?":"+((getd("$woe_cas"+@town+"_tdisable[5]"))?"^FF0000":"^339900")+getd("$woe_cas"+@town+"_1$[5]"):""),-,"^000000Back",L_Select;
+	if (getd("$woe_cas"+@town+"_tdisable["+@menu+"]")) { setd("$woe_cas"+@town+"_tdisable["+@menu+"]", 0); } else { setd("$woe_cas"+@town+"_tdisable["+@menu+"]", 1); }
+	goto L_Select;
+L_Return:
+	return;
+}

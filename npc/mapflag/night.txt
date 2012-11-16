@@ -1,0 +1,22 @@
+//===== eAthena Script =======================================
+//= Map Flags for maps where the night is visible.
+//= This only contols the night hue not the dark circle effect.
+
+//Lavive Town
+lavive_01	mapflag	nightenabled
+lavive_02	mapflag	nightenabled
+lavive_03	mapflag	nightenabled
+lavive_04	mapflag	nightenabled
+lavive_05	mapflag	nightenabled
+lavive_06	mapflag	nightenabled
+lavive_07	mapflag	nightenabled
+lavive_08	mapflag	nightenabled
+lavive_09	mapflag	nightenabled
+lavive_10	mapflag	nightenabled
+la_fild01	mapflag	nightenabled
+la_fild02	mapflag	nightenabled
+la_fild03	mapflag	nightenabled
+la_fild04	mapflag	nightenabled
+la_mfild00	mapflag	nightenabled
+la_mfild01	mapflag	nightenabled
+la_mfild02	mapflag	nightenabled

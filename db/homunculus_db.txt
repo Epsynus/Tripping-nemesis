@@ -1,0 +1,4 @@
+//Legend: b: base, gn: growth min, gx: growth max, en: evolution min, ex: evolution max
+//Note: Only the growth values are in a 1/10 scale, the other stats are 1/1 (eg: 5 gmAGI means 0.5 agi)
+//class,evo_class,name,foodID,hungryDelay,base_size,evo_size,race,element,bASPD,bHP,bSP,bSTR,bAGI,bVIT,bINT,bDEX,bLUK,gnHP,gxHP,gnSP,gxSP,gnSTR,gxSTR,gnAGI,gxAGI,gnVIT,gxVIT,gnINT,gxINT,gnDEX,gxDEX,gnLUK,gxLUK,enHP,exHP,enSP,exSP,enSTR,exSTR,enAGI,exAGI,enVIT,exVIT,enINT,exINT,enDEX,exDEX,enLUK,exLUK
+//6001,6009,Lif,537,60000,0,1,7,0,700,150,40,17,20,15,35,24,12,60,100,4,9,5,19,5,19,5,19,4,20,6,20,6,20,1,10,10,20,1,5,1,4,1,5,4,10,1,10,1,3

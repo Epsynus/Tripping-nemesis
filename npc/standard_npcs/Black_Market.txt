@@ -1,0 +1,26 @@
+//===== Oplex Origins Script ======================================= 
+//= Black Market
+//===== By: ================================================== 
+//= Epsynus
+//===== Current Version: ===================================== 
+//= 1.1
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= NPC that sells rare goods IF you possess the correct card
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.1 - Checks for the keycard
+//============================================================
+blank_01,7,7,5	script	placeholder::uniqueplaceholder	000,{
+if( (countitem(KeyCardID)>=1) )	goto	Black_Market;
+mes	"...";
+close;
+
+Black_Market:
+mes	"Well i like to sell things";
+close;
+}
+
+// Here you put all the clones for this script use the format below
+//la_in01,174,138,0	duplicate(uniqueplaceholder)	placeholder::uniqueplaceholder	000

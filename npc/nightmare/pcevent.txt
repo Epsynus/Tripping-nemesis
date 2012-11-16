@@ -1,0 +1,142 @@
+-	script	survival_mechanic	-1,{
+OnPCLoginEvent:
+	addtimer 500,"survival_mechanic::OnTimeCheck";
+	end;
+OnTimeCheck:
+	sleep2 1200000;
+	set survival, survival + 1;
+//Begin with the SQL check for how long player has survived
+	set @char_id, getcharid(0);
+	query_sql("SELECT survival from `char` where account_id = " + getcharid(0), @survival);
+	if(@survival < survival) {
+	query_sql "UPDATE `char` SET `survival` = "+survival+" WHERE `char_id` = "+@char_id;
+	}
+	addtimer 500,"survival_mechanic::OnTimeCheck";
+	end;
+OnPCDieEvent:
+	awake "survival_mechanic";
+	awake "survival_mechanic::OnTimeCheck";
+	end;	
+}
+
+-	script	game_mechanics::gamemechs	-1,{
+
+OnPCLoginEvent:
+	getmapxy @playermap$,@playerx,@playery,0;
+	if (isday()) announce "It's day time.",bc_self,0xCD3700;
+	if (isnight()) {	
+		announce "It's night time.",bc_self,0xCD3700;
+		atcommand"@effect 334";
+	}
+	if(@playermap$=="op_tut01"){ end; };
+	addtimer 500,"vitality_timer::OnTimeCheck";
+	end;
+
+OnPCLogOutEvent:
+	deltimer "vitality_timer::OnTimeCheck";
+	awake "survival_mechanic::OnTimeCheck";
+	deltimer "survival_mechanic::OnTimeCheck";
+	end;
+
+OnPCDieEvent:
+//Begin with the SQL check for how long player has survived
+	set @char_id, getcharid(0);
+	query_sql("SELECT survival from `char` where account_id = " + getcharid(0), @survival);
+	if(@survival < survival) {
+	query_sql "UPDATE `char` SET `survival` = "+survival+" WHERE `char_id` = "+@char_id;
+	}
+//Reset survival timer
+	set survival, 0;
+	deltimer "vitality_timer::OnTimeCheck";
+	deltimer "survival_mechanic::OnTimeCheck";	
+//Drop items for dead player
+	getmapxy @playermap$,@playerx,@playery,0;
+	makeitem 501,1,@playermap$,@playerx,@playery;	//Drops Uncooked Meat
+//	makeitem 1001,1,@playermap$,@playerx,@playery;	//Drops Skull
+	set @superrand, rand(1,100);
+	if(@superrand > 90)	{	atcommand "@dropall";}	//Drops all items by a chance of 10/100.
+	soundeffect "dying.wav",0;
+	end;
+
+OnNPCKillEvent:	
+	if(KilledRid >= 1078 && KilledRid<=1092){		//Remember to update when adding new monsters!
+	set @char_id, getcharid(0);
+	set monsterkill, monsterkill + 1;
+	//Updates the SQL server on the player's player kills
+	query_sql "UPDATE `char` SET `monster_kill` = "+monsterkill+" WHERE `char_id` = "+@char_id;
+	end;
+	}
+	
+	if(KilledRid == 1123||KilledRid == 1122){	getmapxy @playermap$,@playerx,@playery,0; announce "You killed a Sentry!",bc_self,0xFF0000;end;}
+	if(KilledRid == 1085){
+	announce "You killed General Crowley!!",bc_self,0xFF0000;
+	end;
+	}
+
+//	//mag's barrier check & delete
+//	if(KilledRid == 1511){
+//	set .@switch,1;
+//	callfunc("barricade_func",.@switch);
+//	end;
+//	}
+
+	
+OnPCKillEvent:
+//	getnameditem(501,KilledRid);	//Killed player drops meat
+//	getnameditem(1001,KilledRid);	//Killed player drops skull
+	set @char_id, getcharid(0);
+	set playerkill, playerkill + 1;
+	set sanity, sanity + 5;
+//Updates the SQL server on the player's player kills
+	query_sql "UPDATE `char` SET `player_kill` = "+playerkill+" WHERE `char_id` = "+@char_id;
+	end;
+
+}
+
+-	script	vitality_timer	-1,{
+OnTimeCheck:
+	getmapxy @playermap$,@playerx,@playery,0;
+	if(@playermap$=="op_tut01"){ end; };
+//	sc_end SC_BLIND;
+	heal rand(-10,-5),rand(-10,-5);
+	addtimer 60000,"vitality_timer::OnTimeCheck";
+	end;
+}
+
+-	script	gmnamecheck	-1,{
+
+OnPcLoginEvent:
+if (getgmlevel() < 20) end;
+if (gmlvlnamecheck == 1) end;
+if (getgmlevel() >= 98) set @gmlvlname$,"[Admin]";
+if (getgmlevel() >= 79 && getgmlevel() <= 98) set @gmlvlname$,"[GM]";
+if (getgmlevel() >= 60 && getgmlevel() <= 79) set @gmlvlname$,"[GM]";
+if (getgmlevel() >= 50 && getgmlevel() <= 59) set @gmlvlname$,"[Event GM]";
+if (getgmlevel() >= 40 && getgmlevel() <= 49) set @gmlvlname$,"[Sub GM]";
+if (getgmlevel() >= 20 && getgmlevel() <= 39) set @gmlvlname$,"[Moderator]";
+callfunc "gmloginchangename";
+
+}
+
+
+function	script	gmloginchangename	{
+set @nametemp$,"+strcharinfo(0)+";
+query_sql "UPDATE `char` SET `name` = '"+@gmlvlname$+" "+strcharinfo(0)+"'  WHERE `name`='"+strcharinfo(0)+"'";
+set gmlvlnamecheck,1;
+mes "As this is the first time you have loged in on this GM character, the administrator has changed your name from "+strcharinfo(0)+" to "+@gmlvlname$+" "+strcharinfo(0)+" and has added you into the GM guild";
+next;
+mes "you will be loged off in 5 seconds to reset your name";
+sleep2 5000;
+atcommand "@kick "+strcharinfo(0)+"";
+end;
+}
+
+function	script	mob_mechs	{
+OnNPCKillEvent:
+	getmapxy .@map$,.@x,.@y,3;
+	announce "Mob Location: " + .@map$ + "!",bc_self,0x00FF00;
+	getmapxy .@mapp$,.@xp,.@yp,0;
+	announce "Your Location: " + .@mapp$ + "!",bc_self,0x0000FF;
+	end;
+
+}

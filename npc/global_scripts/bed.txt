@@ -1,0 +1,56 @@
+//===== Oplex Origins Script ======================================= 
+//= Bed
+//===== By: ================================================== 
+//= Epsynus
+//===== Current Version: ===================================== 
+//= 1.2
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Enables you to sleep in beds
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.1 - Optimized some code, added comments and duplicates
+//= v1.2 - Removed half the npc since it was useless :P
+//============================================================
+//Where the inital bed spawns. You can get the mapname and X Y cordinates using /where ingame 
+la_in01,40,102,0	script	Bed::beds	111,{
+		callfunc "sleep_func";
+}
+// Safe House Beds
+// la_in01 bed1-bed20
+la_in01,174,138,0	duplicate(beds)	Bed::bed1	111
+la_in01,174,30,0	duplicate(beds)	Bed::bed2	111
+la_in01,136,30,0	duplicate(beds)	Bed::bed3	111
+la_in01,88,64,0	duplicate(beds)	Bed::bed4	111
+la_in01,88,30,0	duplicate(beds)	Bed::bed5	111
+la_in01,88,172,0	duplicate(beds)	Bed::bed6	111
+la_in01,136,172,0	duplicate(beds)	Bed::bed7	111
+la_in01,136,102,0	duplicate(beds)	Bed::bed8	111
+la_in01,136,138,0	duplicate(beds)	Bed::bed9	111
+la_in01,174,102,0	duplicate(beds)	Bed::bed10	111
+la_in01,88,138,0	duplicate(beds)	Bed::bed11	111
+la_in01,174,172,0	duplicate(beds)	Bed::bed12	111
+la_in01,40,172,0	duplicate(beds)	Bed::bed13	111
+la_in01,40,138,0	duplicate(beds)	Bed::bed14	111
+la_in01,87,102,0	duplicate(beds)	Bed::bed15	111
+la_in01,174,64,0	duplicate(beds)	Bed::bed16	111
+la_in01,88,102,0	duplicate(beds)	Bed::bed17	111
+la_in01,40,64,0	duplicate(beds)	Bed::bed18	111
+la_in01,136,64,0	duplicate(beds)	Bed::bed19	111
+la_in01,40,30,0	duplicate(beds)	Bed::bed20	111
+
+// Safe House Beds
+// la_bld01  bed30-bed41
+la_bld01,6,81,0	duplicate(beds)	Bed::bed30	111
+la_bld01,6,76,0	duplicate(beds)	Bed::bed31	111
+la_bld01,6,71,0	duplicate(beds)	Bed::bed32	111
+la_bld01,13,81,0	duplicate(beds)	Bed::bed33	111
+la_bld01,13,76,0	duplicate(beds)	Bed::bed34	111
+la_bld01,13,71,0	duplicate(beds)	Bed::bed35	111
+la_bld01,22,81,0	duplicate(beds)	Bed::bed36	111
+la_bld01,22,76,0	duplicate(beds)	Bed::bed37	111
+la_bld01,22,71,0	duplicate(beds)	Bed::bed38	111
+la_bld01,29,81,0	duplicate(beds)	Bed::bed39	111
+la_bld01,29,76,0	duplicate(beds)	Bed::bed40	111
+la_bld01,29,71,0	duplicate(beds)	Bed::bed41	111

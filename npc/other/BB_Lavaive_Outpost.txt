@@ -1,0 +1,1847 @@
+//===== eAthena Script ======================================= 
+//= eAthena Bulletin Board System
+//===== By: ================================================== 
+//= [GM]Xeon
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= All version of eAthena trunk+stable, TXT+SQL
+//= And hopefullly everyone e_O
+//===== Description: ========================================= 
+//= A full featured Bullet Board system that can display up to
+//= 9 Bulletins at a time.
+//===== Additional Comments: ================================= 
+//= 1.0 Added the Bulletin Board system [[GM]Xeon]
+//============================================================ 
+
+//lavive_01.gat,50,46,1	script	Bulletin Board#XeonBB1	53,{ //Other good sprites: 857, 858, 844, 837
+
+//======================
+//= Custom Settings
+//======================
+set @GMLvl,40;
+set @AdminLvl,99;
+set @MaxPosts,9; //This does work, but isn't complete. It keeps 9 posts in memory but only shows this amount.
+set @AnnounceNewPosts,0;
+set @AnnounceEditedPosts,0;
+
+//======================
+//= Functions + Script
+//======================
+if(getgmlevel() >= @GMLvl) goto L_GM;
+set @GMMode,0;
+goto L_BBoardSelect;
+
+L_GM:
+	if (#BBFirstRun == 0) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "[^00FF00Loading...^000000]";
+		mes "Since it is your first time running this Bulletin Board, it would be wise to read the Tutorial accessable on the next page to familiarize yourself with the BB interface, though you could easily figure it out on your own.";
+		set #BBFirstRun,1;
+		next;
+		goto L_GM;
+		}
+	mes "[^0000FFBulletin Board^000000]";
+	mes "Welcome to the Bulletin Board admin interface, what would you like to do?";
+	mes "Bulletin Boards: "+$BBCount;
+	if(getgmlevel() < @AdminLvl) menu "Add a Bulletin",L_AddBB,"Edit a Bulletin",-,"Delete a Bulletin",-,"Move a Bulletin up",-,"Move a Bulletin down",-,"View Bulletins",-,"Tutorial",L_Tut,"Exit",L_End;
+	if(getgmlevel() >= @AdminLvl) menu "Add a Bulletin",L_AddBB,"Edit a Bulletin",-,"Delete a Bulletin",-,"Move a Bulletin up",-,"Move a Bulletin down",-,"View Bulletins",-,"Tutorial",L_Tut,"Admin Functions",L_Admin,"Exit",L_End;
+	if(@menu == 2) {
+		set @GMMode,1;
+		next;
+		goto L_BBoardSelect;
+		}
+	if(@menu == 3) {
+		set @GMMode,2;
+		next;
+		goto L_BBoardSelect;
+		}
+	if(@menu == 4) {
+		set @GMMode,3;
+		next;
+		goto L_BBoardSelect;
+		}
+	if(@menu == 5) {
+		set @GMMode,4;
+		next;
+		goto L_BBoardSelect;
+		}
+	if(@menu == 6) {
+		set @GMMode,0;
+		next;
+		goto L_BBoardSelect;
+		}
+
+L_Admin:
+	next;
+	mes "[^0000FFBulletin Board^000000]";
+	mes "Welcome to the Advanced Bulletin Board functions, what would you like to do?";
+	menu "Set Bulletin count",-,"Reset ALL Bulletins",-,"Manage timed announcements",-,"Go Back",-;
+	if(@menu == 1) {
+		mes "The current Bulletin count is: "+$BBCount;
+		input $BBCount;
+		mes "Bulletine Count set to "+$BBCount;
+		next;
+		goto L_Admin;
+		}
+	if(@menu == 2) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "$FF0000Are you ABSOLUTELY sure you wish to completely wipe the Board??^000000";
+		menu "No",L_Admin,"Yes",-;
+		set $BBTitle1$,"";
+		set $BBTitle2$,"";
+		set $BBTitle3$,"";
+		set $BBTitle4$,"";
+		set $BBTitle5$,"";
+		set $BBTitle6$,"";
+		set $BBTitle7$,"";
+		set $BBTitle8$,"";
+		set $BBTitle9$,"";
+		set $BBMsg1$,"";
+		set $BBMsg2$,"";
+		set $BBMsg3$,"";
+		set $BBMsg4$,"";
+		set $BBMsg5$,"";
+		set $BBMsg6$,"";
+		set $BBMsg7$,"";
+		set $BBMsg8$,"";
+		set $BBMsg9$,"";
+		set $BBDate1$,"";
+		set $BBDate2$,"";
+		set $BBDate3$,"";
+		set $BBDate4$,"";
+		set $BBDate5$,"";
+		set $BBDate6$,"";
+		set $BBDate7$,"";
+		set $BBDate8$,"";
+		set $BBDate9$,"";
+		set $BBEdited1$,"";
+		set $BBEdited2$,"";
+		set $BBEdited3$,"";
+		set $BBEdited4$,"";
+		set $BBEdited5$,"";
+		set $BBEdited6$,"";
+		set $BBEdited7$,"";
+		set $BBEdited8$,"";
+		set $BBEdited9$,"";
+		set $BBAuthor1$,"";
+		set $BBAuthor2$,"";
+		set $BBAuthor3$,"";
+		set $BBAuthor4$,"";
+		set $BBAuthor5$,"";
+		set $BBAuthor6$,"";
+		set $BBAuthor7$,"";
+		set $BBAuthor8$,"";
+		set $BBAnnounce1,0;
+		set $BBAnnounce2,0;
+		set $BBAnnounce3,0;
+		set $BBAnnounce4,0;
+		set $BBAnnounce5,0;
+		set $BBAnnounce6,0;
+		set $BBAnnounce7,0;
+		set $BBAnnounce8,0;
+		set $BBAnnounce9,0;
+		deltimer "XeonBBAn::OnAn1";
+		deltimer "XeonBBAn::OnAn2";
+		deltimer "XeonBBAn::OnAn3";
+		deltimer "XeonBBAn::OnAn4";
+		deltimer "XeonBBAn::OnAn5";
+		deltimer "XeonBBAn::OnAn6";
+		deltimer "XeonBBAn::OnAn7";
+		deltimer "XeonBBAn::OnAn8";
+		deltimer "XeonBBAn::OnAn9";
+		set $BBCount,0;
+		mes "All Bulletins deleted, count set to 0, and timed announcements deleted.";
+		next;
+		goto L_Admin;
+		}
+	if(@menu == 3) {
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 4) {
+		next;
+		goto L_GM;
+		}
+
+L_AddBB:
+	next;
+	mes "[^0000FFBulletin Board^000000]";
+	mes "Input the name of the Bulletin (Do NOT use the ' : ' character!)";
+	input @BTitle$;
+	mes "Input the message of the Bulletin";
+	mes "Note you may only enter 210 characters";
+	input @BMsg1$;
+	mes "Would you like to add more?";
+	menu "Yes",-,"No",-;
+	if(@menu == 1) goto L_AddBBMore;
+	set @BMsg2$,"";
+	set @BMsg3$,"";
+	goto L_AddBBDone;
+
+L_AddBBMore:
+	next;
+	mes "[^0000FFBulletin Board^000000]";
+	mes "Input the add-on message of the Bulletin (Note no space will automatically be put between add-ons)";
+	input @BMsg2$;
+	mes "Would you like to add more? (Last time to add more)";
+	menu "Yes",-,"No",-;
+	if(@menu == 1) goto L_AddBBEvenMore;
+	set @BMsg3$,"";
+	goto L_AddBBDone;
+
+L_AddBBEvenMore:
+	next;
+	mes "[^0000FFBulletin Board^000000]";
+	mes "Input the last add-on message of the Bulletin";
+	input @BMsg3$;
+	goto L_AddBBDone;
+
+L_AddBBDone:
+	set $BBTitle9$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle6$;
+	set $BBTitle6$,$BBTitle5$;
+	set $BBTitle5$,$BBTitle4$;
+	set $BBTitle4$,$BBTitle3$;
+	set $BBTitle3$,$BBTitle2$;
+	set $BBTitle2$,$BBTitle1$;
+	set $BBMsg9$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg5$;
+	set $BBMsg5$,$BBMsg4$;
+	set $BBMsg4$,$BBMsg3$;
+	set $BBMsg3$,$BBMsg2$;
+	set $BBMsg2$,$BBMsg1$;
+	set $BBDate9$,$BBDate8$;
+	set $BBDate8$,$BBDate7$;
+	set $BBDate7$,$BBDate6$;
+	set $BBDate6$,$BBDate5$;
+	set $BBDate5$,$BBDate4$;
+	set $BBDate4$,$BBDate3$;
+	set $BBDate3$,$BBDate2$;
+	set $BBDate2$,$BBDate1$;
+	set $BBEdited9$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited5$;
+	set $BBEdited5$,$BBEdited4$;
+	set $BBEdited4$,$BBEdited3$;
+	set $BBEdited3$,$BBEdited2$;
+	set $BBEdited2$,$BBEdited1$;
+	set $BBAuthor9$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor5$;
+	set $BBAuthor5$,$BBAuthor4$;
+	set $BBAuthor4$,$BBAuthor3$;
+	set $BBAuthor3$,$BBAuthor2$;
+	set $BBAuthor2$,$BBAuthor1$;
+	set $BBAnnounce9,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce5;
+	set $BBAnnounce5,$BBAnnounce4;
+	set $BBAnnounce4,$BBAnnounce3;
+	set $BBAnnounce3,$BBAnnounce2;
+	set $BBAnnounce2,$BBAnnounce1;
+	deltimer "XeonBBAn::OnAn1";
+	deltimer "XeonBBAn::OnAn2";
+	deltimer "XeonBBAn::OnAn3";
+	deltimer "XeonBBAn::OnAn4";
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce1 >= 1) addtimer $BBAnnounce1,"XeonBBAn::OnAn1";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBTitle1$,@BTitle$;
+	set $BBMsg1$,@BMsg1$+@BMsg2$+@BMsg3$;
+	set $BBDate1$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBEdited1$,0;
+	set $BBAuthor1$,strcharinfo(0);
+	set $BBAnnounce1,0;
+	if(@AnnounceNewPosts == 1) announce strcharinfo(0)+" has posted a new message on the Bulletin Board name '"+$BBTitle1$+"', please check it out!",bc_yellow|bc_all;
+	if(@AnnounceNewPosts == 2) announce "Added - "+$BBTitle1$+" "+$BBMsg1$,bc_yellow|bc_all;
+	if($BBCount < 9) set $BBCount,$BBCount+1;
+	next;
+	mes "[^0000FFBulletin Board^000000]";
+	mes "Bulletin add successful!";
+	next;
+	goto L_GM;
+
+L_ModAnInterval:
+	mes "[^0000FFBulletin Board^000000]";
+	mes "The current Bulletin Announcement intervals are:";
+	if(@MaxPosts >= 1) mes "Bulletin 1: "+($BBAnnounce1/60000)+" minutes";
+	if(@MaxPosts >= 2) mes "Bulletin 2: "+($BBAnnounce2/60000)+" minutes";
+	if(@MaxPosts >= 3) mes "Bulletin 3: "+($BBAnnounce3/60000)+" minutes";
+	if(@MaxPosts >= 4) mes "Bulletin 4: "+($BBAnnounce4/60000)+" minutes";
+	if(@MaxPosts >= 5) mes "Bulletin 5: "+($BBAnnounce5/60000)+" minutes";
+	if(@MaxPosts >= 6) mes "Bulletin 6: "+($BBAnnounce6/60000)+" minutes";
+	if(@MaxPosts >= 7) mes "Bulletin 7: "+($BBAnnounce7/60000)+" minutes";
+	if(@MaxPosts >= 8) mes "Bulletin 8: "+($BBAnnounce8/60000)+" minutes";
+	if(@MaxPosts >= 9) mes "Bulletin 9: "+($BBAnnounce9/60000)+" minutes";
+	if($BBCount == 1) menu "Modify Bulletin 1",-,"Back",L_Admin;
+	if($BBCount == 2) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Back",L_Admin;
+	if($BBCount == 3) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Modify Bulletin 3",-,"Back",L_Admin;
+	if($BBCount == 4) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Modify Bulletin 3",-,"Modify Bulletin 4",-,"Back",L_Admin;
+	if($BBCount == 5) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Modify Bulletin 3",-,"Modify Bulletin 4",-,"Modify Bulletin 5",-,"Back",L_Admin;
+	if($BBCount == 6) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Modify Bulletin 3",-,"Modify Bulletin 4",-,"Modify Bulletin 5",-,"Modify Bulletin 6",-,"Back",L_Admin;
+	if($BBCount == 7) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Modify Bulletin 3",-,"Modify Bulletin 4",-,"Modify Bulletin 5",-,"Modify Bulletin 6",-,"Modify Bulletin 7",-,"Back",L_Admin;
+	if($BBCount == 8) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Modify Bulletin 3",-,"Modify Bulletin 4",-,"Modify Bulletin 5",-,"Modify Bulletin 6",-,"Modify Bulletin 7",-,"Modify Bulletin 8",-,"Back",L_Admin;
+	if($BBCount == 9) menu "Modify Bulletin 1",-,"Modify Bulletin 2",-,"Modify Bulletin 3",-,"Modify Bulletin 4",-,"Modify Bulletin 5",-,"Modify Bulletin 6",-,"Modify Bulletin 7",-,"Modify Bulletin 8",-,"Modify Bulletin 9",-,"Back",L_Admin;
+	if(@menu == 1) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce1;
+		set $BBAnnounce1,$BBAnnounce1*60000;
+		if($BBAnnounce1 == 0) deltimer "XeonBBAn::OnAn1";
+		if($BBAnnounce1 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce1 >= 1) addtimer $BBAnnounce1,"XeonBBAn::OnAn1";
+		if($BBAnnounce1 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 2) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce2;
+		set $BBAnnounce2,$BBAnnounce2*60000;
+		if($BBAnnounce2 == 0) deltimer "XeonBBAn::OnAn2";
+		if($BBAnnounce2 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+		if($BBAnnounce2 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 3) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce3;
+		set $BBAnnounce3,$BBAnnounce3*60000;
+		if($BBAnnounce3 == 0) deltimer "XeonBBAn::OnAn3";
+		if($BBAnnounce3 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+		if($BBAnnounce3 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 4) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce4;
+		set $BBAnnounce4,$BBAnnounce4*60000;
+		if($BBAnnounce4 == 0) deltimer "XeonBBAn::OnAn4";
+		if($BBAnnounce4 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+		if($BBAnnounce4 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 5) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce5;
+		set $BBAnnounce5,$BBAnnounce5*60000;
+		if($BBAnnounce5 == 0) deltimer "XeonBBAn::OnAn5";
+		if($BBAnnounce5 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+		if($BBAnnounce5 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 6) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce6;
+		set $BBAnnounce6,$BBAnnounce6*60000;
+		if($BBAnnounce6 == 0) deltimer "XeonBBAn::OnAn6";
+		if($BBAnnounce6 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+		if($BBAnnounce6 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 7) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce7;
+		set $BBAnnounce7,$BBAnnounce7*60000;
+		if($BBAnnounce7 == 0) deltimer "XeonBBAn::OnAn7";
+		if($BBAnnounce7 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+		if($BBAnnounce7 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 8) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce8;
+		set $BBAnnounce8,$BBAnnounce8*60000;
+		if($BBAnnounce8 == 0) deltimer "XeonBBAn::OnAn8";
+		if($BBAnnounce8 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+		if($BBAnnounce8 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+	if(@menu == 9) {
+		next;
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Input the new announcement interval in minutes, type 0 to not announce.";
+		input $BBAnnounce9;
+		set $BBAnnounce9,$BBAnnounce9*60000;
+		if($BBAnnounce9 == 0) deltimer "XeonBBAn::OnAn9";
+		if($BBAnnounce9 == 0) mes "Timer deleted successfully!";
+		if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+		if($BBAnnounce9 >= 1) mes "Timer added successfully!";
+		next;
+		goto L_ModAnInterval;
+		}
+
+L_BBoardSelect:
+	mes "[^0000FFBulletin Board^000000]";
+	if(@GMMode == 0) {
+		if($BBCount == 0) {
+			mes "I'm sorry, but no Bulletins have been Bulletined yet!";
+			close;
+			end;
+			}
+		mes "Hello "+strcharinfo(0)+", select a Bulletin you would like to view!";
+		}
+	if(@GMMode >= 1) mes "Please select a Bulletin";
+	if($BBCount == 0) menu "Exit",L_End;
+	if($BBCount == 1) if(@Maxposts >= 1) menu $BBTitle1$,L_1,"Exit",L_End;
+	if($BBCount == 2) if(@Maxposts >= 2) menu $BBTitle1$,L_1,$BBTitle2$,L_2,"Exit",L_End;
+	if($BBCount == 3) if(@Maxposts >= 3) menu $BBTitle1$,L_1,$BBTitle2$,L_2,$BBTitle3$,L_3,"Exit",L_End;
+	if($BBCount == 4) if(@Maxposts >= 4) menu $BBTitle1$,L_1,$BBTitle2$,L_2,$BBTitle3$,L_3,$BBTitle4$,L_4,"Exit",L_End;
+	if($BBCount == 5) if(@Maxposts >= 5) menu $BBTitle1$,L_1,$BBTitle2$,L_2,$BBTitle3$,L_3,$BBTitle4$,L_4,$BBTitle5$,L_5,"Exit",L_End;
+	if($BBCount == 6) if(@Maxposts >= 6) menu $BBTitle1$,L_1,$BBTitle2$,L_2,$BBTitle3$,L_3,$BBTitle4$,L_4,$BBTitle5$,L_5,$BBTitle6$,L_6,"Exit",L_End;
+	if($BBCount == 7) if(@Maxposts >= 7) menu $BBTitle1$,L_1,$BBTitle2$,L_2,$BBTitle3$,L_3,$BBTitle4$,L_4,$BBTitle5$,L_5,$BBTitle6$,L_6,$BBTitle7$,L_7,"Exit",L_End;
+	if($BBCount == 8) if(@Maxposts >= 8) menu $BBTitle1$,L_1,$BBTitle2$,L_2,$BBTitle3$,L_3,$BBTitle4$,L_4,$BBTitle5$,L_5,$BBTitle6$,L_6,$BBTitle7$,L_7,$BBTitle8$,L_8,"Exit",L_End;
+	if($BBCount == 9) if(@Maxposts >= 9) menu $BBTitle1$,L_1,$BBTitle2$,L_2,$BBTitle3$,L_3,$BBTitle4$,L_4,$BBTitle5$,L_5,$BBTitle6$,L_6,$BBTitle7$,L_7,$BBTitle8$,L_8,$BBTitle9$,L_9,"Exit",L_End;
+
+L_1:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle1$+"^000000]";
+	mes $BBMsg1$;
+	mes "  Posted: "+$BBDate1$;
+	if($BBEdited1$ != "0") mes "  Edited: "+$BBEdited1$;
+	mes "  Posted by: "+$BBAuthor1$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor1$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle1$+"^000000]";
+	mes "^FF0000 "+$BBTitle1$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle1$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg1$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg1$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle1$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 1?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited1$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle1$,@BTitle$;
+	set $BBMsg1$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle1$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle1$+" "+$BBMsg1$,bc_yellow|bc_all;
+	mes "Bulletin 1 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle1$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 1?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle1$,$BBTitle2$;
+	set $BBTitle2$,$BBTitle3$;
+	set $BBTitle3$,$BBTitle4$;
+	set $BBTitle4$,$BBTitle5$;
+	set $BBTitle5$,$BBTitle6$;
+	set $BBTitle6$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle9$;
+	set $BBMsg1$,$BBMsg2$;
+	set $BBMsg2$,$BBMsg3$;
+	set $BBMsg3$,$BBMsg4$;
+	set $BBMsg4$,$BBMsg5$;
+	set $BBMsg5$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate1$,$BBDate2$;
+	set $BBDate2$,$BBDate3$;
+	set $BBDate3$,$BBDate4$;
+	set $BBDate4$,$BBDate5$;
+	set $BBDate5$,$BBDate6$;
+	set $BBDate6$,$BBDate7$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited1$,$BBEdited2$;
+	set $BBEdited2$,$BBEdited3$;
+	set $BBEdited3$,$BBEdited4$;
+	set $BBEdited4$,$BBEdited5$;
+	set $BBEdited5$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor1$,$BBAuthor2$;
+	set $BBAuthor2$,$BBAuthor3$;
+	set $BBAuthor3$,$BBAuthor4$;
+	set $BBAuthor4$,$BBAuthor5$;
+	set $BBAuthor5$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce1,$BBAnnounce2;
+	set $BBAnnounce2,$BBAnnounce3;
+	set $BBAnnounce3,$BBAnnounce4;
+	set $BBAnnounce4,$BBAnnounce5;
+	set $BBAnnounce5,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn1";
+	deltimer "XeonBBAn::OnAn2";
+	deltimer "XeonBBAn::OnAn3";
+	deltimer "XeonBBAn::OnAn4";
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce1 >= 1) addtimer $BBAnnounce1,"XeonBBAn::OnAn1";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 1 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 2) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle2$;
+	set $BBTitle2$,$BBTitle1$;
+	set $BBTitle1$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg2$;
+	set $BBMsg2$,$BBMsg1$;
+	set $BBMsg1$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate2$;
+	set $BBDate2$,$BBDate1$;
+	set $BBDate1$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited2$;
+	set $BBEdited2$,$BBEdited1$;
+	set $BBEdited1$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor2$;
+	set $BBAuthor2$,$BBAuthor1$;
+	set $BBAuthor1$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce2;
+	set $BBAnnounce2,$BBAnnounce1;
+	set $BBAnnounce1,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn1";
+	deltimer "XeonBBAn::OnAn2";
+	if($BBAnnounce1 >= 1) addtimer $BBAnnounce1,"XeonBBAn::OnAn1";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	goto L_BBoardSelect;
+	}
+
+L_2:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle2$+"^000000]";
+	mes $BBMsg2$;
+	mes "  Posted: "+$BBDate2$;
+	if($BBEdited2$ != "0") mes "  Edited: "+$BBEdited2$;
+	mes "  Posted by: "+$BBAuthor2$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor2$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle2$+"^000000]";
+	mes "^FF0000 "+$BBTitle2$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle2$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg2$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg2$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle2$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 2?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited2$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle2$,@BTitle$;
+	set $BBMsg2$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle2$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle2$+" "+$BBMsg2$,bc_yellow|bc_all;
+	mes "Bulletin 2 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle2$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 2?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle2$,$BBTitle3$;
+	set $BBTitle3$,$BBTitle4$;
+	set $BBTitle4$,$BBTitle5$;
+	set $BBTitle5$,$BBTitle6$;
+	set $BBTitle6$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle9$;
+	set $BBMsg2$,$BBMsg3$;
+	set $BBMsg3$,$BBMsg4$;
+	set $BBMsg4$,$BBMsg5$;
+	set $BBMsg5$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate2$,$BBDate3$;
+	set $BBDate3$,$BBDate4$;
+	set $BBDate4$,$BBDate5$;
+	set $BBDate5$,$BBDate6$;
+	set $BBDate6$,$BBDate7$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited2$,$BBEdited3$;
+	set $BBEdited3$,$BBEdited4$;
+	set $BBEdited4$,$BBEdited5$;
+	set $BBEdited5$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor2$,$BBAuthor3$;
+	set $BBAuthor3$,$BBAuthor4$;
+	set $BBAuthor4$,$BBAuthor5$;
+	set $BBAuthor5$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce2,$BBAnnounce3;
+	set $BBAnnounce3,$BBAnnounce4;
+	set $BBAnnounce4,$BBAnnounce5;
+	set $BBAnnounce5,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn2";
+	deltimer "XeonBBAn::OnAn3";
+	deltimer "XeonBBAn::OnAn4";
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 2 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle1$;
+	set $BBTitle1$,$BBTitle2$;
+	set $BBTitle2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg1$;
+	set $BBMsg1$,$BBMsg2$;
+	set $BBMsg2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate1$;
+	set $BBDate1$,$BBDate2$;
+	set $BBDate2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited1$;
+	set $BBEdited1$,$BBEdited2$;
+	set $BBEdited2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor1$;
+	set $BBAuthor1$,$BBAuthor2$;
+	set $BBAuthor2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce1;
+	set $BBAnnounce1,$BBAnnounce2;
+	set $BBAnnounce2,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn1";
+	deltimer "XeonBBAn::OnAn2";
+	if($BBAnnounce1 >= 1) addtimer $BBAnnounce1,"XeonBBAn::OnAn1";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 3) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle3$;
+	set $BBTitle3$,$BBTitle2$;
+	set $BBTitle2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg3$;
+	set $BBMsg3$,$BBMsg2$;
+	set $BBMsg2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate3$;
+	set $BBDate3$,$BBDate2$;
+	set $BBDate2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited3$;
+	set $BBEdited3$,$BBEdited2$;
+	set $BBEdited2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor3$;
+	set $BBAuthor3$,$BBAuthor2$;
+	set $BBAuthor2$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce3;
+	set $BBAnnounce3,$BBAnnounce2;
+	set $BBAnnounce2,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn2";
+	deltimer "XeonBBAn::OnAn3";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	goto L_BBoardSelect;
+	}
+
+L_3:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle3$+"^000000]";
+	mes $BBMsg3$;
+	mes "  Posted: "+$BBDate3$;
+	if($BBEdited3$ != "0") mes "  Edited: "+$BBEdited3$;
+	mes "  Posted by: "+$BBAuthor3$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor3$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle3$+"^000000]";
+	mes "^FF0000 "+$BBTitle3$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle3$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg3$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg3$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle3$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 3?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited3$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle3$,@BTitle$;
+	set $BBMsg3$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle3$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle3$+" "+$BBMsg3$,bc_yellow|bc_all;
+	mes "Bulletin 3 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle3$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 3?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle3$,$BBTitle4$;
+	set $BBTitle4$,$BBTitle5$;
+	set $BBTitle5$,$BBTitle6$;
+	set $BBTitle6$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle9$;
+	set $BBMsg4$,$BBMsg4$;
+	set $BBMsg5$,$BBMsg5$;
+	set $BBMsg6$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate3$,$BBDate4$;
+	set $BBDate4$,$BBDate5$;
+	set $BBDate5$,$BBDate6$;
+	set $BBDate6$,$BBDate7$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited3$,$BBEdited4$;
+	set $BBEdited4$,$BBEdited5$;
+	set $BBEdited5$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor3$,$BBAuthor4$;
+	set $BBAuthor4$,$BBAuthor5$;
+	set $BBAuthor5$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce3,$BBAnnounce4;
+	set $BBAnnounce4,$BBAnnounce5;
+	set $BBAnnounce5,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn3";
+	deltimer "XeonBBAn::OnAn4";
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 3 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle2$;
+	set $BBTitle2$,$BBTitle3$;
+	set $BBTitle3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg2$;
+	set $BBMsg2$,$BBMsg3$;
+	set $BBMsg3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate2$;
+	set $BBDate2$,$BBDate3$;
+	set $BBDate3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited2$;
+	set $BBEdited2$,$BBEdited3$;
+	set $BBEdited3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor2$;
+	set $BBAuthor2$,$BBAuthor3$;
+	set $BBAuthor3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce2;
+	set $BBAnnounce2,$BBAnnounce3;
+	set $BBAnnounce3,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn2";
+	deltimer "XeonBBAn::OnAn3";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 4) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle4$;
+	set $BBTitle4$,$BBTitle3$;
+	set $BBTitle3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg4$;
+	set $BBMsg4$,$BBMsg3$;
+	set $BBMsg3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate4$;
+	set $BBDate4$,$BBDate3$;
+	set $BBDate3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited4$;
+	set $BBEdited4$,$BBEdited3$;
+	set $BBEdited3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor4$;
+	set $BBAuthor4$,$BBAuthor3$;
+	set $BBAuthor3$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce4;
+	set $BBAnnounce4,$BBAnnounce3;
+	set $BBAnnounce3,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn3";
+	deltimer "XeonBBAn::OnAn4";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	goto L_BBoardSelect;
+	}
+
+L_4:
+if(@GMMode == 0) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor4$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle4$+"^000000]";
+	mes $BBMsg4$;
+	mes "  Posted: "+$BBDate4$;
+	if($BBEdited4$ != "0") mes "  Edited: "+$BBEdited4$;
+	mes "  Posted by: "+$BBAuthor4$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	mes "[^FF9000"+$BBTitle4$+"^000000]";
+	mes "^FF0000 "+$BBTitle4$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle4$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg4$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg4$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle4$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 4?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited4$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle4$,@BTitle$;
+	set $BBMsg4$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle4$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle4$+" "+$BBMsg4$,bc_yellow|bc_all;
+	mes "Bulletin 4 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle4$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 4?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle8$,$BBTitle9$;
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle6$,$BBTitle7$;
+	set $BBTitle5$,$BBTitle6$;
+	set $BBTitle4$,$BBTitle5$;
+	set $BBMsg4$,$BBMsg5$;
+	set $BBMsg5$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate4$,$BBDate5$;
+	set $BBDate5$,$BBDate6$;
+	set $BBDate6$,$BBDate7$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited4$,$BBEdited5$;
+	set $BBEdited5$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor4$,$BBAuthor5$;
+	set $BBAuthor5$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce4,$BBAnnounce5;
+	set $BBAnnounce5,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn4";
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 4 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle3$;
+	set $BBTitle3$,$BBTitle4$;
+	set $BBTitle4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg3$;
+	set $BBMsg3$,$BBMsg4$;
+	set $BBMsg4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate3$;
+	set $BBDate3$,$BBDate4$;
+	set $BBDate4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited3$;
+	set $BBEdited3$,$BBEdited4$;
+	set $BBEdited4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor3$;
+	set $BBAuthor3$,$BBAuthor4$;
+	set $BBAuthor4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce3;
+	set $BBAnnounce3,$BBAnnounce4;
+	set $BBAnnounce4,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn3";
+	deltimer "XeonBBAn::OnAn4";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 5) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle5$;
+	set $BBTitle5$,$BBTitle4$;
+	set $BBTitle4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg5$;
+	set $BBMsg5$,$BBMsg4$;
+	set $BBMsg4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate5$;
+	set $BBDate5$,$BBDate4$;
+	set $BBDate4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited5$;
+	set $BBEdited5$,$BBEdited4$;
+	set $BBEdited4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor5$;
+	set $BBAuthor5$,$BBAuthor4$;
+	set $BBAuthor4$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce5;
+	set $BBAnnounce5,$BBAnnounce4;
+	set $BBAnnounce4,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn4";
+	deltimer "XeonBBAn::OnAn5";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	goto L_BBoardSelect;
+	}
+
+L_5:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle5$+"^000000]";
+	mes $BBMsg5$;
+	mes "  Posted: "+$BBDate5$;
+	if($BBEdited5$ != "0") mes "  Edited: "+$BBEdited5$;
+	mes "  Posted by: "+$BBAuthor5$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor5$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle5$+"^000000]";
+	mes "^FF0000 "+$BBTitle5$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle5$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg5$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg5$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle5$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 5?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited5$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle5$,@BTitle$;
+	set $BBMsg5$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle5$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle5$+" "+$BBMsg5$,bc_yellow|bc_all;
+	mes "Bulletin 5 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle5$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 5?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle5$,$BBTitle6$;
+	set $BBTitle6$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle9$;
+	set $BBMsg5$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate5$,$BBDate6$;
+	set $BBDate6$,$BBDate7$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited5$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor5$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce5,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 5 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle4$;
+	set $BBTitle4$,$BBTitle5$;
+	set $BBTitle5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg4$;
+	set $BBMsg4$,$BBMsg5$;
+	set $BBMsg5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate4$;
+	set $BBDate4$,$BBDate5$;
+	set $BBDate5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited4$;
+	set $BBEdited4$,$BBEdited5$;
+	set $BBEdited5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor4$;
+	set $BBAuthor4$,$BBAuthor5$;
+	set $BBAuthor5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce4;
+	set $BBAnnounce4,$BBAnnounce5;
+	set $BBAnnounce5,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn4";
+	deltimer "XeonBBAn::OnAn5";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 6) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle6$;
+	set $BBTitle6$,$BBTitle5$;
+	set $BBTitle5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg5$;
+	set $BBMsg5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate6$;
+	set $BBDate6$,$BBDate5$;
+	set $BBDate5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited5$;
+	set $BBEdited5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor5$;
+	set $BBAuthor5$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce5;
+	set $BBAnnounce5,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	goto L_BBoardSelect;
+	}
+
+L_6:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle6$+"^000000]";
+	mes $BBMsg6$;
+	mes "  Posted: "+$BBDate6$;
+	if($BBEdited6$ != "0") mes "  Edited: "+$BBEdited6$;
+	mes "  Posted by: "+$BBAuthor6$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor6$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle6$+"^000000]";
+	mes "^FF0000 "+$BBTitle6$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle6$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg6$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg6$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle6$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 6?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited6$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle6$,@BTitle$;
+	set $BBMsg6$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle6$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle6$+" "+$BBMsg6$,bc_yellow|bc_all;
+	mes "Bulletin 6 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle6$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 6?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle6$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle9$;
+	set $BBMsg6$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate6$,$BBDate7$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited6$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor6$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce6,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 6 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle5$;
+	set $BBTitle5$,$BBTitle6$;
+	set $BBTitle6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg5$;
+	set $BBMsg5$,$BBMsg6$;
+	set $BBMsg6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate5$;
+	set $BBDate5$,$BBDate6$;
+	set $BBDate6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited5$;
+	set $BBEdited5$,$BBEdited6$;
+	set $BBEdited6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor5$;
+	set $BBAuthor5$,$BBAuthor6$;
+	set $BBAuthor6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce5;
+	set $BBAnnounce5,$BBAnnounce6;
+	set $BBAnnounce6,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn5";
+	deltimer "XeonBBAn::OnAn6";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 7) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle6$;
+	set $BBTitle6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg6$;
+	set $BBMsg6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate7$;
+	set $BBDate7$,$BBDate6$;
+	set $BBDate6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited6$;
+	set $BBEdited6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor6$;
+	set $BBAuthor6$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce6;
+	set $BBAnnounce6,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	goto L_BBoardSelect;
+	}
+
+L_7:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle7$+"^000000]";
+	mes $BBMsg7$;
+	mes "  Posted: "+$BBDate7$;
+	if($BBEdited7$ != "0") mes "  Edited: "+$BBEdited7$;
+	mes "  Posted by: "+$BBAuthor7$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor7$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle7$+"^000000]";
+	mes "^FF0000 "+$BBTitle7$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle7$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg7$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg7$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle7$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 7?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited7$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle7$,@BTitle$;
+	set $BBMsg7$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle7$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle7$+" "+$BBMsg7$,bc_yellow|bc_all;
+	mes "Bulletin 7 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle7$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 7?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle9$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 7 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle6$;
+	set $BBTitle6$,$BBTitle7$;
+	set $BBTitle7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg6$;
+	set $BBMsg6$,$BBMsg7$;
+	set $BBMsg7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate6$;
+	set $BBDate6$,$BBDate7$;
+	set $BBDate7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited6$;
+	set $BBEdited6$,$BBEdited7$;
+	set $BBEdited7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor6$;
+	set $BBAuthor6$,$BBAuthor7$;
+	set $BBAuthor7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce6;
+	set $BBAnnounce6,$BBAnnounce7;
+	set $BBAnnounce7,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn6";
+	deltimer "XeonBBAn::OnAn7";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 8) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle7$;
+	set $BBTitle7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg7$;
+	set $BBMsg7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate8$;
+	set $BBDate8$,$BBDate7$;
+	set $BBDate7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited7$;
+	set $BBEdited7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor7$;
+	set $BBAuthor7$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce7;
+	set $BBAnnounce7,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	goto L_BBoardSelect;
+	}
+
+L_8:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle8$+"^000000]";
+	mes $BBMsg8$;
+	mes "  Posted: "+$BBDate8$;
+	if($BBEdited8$ != "0") mes "  Edited: "+$BBEdited8$;
+	mes "  Posted by: "+$BBAuthor8$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor8$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle8$+"^000000]";
+	mes "^FF0000 "+$BBTitle8$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle8$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg8$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg8$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle8$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 8?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited8$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle8$,@BTitle$;
+	set $BBMsg8$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle8$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle8$+" "+$BBMsg8$,bc_yellow|bc_all;
+	mes "Bulletin 8 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle8$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 8?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBTitle8$,$BBTitle9$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBDate8$,$BBDate9$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAnnounce8,$BBAnnounce9;
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 8 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle7$;
+	set $BBTitle7$,$BBTitle8$;
+	set $BBTitle8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg7$;
+	set $BBMsg7$,$BBMsg8$;
+	set $BBMsg8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate7$;
+	set $BBDate7$,$BBDate8$;
+	set $BBDate8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited7$;
+	set $BBEdited7$,$BBEdited8$;
+	set $BBEdited8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor7$;
+	set $BBAuthor7$,$BBAuthor8$;
+	set $BBAuthor8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce7;
+	set $BBAnnounce7,$BBAnnounce8;
+	set $BBAnnounce8,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn7";
+	deltimer "XeonBBAn::OnAn8";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	if(@MaxPosts < 9) goto L_BBoardSelect;
+	set $BBMoveTemp$,$BBTitle9$;
+	set $BBTitle9$,$BBTitle8$;
+	set $BBTitle8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg9$;
+	set $BBMsg9$,$BBMsg8$;
+	set $BBMsg8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate9$;
+	set $BBDate9$,$BBDate8$;
+	set $BBDate8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited9$;
+	set $BBEdited9$,$BBEdited8$;
+	set $BBEdited8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor9$;
+	set $BBAuthor9$,$BBAuthor8$;
+	set $BBAuthor8$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce9;
+	set $BBAnnounce9,$BBAnnounce8;
+	set $BBAnnounce8,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	goto L_BBoardSelect;
+	}
+
+L_9:
+if(@GMMode == 0) {
+	next;
+	mes "[^FF9000"+$BBTitle9$+"^000000]";
+	mes $BBMsg9$;
+	mes "  Posted: "+$BBDate9$;
+	if($BBEdited9$ != "0") mes "  Edited: "+$BBEdited9$;
+	mes "  Posted by: "+$BBAuthor9$;
+	next;
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 1) {
+	next;
+	if(getgmlevel() < @AdminLvl) if (strcharinfo(0) != $BBAuthor9$) {
+		mes "[^0000FFBulletin Board^000000]";
+		mes "Sorry, but only the author or a administrator can alter this post!";
+		next;
+		goto L_GM;
+		}
+	mes "[^FF9000"+$BBTitle9$+"^000000]";
+	mes "^FF0000 "+$BBTitle9$+"^000000";
+	mes "Edit the title?";
+	set @BTitle$,$BBTitle9$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BTitle$;
+	mes "^FF0000 "+$BBMsg9$+"^000000";
+	mes "Edit the message?";
+	set @BMsg$,$BBMsg9$;
+	menu "Yes",-,"No",-;
+	if(@menu == 1) input @BMsg1$;
+	if(@menu == 1) mes "If you wish to add more, do it now. Just enter 1 space if you don't want to.";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) set @BMsg1$,"";
+	if(@menu == 1) input @BMsg2$;
+	if(@menu == 1) input @BMsg3$;
+	next;
+	mes "[^FF9000"+$BBTitle9$+"^000000]";
+	mes "Are you sure you wish to apply the changes made to Bulletin 9?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	set $BBEdited9$,gettimestr("%m/%d/%Y %H:%M:%S",21);
+	set $BBTitle9$,@BTitle$;
+	set $BBMsg9$,@BMsg1$+@Msg2$+@Msg3$;
+	if(@AnnounceEditedPosts == 1) announce strcharinfo(0)+" has edited the post named '"+$BBTitle9$+"', check it out.",bc_yellow|bc_all;
+	if(@AnnounceEditedPosts == 2) announce "Edited - "+$BBTitle9$+" "+$BBMsg9$,bc_yellow|bc_all;
+	mes "Bulletin 9 edited successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 2) {
+	next;
+	mes "[^FF9000"+$BBTitle9$+"^000000]";
+	mes "Are you sure you wish to delete Bulletin 9?";
+	menu "Yes",-,"No",-;
+	if(@menu == 2) { next; goto L_GM; }
+	deltimer "XeonBBAn::OnAn9";
+	set $BBCount,$BBCount-1;
+	mes "Bulletin 9 deleted successfully!";
+	next;
+	goto L_GM;
+	}
+if(@GMMode == 3) {
+	set $BBMoveTemp$,$BBTitle8$;
+	set $BBTitle8$,$BBTitle9$;
+	set $BBTitle9$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBMsg8$;
+	set $BBMsg8$,$BBMsg9$;
+	set $BBMsg9$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBDate8$;
+	set $BBDate8$,$BBDate9$;
+	set $BBDate9$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBEdited8$;
+	set $BBEdited8$,$BBEdited9$;
+	set $BBEdited9$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAuthor8$;
+	set $BBAuthor8$,$BBAuthor9$;
+	set $BBAuthor9$,$BBMoveTemp$;
+	set $BBMoveTemp$,$BBAnnounce8;
+	set $BBAnnounce8,$BBAnnounce9;
+	set $BBAnnounce9,$BBMoveTemp$;
+	deltimer "XeonBBAn::OnAn8";
+	deltimer "XeonBBAn::OnAn9";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	goto L_BBoardSelect;
+	}
+if(@GMMode == 4) {
+	goto L_BBoardSelect;
+	}
+
+L_Tut:
+	next;
+	mes "[^0000FFBulletin Board^000000]";
+	mes "Ok, I know to those select few that this BB can seem a tad complicated, but it really isn't.";
+	mes "Here is the table of contents:";
+	mes " ";
+	mes "Section I: Adding a Bulletin";
+	mes "Section II: Editing a Bulletin";
+	mes "Section III: Deleting a Bulletin";
+	mes "Section IV: Arranging Bulletins";
+	mes "Section V: Viewing Bulletins";
+	mes "Section VI: Announcing on timed intervals";
+	mes "ok, now onto section 1!";
+	next;
+	mes "[^0000FFSection I^000000]";
+	mes "When you select add a Bulletin, the first thing it asks for is the title.";
+	mes "The title is NOT the content of your Bulletin, it is simply a little up-to-5-word summary of the Bulletin, it will show in the menu for what Bulletin to view.";
+	mes "The second thing it asks for is the actual content, or message.";
+	mes "This is the actual info you are informing people of, this can only be 210 characters total, 70 per input. Keep in mind that you will need to add a space ( ) between inputs otherwise the words merge (Unless you put half a word in both inputs).";
+	mes "Now onto Section II!";
+	next;
+	mes "[^0000FFSection II^000000]";
+	mes "If you select Edit a Bulletin, it will let you select the Bulletin to edit, then ask whether you wish to change it's title and message.";
+	mes "Entering the title is just like adding a new Bulletin, just enter the short summary.";
+	mes "The message however, doesn't ask if you would like to add extensions like adding a Bulletin did. Instead, it just shows the input box 3 times, if you don't need the extensions, simple enter a space ( ) and hit ok.";
+	mes "Then it asks if you would like to apply changes, if you select no it goes back to the GM menu and doesn't edit the title and message.";
+	mes "Now, onto the last section, 3.";
+	next;
+	mes "[^0000FFSection III^000000]";
+	mes "Deleting a Bulletin is by far the easiest thing to do, simply select the Bulletin then delete!";
+	mes "After deleting, you'll never see it again, obviously.";
+	mes "Moving on, section IV.";
+	next;
+	mes "[^0000FFSection IV^000000]";
+	mes "Rearranging Bulletins can be a bit tedious at first, the Move Bulletin up and Move Bulletin down functions are simply to help organize your Board.";
+	mes "Moving a Bulletin up simply moves it up one spot on the player view of the Bulletin.";
+	mes "And yes, who would have guessed, moving a bulletin down moves the Bulletin down one slot on the player view of the Bulletin.";
+	mes "Now on to section V!";
+	next;
+	mes "[^0000FFSection V^000000]";
+	mes "Vieiwng the Bulletin is fairly self explanatory, it simply means you view the Bulletin exactly how players see it when they click this NPC.";
+	mes "This is a good way of checking for spelling errors and to know if you forgot a space or added a ' : ' in the title.";
+	mes "Onto the last section, VI!";
+	next;
+	mes "[^0000FFSection VI^000000]";
+	mes "Timed intervals are only editable by the Administrator(s) of the server, higher up than a typical GM.";
+	mes "Intervals are in minutes, setting a timed interval will make that Bulletin be announced to the server every amount of minutes you set.";
+	mes "Setting the interval to 0 deleted the timer, and then it won't be announced.";
+	mes "Simple, eh?";
+	mes "Well, that summarizes the main stuff, back to the GM menu to use your new BB knowledge!";
+	next;
+	goto L_GM;
+
+L_End:
+	close;
+	end;
+
+}
+
+//Add Bulletin Board duplicates below!!
+//map.gat,x,y,direction	duplicate(XeonBB1)	Bulletin Board#XeonBB2	857
+//map.gat,x,y,direction	duplicate(XeonBB1)	Bulletin Board#XeonBB3	857
+//map.gat,x,y,direction	duplicate(XeonBB1)	Bulletin Board#XeonBB4	857
+
+
+prontera.gat,0,0,4	script	XeonBBAn	-1,{
+
+OnInit:
+	if($BBAnnounce1 >= 1) addtimer $BBAnnounce1,"XeonBBAn::OnAn1";
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	end;
+
+if(getarg(0) == 1) goto OnAn1;
+if(getarg(0) == 2) goto OnAn2;
+if(getarg(0) == 3) goto OnAn3;
+if(getarg(0) == 4) goto OnAn4;
+if(getarg(0) == 5) goto OnAn5;
+if(getarg(0) == 6) goto OnAn6;
+if(getarg(0) == 7) goto OnAn7;
+if(getarg(0) == 8) goto OnAn8;
+if(getarg(0) == 9) goto OnAn9;
+end;
+
+OnAn1:
+	announce $BBTitle1$+": "+$BBMsg1$,bc_yellow|bc_all;
+	if($BBAnnounce1 >= 1) addtimer $BBAnnounce1,"XeonBBAn::OnAn1";
+	end;
+
+OnAn2:
+	announce $BBTitle2$+": "+$BBMsg2$,bc_yellow|bc_all;
+	if($BBAnnounce2 >= 1) addtimer $BBAnnounce2,"XeonBBAn::OnAn2";
+	end;
+
+OnAn3:
+	announce $BBTitle3$+": "+$BBMsg3$,bc_yellow|bc_all;
+	if($BBAnnounce3 >= 1) addtimer $BBAnnounce3,"XeonBBAn::OnAn3";
+	end;
+
+OnAn4:
+	announce $BBTitle4$+": "+$BBMsg4$,bc_yellow|bc_all;
+	if($BBAnnounce4 >= 1) addtimer $BBAnnounce4,"XeonBBAn::OnAn4";
+	end;
+
+OnAn5:
+	announce $BBTitle5$+": "+$BBMsg5$,bc_yellow|bc_all;
+	if($BBAnnounce5 >= 1) addtimer $BBAnnounce5,"XeonBBAn::OnAn5";
+	end;
+
+OnAn6:
+	announce $BBTitle6$+": "+$BBMsg6$,bc_yellow|bc_all;
+	if($BBAnnounce6 >= 1) addtimer $BBAnnounce6,"XeonBBAn::OnAn6";
+	end;
+
+OnAn7:
+	announce $BBTitle7$+": "+$BBMsg7$,bc_yellow|bc_all;
+	if($BBAnnounce7 >= 1) addtimer $BBAnnounce7,"XeonBBAn::OnAn7";
+	end;
+
+OnAn8:
+	announce $BBTitle8$+": "+$BBMsg8$,bc_yellow|bc_all;
+	if($BBAnnounce8 >= 1) addtimer $BBAnnounce8,"XeonBBAn::OnAn8";
+	end;
+
+OnAn9:
+	announce $BBTitle9$+": "+$BBMsg9$,bc_yellow|bc_all;
+	if($BBAnnounce9 >= 1) addtimer $BBAnnounce9,"XeonBBAn::OnAn9";
+	end;
+
+}

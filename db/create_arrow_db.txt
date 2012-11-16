@@ -1,0 +1,4 @@
+// Arrow Crafting Database
+//
+// Structure of Database:
+// SourceID,MakeID1,MakeAmount1,...,MakeID5,MakeAmount5

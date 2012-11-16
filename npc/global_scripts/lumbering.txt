@@ -1,0 +1,61 @@
+//===== Oplex Origins Script ======================================= 
+//= Lumbering
+//===== By: ================================================== 
+//= Sigma
+//===== Current Version: ===================================== 
+//= 1.2
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Enables you chop down trees!
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.1 - updated lumber locations - Magnus
+//= v1.2 - Added Lumber locations for la_fild00 - Magnus
+//============================================================
+blank_01,5,5,5	script	Lumber::lumber	111,{
+		callfunc "lumber_func";
+}
+
+// Here you put all the clones for this script use the format below
+//la_in01,174,138,0	duplicate(lumber)	Lumber::lumber1	111
+la_fild01,27,72,0	duplicate(lumber)	Lumber::lumber1	111
+la_fild01,5,70,0	duplicate(lumber)	Lumber::lumber2	111
+la_fild01,9,34,0	duplicate(lumber)	Lumber::lumber3	111
+la_fild01,9,10,0	duplicate(lumber)	Lumber::lumber4	111
+la_fild01,27,18,0	duplicate(lumber)	Lumber::lumber5	111
+la_fild01,25,38,0	duplicate(lumber)	Lumber::lumber6	111
+la_fild01,67,26,0	duplicate(lumber)	Lumber::lumber7	111
+la_fild01,73,46,0	duplicate(lumber)	Lumber::lumber8	111
+la_fild01,81,67,0	duplicate(lumber)	Lumber::lumber9	111
+la_fild01,69,84,0	duplicate(lumber)	Lumber::lumber10	111
+la_fild01,79,82,0	duplicate(lumber)	Lumber::lumber11	111
+la_fild01,79,8,0	duplicate(lumber)	Lumber::lumber12	111
+la_fild01,89,11,0	duplicate(lumber)	Lumber::lumber13	111
+la_fild01,83,22,0	duplicate(lumber)	Lumber::lumber14	111
+la_mfild00,29,2,0	duplicate(lumber)	Lumber::lumber15	111
+la_mfild00,20,5,0	duplicate(lumber)	Lumber::lumber16	111
+la_mfild00,12,4,0	duplicate(lumber)	Lumber::lumber17	111
+la_mfild00,6,2,0	duplicate(lumber)	Lumber::lumber18	111
+la_mfild00,26,8,0	duplicate(lumber)	Lumber::lumber19	111
+la_mfild00,3,14,0	duplicate(lumber)	Lumber::lumber20	111
+la_mfild00,29,16,0	duplicate(lumber)	Lumber::lumber21	111
+la_mfild00,33,17,0	duplicate(lumber)	Lumber::lumber22	111
+la_mfild00,21,21,0	duplicate(lumber)	Lumber::lumber23	111
+la_mfild00,10,23,0	duplicate(lumber)	Lumber::lumber24	111
+la_mfild00,7,29,0	duplicate(lumber)	Lumber::lumber25	111
+la_mfild00,51,37,0	duplicate(lumber)	Lumber::lumber26	111
+la_mfild00,75,2,0	duplicate(lumber)	Lumber::lumber27	111
+la_mfild00,83,4,0	duplicate(lumber)	Lumber::lumber28	111
+la_mfild00,91,11,0	duplicate(lumber)	Lumber::lumber29	111
+la_mfild00,73,12,0	duplicate(lumber)	Lumber::lumber30	111
+la_mfild00,69,19,0	duplicate(lumber)	Lumber::lumber31	111
+la_mfild00,93,38,0	duplicate(lumber)	Lumber::lumber32	111
+la_mfild00,75,40,0	duplicate(lumber)	Lumber::lumber33	111
+la_mfild00,98,50,0	duplicate(lumber)	Lumber::lumber34	111
+la_mfild00,85,53,0	duplicate(lumber)	Lumber::lumber35	111
+la_mfild00,70,57,0	duplicate(lumber)	Lumber::lumber36	111
+la_mfild00,94,65,0	duplicate(lumber)	Lumber::lumber37	111
+la_mfild00,71,66,0	duplicate(lumber)	Lumber::lumber38	111
+la_mfild00,96,87,0	duplicate(lumber)	Lumber::lumber39	111
+la_mfild00,74,91,0	duplicate(lumber)	Lumber::lumber40	111

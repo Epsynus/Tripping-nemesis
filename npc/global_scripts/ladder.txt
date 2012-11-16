@@ -1,0 +1,72 @@
+//===== Oplex Origins Script =================================
+//= Ladder
+//===== By: ================================================== 
+//= Ducky and Epsynus
+//===== Current Version: ===================================== 
+//= 1.3
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Climbing ladders
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.1 - Fixed sprite
+//= v1.2 - Made it requier a crowbar.
+//= v1.3 - Modified to better suit duplication. - Sigma
+//============================================================
+-	script	ladderBase	-1,{
+	set @crowbarid, 1120; //place crowbar ID here before using the script
+	set @crowbarname$, "Crowbar";
+	set .@ladder$, strnpcinfo(2);
+	sleep2 500;	//Give the script a half second delay before allowing player to go through (limits abuse)
+	if(countitem(@crowbarid) < 1) goto ladder_fail;
+	message strcharinfo(0), "You use your " +@crowbarname$+ " to remove the lid.";
+		// Lavive - Enter Sewers - From Top Side
+		if(.@ladder$ == "l1") { warp "la_sewer01",39,32; }
+		if(.@ladder$ == "l2") { warp "la_sewer02",39,32; }
+		if(.@ladder$ == "l3") { warp "la_sewer03",39,32; }
+		if(.@ladder$ == "l4") { warp "la_sewer04",39,32; }
+		if(.@ladder$ == "l5") { warp "la_sewer05",39,32; }
+		if(.@ladder$ == "l6") { warp "la_sewer06",39,32; }
+		if(.@ladder$ == "l7") { warp "la_sewer07",39,32; }
+		if(.@ladder$ == "l8") { warp "la_sewer08",39,32; }
+		if(.@ladder$ == "l9") { warp "la_sewer09",39,32; }
+		// Lavive - Exit Sewers - From Bottom Side
+		if(.@ladder$ == "l10") { warp "lavive_01",50,50; }
+		if(.@ladder$ == "l11") { warp "lavive_02",50,50; }
+		if(.@ladder$ == "l12") { warp "lavive_03",50,50; }
+		if(.@ladder$ == "l13") { warp "lavive_04",50,50; }
+		if(.@ladder$ == "l14") { warp "lavive_05",50,50; }
+		if(.@ladder$ == "l15") { warp "lavive_06",50,50; }
+		if(.@ladder$ == "l16") { warp "lavive_07",50,50; }
+		if(.@ladder$ == "l17") { warp "lavive_08",50,50; }
+		if(.@ladder$ == "l18") { warp "lavive_09",50,50; }
+	end;
+ladder_fail:
+	message strcharinfo(0),"It would seem you need some sort of tool to open this";
+}
+
+//============================================================
+//= NPC Locations Below, Duplicates Above in if(.@ladder == yourLadder)
+//============================================================
+
+// Lavive - Enter Sewers - From Top Side
+lavive_01,50,48,0	duplicate(ladderBase)	Ladder#l1	111
+lavive_02,50,48,0	duplicate(ladderBase)	Ladder#l2	111
+lavive_03,50,48,0	duplicate(ladderBase)	Ladder#l3	111
+lavive_04,50,48,0	duplicate(ladderBase)	Ladder#l4	111
+lavive_05,50,48,0	duplicate(ladderBase)	Ladder#l5	111
+lavive_06,50,48,0	duplicate(ladderBase)	Ladder#l6	111
+lavive_07,51,48,0	duplicate(ladderBase)	Ladder#l7	111
+lavive_08,48,48,0	duplicate(ladderBase)	Ladder#l8	111
+lavive_09,50,48,0	duplicate(ladderBase)	Ladder#l9	111
+// Lavive - Exit Sewers - From Bottom Side
+la_sewer01,36,32,0	duplicate(ladderBase)	Ladder#l10	111
+la_sewer02,36,32,0	duplicate(ladderBase)	Ladder#l11	111
+la_sewer03,36,32,0	duplicate(ladderBase)	Ladder#l12	111
+la_sewer04,36,32,0	duplicate(ladderBase)	Ladder#l13	111
+la_sewer05,36,32,0	duplicate(ladderBase)	Ladder#l14	111
+la_sewer06,36,32,0	duplicate(ladderBase)	Ladder#l15	111
+la_sewer07,36,32,0	duplicate(ladderBase)	Ladder#l16	111
+la_sewer08,36,32,0	duplicate(ladderBase)	Ladder#l17	111
+la_sewer09,36,32,0	duplicate(ladderBase)	Ladder#l18	111

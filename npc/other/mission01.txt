@@ -1,0 +1,75 @@
+//===== Oplex Origins Script =================================
+//= First mission
+//===== By: ================================================== 
+//= Epsynus &  Sigma
+//===== Current Version: ===================================== 
+//= 1.1
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= The first mission people do.
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.1 - Added the morgue and changed some other parts
+//==== Note: =================================================
+//= This info is taken from
+//= http://theonlyhome.com/oplex/showthread.php?tid=83
+//= It's not fully done it's missing maps and ID's
+//============================================================
+
+la_hosp00,83,81,0	script	Patient Terminal::ptrm01	111,{
+if( ($quest==1) )	goto	Q_1;
+mes	"^990000 [ Patient Terminal ]^000000";
+mes	"...I moved everyone to the basement so those things wouldn't get to them...";
+next;
+mes	"...Most of the survivors are comatose but some are showing signs of rehabilitation...";
+next;
+mes	"...I'm going to seal the doors to the basement just to be safe. The only way out then will be the Service Tunnels...";
+next;
+mes	"I'll hide the key in morgue on the ta...";
+set $quest,1;
+close;
+
+Q_1:
+	message strcharinfo(0),"Find the key!";
+	close;
+}
+
+//============================================================
+//= Morgue
+//============================================================
+la_hosp00,83,67,0	script	Table	111,{
+
+if( ($qkey==1) )	goto NoKey;
+callfunc "loading_func";
+callfunc "loading_func";
+callfunc "loading_func";
+callfunc "loading_func";
+callfunc "loading_func";
+message strcharinfo(0),"Found the key.";
+set @key, 1054;
+getitem @key, 1;
+set	$qkey,1;
+end;
+
+NoKey:
+message strcharinfo(0),"There's nothing else here.";
+end;
+}
+
+morgue,47,21,0	script	Door::qdoor	-,{
+if( (countitem(.@key)>=1) )	goto	Q_door;
+message strcharinfo(0),"Nothing of importance";
+end;
+
+Q_door:
+	mes	"Your hands are shaking as you try to open the door with the key";
+	callfunc "loading_func";
+	delitem	.@key,1;
+	warp "lavive_service_tunnels",00,00;
+end;
+}
+
+//============================================================
+//=
+//============================================================

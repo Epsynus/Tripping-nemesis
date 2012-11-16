@@ -1,0 +1,259 @@
+//===== Oplex Origins Script =================================
+//= Searchable Locations
+//===== By: ================================================== 
+//= Sigma
+//===== Current Version: ===================================== 
+//= 1.3
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Searchable locations.
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.1 - Added Distance Check - Sigma
+//= v1.2 - Added Flavor Text & random chance - Sigma
+//= v1.3 - Added different search types depending on NPC name - Sigma
+//============================================================
+
+-	script	searchBase	-1,{	
+OnTouch:
+    while( !getmapxy( .@map$, .@x, .@y, 0 ) ) {
+        getmapxy .@map$, .@x1, .@y1, 1;
+        set( .@rect, distance( .@x, .@y, .@x1, .@y1 ));
+	if ( .@rect <= 3 ) {
+	set .@searchtype$,strnpcinfo(1);
+		if(gettimetick(2) >= getd(".nextavail_" + strnpcinfo(2))) {
+			set @superrand, rand(1,100);
+			mes "Searching...";
+			callfunc "loading_func";
+			if(@superrand > 60) && (.@searchtype$ == "Search") {
+				getitem groupranditem(19), 1;
+				setd(".nextavail_" + strnpcinfo(2), gettimetick(2) + .availTimeout);
+				mes "You found something...";
+				close;
+			}
+			if(@superrand > 60) && (.@searchtype$ == "Refrigerator") {
+				getitem groupranditem(1), 1;
+				if(@superrand > 75) { getitem groupranditem(2), 1; }
+				if(@superrand > 90) { getitem groupranditem(3), 1; }
+				setd(".nextavail_" + strnpcinfo(2), gettimetick(2) + .availTimeout);
+				mes "You found some food...";
+				close;
+			}
+			if(@superrand > 60) && (.@searchtype$ == "Tree") {
+				getitem 525, 1;
+				if(@superrand > 75) { getitem 525, 2; }
+				if(@superrand > 90) { getitem 525, 3; }
+				if(@superrand > 100) { getitem 524, 20; }
+				setd(".nextavail_" + strnpcinfo(2), gettimetick(2) + .availTimeout);
+				mes "You found some food...";
+				close;
+			}
+			if(@superrand > 60) && (.@searchtype$ == "Pile") {
+				getitem 1018, 1;
+				if(@superrand > 75) { getitem 1018, 2; }
+				if(@superrand > 90) { getitem 1018, 3; }
+				if(@superrand > 100) { getitem 1018, 20; }
+				setd(".nextavail_" + strnpcinfo(2), gettimetick(2) + .availTimeout);
+				mes "You found some charcoal...";
+				close;
+			}
+			else { mes "Couldn't find a thing..."; close; end; }
+		} else { message strcharinfo(0), "Nothing useful..."; }	
+	}
+	end;
+	}
+OnInit:
+	set .availTimeout, 1800; //time in seconds
+	set .nextavail, gettimetick(2);
+}
+//============================================================
+// There are currently (4) search types. Use < SearchType#UniqueName >
+// Search: Gives random items from group 19.
+// Refrigerator: Gives random items from groups 1,2,3.
+// Tree: Gives apples and acorns.
+// Pile: Gives charcoal.
+//============================================================
+//Cars			
+lavive_01,43,18,0	duplicate(searchBase)	Search#s1	111
+lavive_01,6,86,0	duplicate(searchBase)	Search#s2	111
+lavive_02,57,29,0	duplicate(searchBase)	Search#s3	111
+lavive_02,7,39,0	duplicate(searchBase)	Search#s4	111
+lavive_02,17,35,0	duplicate(searchBase)	Search#s5	111
+lavive_02,17,23,0	duplicate(searchBase)	Search#s6	111
+lavive_02,28,23,0	duplicate(searchBase)	Search#s7	111
+lavive_02,7,11,0	duplicate(searchBase)	Search#s8	111
+lavive_03,6,39,0	duplicate(searchBase)	Search#s9	111
+lavive_03,58,15,0	duplicate(searchBase)	Search#s10	111
+lavive_04,49,72,0	duplicate(searchBase)	Search#s11	111
+lavive_04,50,47,0	duplicate(searchBase)	Search#s12	111
+lavive_04,75,39,0	duplicate(searchBase)	Search#s13	111
+lavive_04,94,63,0	duplicate(searchBase)	Search#s14	111
+lavive_04,15,54,0	duplicate(searchBase)	Search#s15	111
+lavive_05,8,71,0	duplicate(searchBase)	Search#s16	111
+lavive_05,12,76,0	duplicate(searchBase)	Search#s17	111
+lavive_05,28,68,0	duplicate(searchBase)	Search#s18	111
+lavive_05,50,59,0	duplicate(searchBase)	Search#s19	111
+lavive_06,55,29,0	duplicate(searchBase)	Search#s20	111
+lavive_06,51,42,0	duplicate(searchBase)	Search#s21	111
+lavive_08,41,29,0	duplicate(searchBase)	Search#s22	111
+			
+//Crates			
+op_tut01,29,48,0	duplicate(searchBase)	Search#s23	111
+op_tut01,22,49,0	duplicate(searchBase)	Search#s24	111
+op_tut01,14,47,0	duplicate(searchBase)	Search#s25	111
+op_tut01,15,40,0	duplicate(searchBase)	Search#s26	111
+op_tut01,26,42,0	duplicate(searchBase)	Search#s27	111
+			
+//Book Shelves			
+op_tut01,64,51,0	duplicate(searchBase)	Search#s28	111
+op_tut01,68,51,0	duplicate(searchBase)	Search#s29	111
+op_tut01,77,48,0	duplicate(searchBase)	Search#s30	111
+la_eden,21,19,0	duplicate(searchBase)	Search#s31	111
+la_eden,21,25,0	duplicate(searchBase)	Search#s32	111
+la_eden,25,22,0	duplicate(searchBase)	Search#s33	111
+la_eden,25,28,0	duplicate(searchBase)	Search#s34	111
+la_lib01,24,28,0	duplicate(searchBase)	Search#s35	111
+la_lib01,21,28,0	duplicate(searchBase)	Search#s36	111
+la_lib01,18,28,0	duplicate(searchBase)	Search#s37	111
+la_lib01,15,28,0	duplicate(searchBase)	Search#s38	111
+la_lib01,12,28,0	duplicate(searchBase)	Search#s39	111
+la_lib01,11,7,0	duplicate(searchBase)	Search#s40	111
+la_lib01,22,10,0	duplicate(searchBase)	Search#s41	111
+la_lib01,25,70,0	duplicate(searchBase)	Search#s42	111
+la_lib01,33,70,0	duplicate(searchBase)	Search#s43	111
+//			
+la_in01,44,137,0	duplicate(searchBase)	Search#s44	111
+la_in01,43,30,0	duplicate(searchBase)	Search#s45	111
+la_in01,45,102,0	duplicate(searchBase)	Search#s46	111
+la_in01,92,102,0	duplicate(searchBase)	Search#s47	111
+			
+//Cabinets			
+la_jack,6,9,0	duplicate(searchBase)	Search#s48	111
+la_jack,13,91,0	duplicate(searchBase)	Search#s49	111
+la_jack,13,87,0	duplicate(searchBase)	Search#s50	111
+la_jack,13,83,0	duplicate(searchBase)	Search#s51	111
+la_jack,9,83,0	duplicate(searchBase)	Search#s52	111
+la_jack,9,87,0	duplicate(searchBase)	Search#s53	111
+la_jack,9,91,0	duplicate(searchBase)	Search#s54	111
+la_police01,27,33,0	duplicate(searchBase)	Search#s55	111
+la_police01,19,33,0	duplicate(searchBase)	Search#s56	111
+//			
+la_in01,47,102,0	duplicate(searchBase)	Search#s57	111
+la_in01,95,102,0	duplicate(searchBase)	Search#s58	111
+la_in01,46,138,0	duplicate(searchBase)	Search#s59	111
+la_in01,46,30,0	duplicate(searchBase)	Search#s60	111
+			
+//Refrigerators			
+op_tut01,67,7,0	duplicate(searchBase)	Refrigerator#s1	111
+la_jack,7,17,0	duplicate(searchBase)	Refrigerator#s2	111
+la_eden,11,33,0	duplicate(searchBase)	Refrigerator#s3	111
+la_in01,42,16,0	duplicate(searchBase)	Refrigerator#s4	111
+la_in01,90,16,0	duplicate(searchBase)	Refrigerator#s5	111
+la_in01,138,16,0	duplicate(searchBase)	Refrigerator#s6	111
+la_in01,176,16,0	duplicate(searchBase)	Refrigerator#s7	111
+la_in01,42,50,0	duplicate(searchBase)	Refrigerator#s8	111
+la_in01,90,50,0	duplicate(searchBase)	Refrigerator#s9	111
+la_in01,138,50,0	duplicate(searchBase)	Refrigerator#s10	111
+la_in01,176,50,0	duplicate(searchBase)	Refrigerator#s11	111
+la_in01,42,88,0	duplicate(searchBase)	Refrigerator#s12	111
+la_in01,90,88,0	duplicate(searchBase)	Refrigerator#s13	111
+la_in01,138,88,0	duplicate(searchBase)	Refrigerator#s14	111
+la_in01,176,88,0	duplicate(searchBase)	Refrigerator#s15	111
+la_in01,42,124,0	duplicate(searchBase)	Refrigerator#s16	111
+			
+//Stoves - ADD			
+la_eden,14,33,0	duplicate(searchBase)	Search#s61	111
+op_tut01,64,82,0	duplicate(searchBase)	Search#s62	111
+la_in01,38,16,0	duplicate(searchBase)	Search#s63	111
+la_in01,86,16,0	duplicate(searchBase)	Search#s64	111
+la_in01,134,16,0	duplicate(searchBase)	Search#s65	111
+la_in01,172,16,0	duplicate(searchBase)	Search#s66	111
+la_in01,38,50,0	duplicate(searchBase)	Search#s67	111
+la_in01,86,50,0	duplicate(searchBase)	Search#s68	111
+la_in01,134,50,0	duplicate(searchBase)	Search#s69	111
+la_in01,172,50,0	duplicate(searchBase)	Search#s70	111
+la_in01,38,88,0	duplicate(searchBase)	Search#s71	111
+la_in01,86,88,0	duplicate(searchBase)	Search#s72	111
+la_in01,134,88,0	duplicate(searchBase)	Search#s73	111
+la_in01,172,88,0	duplicate(searchBase)	Search#s74	111
+la_in01,38,124,0	duplicate(searchBase)	Search#s75	111
+			
+//Desks			
+la_jack,20,7,0	duplicate(searchBase)	Search#s76	111
+la_eden,16,21,0	duplicate(searchBase)	Search#s77	111
+la_lib01,19,11,0	duplicate(searchBase)	Search#s78	111
+			
+//Fountain			
+lavive_04,50,15,0	duplicate(searchBase)	Search#s79	111
+			
+//Trees			
+lavive_01,34,89,0	duplicate(searchBase)	Tree#s1	111
+lavive_01,10,63,0	duplicate(searchBase)	Tree#s2	111
+lavive_01,10,32,0	duplicate(searchBase)	Tree#s3	111
+lavive_01,34,10,0	duplicate(searchBase)	Tree#s4	111
+lavive_01,65,10,0	duplicate(searchBase)	Tree#s5	111
+lavive_01,89,33,0	duplicate(searchBase)	Tree#s6	111
+lavive_01,89,63,0	duplicate(searchBase)	Tree#s7	111
+lavive_01,65,89,0	duplicate(searchBase)	Tree#s8	111
+lavive_02,90,64,0	duplicate(searchBase)	Tree#s9	111
+lavive_02,98,64,0	duplicate(searchBase)	Tree#s10	111
+lavive_02,89,18,0	duplicate(searchBase)	Tree#s11	111
+lavive_02,98,18,0	duplicate(searchBase)	Tree#s12	111
+lavive_02,89,31,0	duplicate(searchBase)	Tree#s13	111
+lavive_02,96,31,0	duplicate(searchBase)	Tree#s14	111
+lavive_02,90,83,0	duplicate(searchBase)	Tree#s15	111
+lavive_02,98,83,0	duplicate(searchBase)	Tree#s16	111
+lavive_03,29,82,0	duplicate(searchBase)	Tree#s17	111
+lavive_03,6,86,0	duplicate(searchBase)	Tree#s18	111
+lavive_03,6,61,0	duplicate(searchBase)	Tree#s19	111
+lavive_03,6,34,0	duplicate(searchBase)	Tree#s20	111
+lavive_03,6,5,0	duplicate(searchBase)	Tree#s21	111
+lavive_03,36,5,0	duplicate(searchBase)	Tree#s22	111
+lavive_03,64,5,0	duplicate(searchBase)	Tree#s23	111
+lavive_03,93,5,0	duplicate(searchBase)	Tree#s24	111
+lavive_03,71,66,0	duplicate(searchBase)	Tree#s25	111
+lavive_03,70,81,0	duplicate(searchBase)	Tree#s26	111
+lavive_03,33,43,0	duplicate(searchBase)	Tree#s27	111
+lavive_03,26,43,0	duplicate(searchBase)	Tree#s28	111
+lavive_03,69,33,0	duplicate(searchBase)	Tree#s29	111
+lavive_03,89,68,0	duplicate(searchBase)	Tree#s30	111
+lavive_03,93,90,0	duplicate(searchBase)	Tree#s31	111
+lavive_05,33,3,0	duplicate(searchBase)	Tree#s32	111
+lavive_05,33,14,0	duplicate(searchBase)	Tree#s33	111
+lavive_05,33,21,0	duplicate(searchBase)	Tree#s34	111
+lavive_05,33,30,0	duplicate(searchBase)	Tree#s35	111
+lavive_05,33,63,0	duplicate(searchBase)	Tree#s36	111
+lavive_05,33,71,0	duplicate(searchBase)	Tree#s37	111
+lavive_05,33,79,0	duplicate(searchBase)	Tree#s38	111
+lavive_05,33,92,0	duplicate(searchBase)	Tree#s39	111
+lavive_05,71,68,0	duplicate(searchBase)	Tree#s40	111
+lavive_05,82,68,0	duplicate(searchBase)	Tree#s41	111
+lavive_05,71,56,0	duplicate(searchBase)	Tree#s42	111
+lavive_05,82,56,0	duplicate(searchBase)	Tree#s43	111
+lavive_05,71,24,0	duplicate(searchBase)	Tree#s44	111
+lavive_05,82,24,0	duplicate(searchBase)	Tree#s45	111
+lavive_05,96,24,0	duplicate(searchBase)	Tree#s46	111
+lavive_05,71,5,0	duplicate(searchBase)	Tree#s47	111
+lavive_05,82,5,0	duplicate(searchBase)	Tree#s48	111
+lavive_05,96,5,0	duplicate(searchBase)	Tree#s49	111
+la_eden,11,20,0,	duplicate(searchBase)	Tree#s50	111
+la_eden,28,18,0,	duplicate(searchBase)	Tree#s51	111
+la_eden,28,32,0,	duplicate(searchBase)	Tree#s52	111
+			
+//Fire Hydrant			
+//lavive_01,38,63,0	duplicate(searchBase)	Search#s80	111
+//lavive_01,59,32,0	duplicate(searchBase)	Search#s81	111
+//lavive_08,39,31,0	duplicate(searchBase)	Search#s82	111
+			
+//Remnants of a Camp Fire			
+lavive_01,70,78,0	duplicate(searchBase)	Pile#s1	111
+lavive_01,81,11,0	duplicate(searchBase)	Pile#s2	111
+lavive_01,18,9,0	duplicate(searchBase)	Pile#s3	111
+lavive_01,18,77,0	duplicate(searchBase)	Pile#s4	111
+			
+//Barrels			
+lavive_01,17,82,0	duplicate(searchBase)	Search#s83	111
+			
+//Altar Thing			
+la_church01,51,51,0	duplicate(searchBase)	Search#s84	111

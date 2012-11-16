@@ -1,0 +1,19 @@
+//===== Oplex Origins Script ======================================= 
+//= Fishing
+//===== By: ================================================== 
+//= Sigma
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Enables you to fish!
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//============================================================
+blank_01,10,10,5	script	Fish::fish	111,{
+		callfunc "fishing_func";
+}
+
+// Here you put all the clones for this script use the format below
+la_mfild01,43,77,0	duplicate(fish)	Fish::fish1	52

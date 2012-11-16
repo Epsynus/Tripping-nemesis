@@ -1,0 +1,19 @@
+//===== Oplex Origins Script ======================================= 
+//= Mercenary renter/hireing
+//===== By: ================================================== 
+//= Epsynus
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Allows you to rent/hire mercenary's
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//============================================================
+blank_01,7,7,5	script	placeholder::uniqueplaceholder	000,{
+// we all love placeholder
+}
+
+// Here you put all the clones for this script use the format below
+//la_in01,174,138,0	duplicate(uniqueplaceholder)	placeholder::uniqueplaceholder	000

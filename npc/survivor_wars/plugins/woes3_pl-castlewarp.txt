@@ -1,0 +1,43 @@
+// WoE Setter 3 Plug-in
+// GM - Castle Warper
+// By: [GM]Xeon
+// Version: 1.0.0
+
+-	script	WoES3Pl_RCastleWarp	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	setarray $@woes3_gld$[1],"alde_gld","gef_fild13","pay_gld","prt_gld","ncastle","sch_gld","aru_gld";
+	setarray $@woes3_emp_1[1],216,213,205,36,27,23,23,31,217,101;
+	setarray $@woes3_emp_2[1],197,176,244,174,194,181,178,166,177,184;
+	setarray $@woes3_emp_3[1],139,38,268,270,30,139,25,264,28,30;
+	setarray $@woes3_emp_4[1],197,157,16,291,266,197,174,220,14,266;
+	setarray $@woes3_emp_5[1],0,0,0,0,0,0,0,0;
+	setarray $@woes3_emp_6[1],87,89,141,141,141,219,256,293,293,293;
+	setarray $@woes3_emp_7[1],120,162,338,120,120,272,193,202,272,272;
+	setarray $@woes3_cas_1[1],48,95,142,239,264,83,249,85,242,90;
+	setarray $@woes3_cas_2[1],150,308,117,193,252,50,240,273,278,57;
+	setarray $@woes3_cas_3[1],121,295,317,140,204,233,116,293,160,266;
+	setarray $@woes3_cas_4[1],134,240,153,111,208,65,128,137,240,240;
+	setarray $@woes3_cas_5[1],187,183,18,19,16,180,178,14;
+	setarray $@woes3_cas_6[1],293,288,97,137,71,100,252,196,90,315;
+	setarray $@woes3_cas_7[1],158,83,68,299,292,272,47,155,345,107;
+	set $@woes3_pl_gmmenu$[getarraysize($@woes3_pl_playermenu$)], "Warp to Castle Entrance/Emperium";
+	set $@woes3_pl_gm$[getarraysize($@woes3_pl_player$)], "CastleWarp";
+	end;
+}
+
+function	script	WoES3Pl_CastleWarp	{
+L_Select:
+	menu $woe_towns$[1]+":"+$woe_towns$[2]+":"+$woe_towns$[3]+":"+$woe_towns$[4]+":"+$woe_towns$[5]+":"+$woe_towns$[6]+":"+$woe_towns$[7],-,"^000000Back",L_Return;
+	set @town, @menu;
+L_SelectCastles:
+	menu getd("$woe_cas"+@town+"_1$[1]")+":"+getd("$woe_cas"+@town+"_1$[2]")+":"+getd("$woe_cas"+@town+"_1$[3]")+":"+getd("$woe_cas"+@town+"_1$[4]")+((@town!=5)?":"+getd("$woe_cas"+@town+"_1$[5]"):""),-,"Back",L_Select;
+	set @castle, @menu;
+	menu "Castle Entrance",-,"Castle Emperium",-,"Back",L_SelectCastles;
+	if (@menu==1) warp $@woes3_gld$[@town],getd("$@woes3_cas_"+@town+"["+@castle+"]"),getd("$@woes3_cas_"+@town+"["+(@castle+((@town!=5)?5:4))+"]");
+	else warp getd("$woe_cas"+@town+"_3$["+@castle+"]"),getd("$@woes3_emp_"+@town+"["+@castle+"]"),getd("$@woes3_emp_"+@town+"["+(@castle+((@town!=5)?5:4))+"]");
+	close;
+	end;
+L_Return:
+	return;
+}

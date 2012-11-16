@@ -1,4 +1,4 @@
 Tripping-nemesis
 ================
 
-Zombie Survival MMORPG
+Zombie Survival MMORPG in early stages of development.

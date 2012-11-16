@@ -1,0 +1,43 @@
+-	script	game_mechanics	-1,{
+
+OnPCLoginEvent:
+	skill 441,5,0;
+	addtimer 1000,"vitality_timer::OnTimer";
+	if (isday()) announce "The day is young...",bc_all,0xFFFF00;
+	if (isnight()) announce "The night has fallen...",bc_all,0xFFFF00;
+	callfunc "func_flashlight";
+	end;
+
+OnPCLogoutEvent:
+	end;
+
+OnPCDieEvent:
+//	getmapxy @playermap$,@playerx,@playery,0;
+//	makeitem 530,1,@playermap$,@playerx,@playery;
+//	makeitem 7050,1,@playermap$,@playerx,@playery;
+	deltimer "vitality_timer::OnTimer";
+	soundeffect "dying.wav",0;
+//	set @superrand, rand(1,500);
+//	if(@superrand > 495) {	atcommand "@dropall";};
+//	set @randzombietime, rand(1000,5000);
+//	set @randzombie, rand(0,10000);
+//	sleep2 @randzombietime;
+//	if (@randzombie == 10000) goto PC_tank_spawn;
+//	monster @playermap$,@playerx,@playery," ",1084,1,"game_mechanics::OnDeath_count";
+	end;
+
+//PC_tank_spawn:
+//	monster @playermap$,@playerx,@playery," ",1085,1,"game_mechanics::OnDeath_count";
+//	end;
+
+
+}
+
+-	script	vitality_timer	-1,{
+OnTimer:
+	getmapxy @playermap$,@playerx,@playery,0;
+	if(@playermap$=="limbo_1.gat"){ end; };
+	percentheal -3,0;
+	addtimer 60000,"vitality_timer::OnTimer";
+	end;
+}

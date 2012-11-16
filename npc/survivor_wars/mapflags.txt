@@ -1,0 +1,1 @@
+la_bld01	mapflag	gvg_castle

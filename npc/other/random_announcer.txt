@@ -1,0 +1,36 @@
+//===== eAthena Script ======================================= 
+//= "Random" Auto-Announcer
+//===== By: ================================================== 
+//= Midou Ban
+//===== Current Versions =====================================
+//= 1.0	Made.
+//===== Description: ========================================= 
+//= Randomly announces your announcement
+//==== Compatible With: ======================================
+//= SVNs with sleep.
+//============================================================
+-	script	AuAn	-1,{
+OnInit:
+//==== CONFIGURABLE OPTIONS ==================================
+
+// Minutes for each random announcement
+	setarray .@tTa[0],10; // Randomly pick 60/30/15/7 minutes as an duration to announce.
+
+// Second delay for each announcement
+	setarray .@tTas,10;
+
+// Announcements. If you want to add more announcements, below setarray .@tTa$[0], add "<text>" with a comma at the end. Lowest is the first to be announced, topest is the last to be announced.
+	setarray .@tTa$[0],
+			"Welcome to the develpers test server.", // End announcement must end with ; and not ,
+			"Please report all bugs in the Dev Section.";
+
+//==== END OF CONFIGURABLE OPTIONS ===========================
+
+
+	for(set .@i,0; .@i<=getarraysize(.@tTa); set .@i,.@i+1) set .@tTa[.@i],.@tTa[.@i]*60000;
+	set .@tTas,.@tTas*1000;
+	sleep .@tTa[rand(0,getarraysize(.@tTa))];
+	for(set .@i,getarraysize(.@tTa$); .@i>=0; set .@i,.@i-1) { announce .@tTa$[.@i],0; sleep .@tTas; }
+	goto OnInit;
+
+}

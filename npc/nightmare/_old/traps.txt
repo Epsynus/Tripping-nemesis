@@ -1,0 +1,154 @@
+function	script	trapmaker_formula	{
+	set @trapformula, (getskilllv(723)*10)+((readparam(bSTR)+readparam(bDEX)))/750;
+	return;
+	end;
+}
+
+function	script	trapmaker_level	{
+	set trapmaker_level,trapmaker_level+1;
+	sleep2 1000;
+	if(trapmaker_level==10) goto trapmaker_level_2;
+	if(trapmaker_level==25) goto trapmaker_level_3;
+	if(trapmaker_level==50) goto trapmaker_level_4;
+	if(trapmaker_level==75) goto trapmaker_level_5;
+	if(trapmaker_level==100) goto trapmaker_level_6;
+	if(trapmaker_level==150) goto trapmaker_level_7;
+	if(trapmaker_level==250) goto trapmaker_level_8;
+	if(trapmaker_level==500) goto trapmaker_level_9;
+	if(trapmaker_level==1000) goto trapmaker_level_10;
+	return;
+	end;
+trapmaker_level_2:
+	skill 723,2,0;
+	return;
+	end;
+trapmaker_level_3:
+	skill 723,3,0;
+	return;
+	end;
+trapmaker_level_4:
+	skill 723,4,0;
+	return;
+	end;
+trapmaker_level_5:
+	skill 723,5,0;
+	return;
+	end;
+trapmaker_level_6:
+	skill 723,6,0;
+	return;
+	end;
+trapmaker_level_7:
+	skill 723,7,0;
+	return;
+	end;
+trapmaker_level_8:
+	skill 723,8,0;
+	return;
+	end;
+trapmaker_level_9:
+	skill 723,9,0;
+	return;
+	end;
+trapmaker_level_10:
+	skill 723,10,0;
+	return;
+	end;
+}
+
+function	script	trapmaker	{
+	mes "Select a trap you would like to make:";
+	next;
+	menu "Skid Trap",trap_skid,"Land Mine",trap_land,"Ankle Snare",trap_snare,"Blast Mine",trap_blast,"Claymore Trap",trap_claymore,"Talkie Box",trap_talkie,"Nevermind",-;
+	close;
+	end;
+trap_skid:
+	callfunc "trapmaker_formula";
+	set @traprand, rand(1,100);
+	if(@traprand>@trapformula) goto trap_failed;
+	mes "Trap has been made.";
+	getitem 761,1;
+	callfunc "trapmaker_level";
+	close;
+	end;
+trap_land:
+	next;
+	mes "You'll need:";
+	mes "1 Wood";
+	next;
+	if(countitem(7007)<1) goto trap_items;
+	delitem 7007,1;
+	callfunc "trapmaker_formula";
+	set @traprand, rand(1,100);
+	if(@traprand>@trapformula) goto trap_failed;
+	mes "Trap has been made.";
+	getitem 762,1;
+	callfunc "trapmaker_level";
+	close;
+	end;
+trap_snare:
+	next;
+	mes "You'll need:";
+	mes "1 Wood";
+	next;
+	if(countitem(7007)<1) goto trap_items;
+	delitem 7007,1;
+	callfunc "trapmaker_formula";
+	set @traprand, rand(1,100);
+	if(@traprand>@trapformula) goto trap_failed;
+	mes "Trap has been made.";
+	getitem 763,1;
+	callfunc "trapmaker_level";
+	close;
+	end;
+trap_blast:
+	next;
+	mes "You'll need:";
+	mes "1 Wood";
+	mes "1 Steel";
+	next;
+	if(countitem(7007)<1) || (countitem(7024)<1) goto trap_items;
+	delitem 7007,1;
+	delitem 7024,1;
+	callfunc "trapmaker_formula";
+	set @traprand, rand(1,100);
+	if(@traprand>@trapformula) goto trap_failed;
+	mes "Trap has been made.";
+	getitem 764,1;
+	callfunc "trapmaker_level";
+	close;
+	end;
+trap_claymore:
+	next;
+	mes "You'll need:";
+	mes "3 Wood";
+	mes "1 Steel";
+	next;
+	if(countitem(7007)<3) || (countitem(7024)<1) goto trap_items;
+	delitem 7007,1;
+	delitem 7024,1;
+	callfunc "trapmaker_formula";
+	set @traprand, rand(1,100);
+	if(@traprand>@trapformula) goto trap_failed;
+	mes "Trap has been made.";
+	getitem 765,1;
+	callfunc "trapmaker_level";
+	close;
+	end;
+trap_talkie:
+	callfunc "trapmaker_formula";
+	set @traprand, rand(1,100);
+	if(@traprand>@trapformula) goto trap_failed;
+	mes "Trap has been made.";
+	getitem 766,1;
+	callfunc "trapmaker_level";
+	close;
+	end;
+trap_noitems:
+	mes "Sorry, you do not have all of the required items.";
+	close;
+	end;
+trap_failed:
+	mes "Sorry, but you failed to make your trap.";
+	close;
+}

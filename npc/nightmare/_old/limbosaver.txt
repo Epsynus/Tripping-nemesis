@@ -1,0 +1,23 @@
+limbo_1,98,115,4	script	Limbo Master::lim_guard01	48,{
+set @npcname$, "[ Limbo Master ]";
+	mes @npcname$;
+	mes "Are you ready to return?";
+	next;
+	menu "Yes",a_yes,"No",-;
+	next;
+	mes @npcname$;
+	mes "Alright.";
+	close;
+a_yes:
+	next; 
+	mes @npcname$;
+	mes "Be careful.";
+	deltimer "vitality_timer::OnTimer";
+	addtimer 60000,"vitality_timer::OnTimer";
+	next;
+	percentheal 75,75;
+	warp lastsavedmap$,lastsavedx,lastsavedy;
+	close2;
+	
+}
+

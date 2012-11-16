@@ -1,0 +1,27 @@
+//===== Oplex Origins Script =================================
+//= Door
+//===== By: ================================================== 
+//= Ducky and Epsynus
+//===== Current Version: ===================================== 
+//= 1.1
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Locked doors
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.1 - Fixed sprite. 111 is as long as you aint touched it. an empty sprite.
+//============================================================
+lavive_03.gat,26,95,0	script	Door::door_la01	111,{
+	set @keyitemid, 500; //PLACE THE KEY ITEM ID HERE BEFORE USING THE SCRIPT
+	set @keyname$, "Silver Key";	//NAME OF THE KEY, EDIT BEFORE USING SCRIPT
+	sleep2 500;	//Give the script a half second delay before allowing player to go through (limits abuse)
+	if(countitem(@keyitemid) < 1) goto door_fail;
+	message strcharinfo(0), "You inserted the " +@keyname$+ " and opened the door.";
+//	soundeffect "door.wav",0;	//NOT IMPLEMENTED YET - Add door_open.wav to data/wav before uncommenting this
+//	warp "la_in01",47,21;	//Place appropriate coordinates
+	end;
+door_fail:
+	message strcharinfo(0),"The door is locked. Maybe you need a key to open it...";
+
+}

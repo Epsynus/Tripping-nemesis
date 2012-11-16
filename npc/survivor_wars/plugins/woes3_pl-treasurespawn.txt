@@ -1,0 +1,59 @@
+// WoE Setter 3 Plug-in
+// GM - Treasure Spawn
+// By: [GM]Xeon
+// Version: 1.0.1
+
+-	script	WoES3Pl_RTreasureSpawn	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	set $@woes3_pl_gmmenu$[getarraysize($@woes3_pl_gmmenu$)], "Spawn Treasure";
+	set $@woes3_pl_gm$[getarraysize($@woes3_pl_gm$)], "TreasureSpawn";
+	end;
+}
+
+function	script	WoES3Pl_TreasureSpawn	{
+L_Select:
+	dispbottom "Select castle(s) to spawn treasure boxes for.";
+	menu $woe_towns$[1]+":"+$woe_towns$[2]+":"+$woe_towns$[3]+":"+$woe_towns$[4]+":"+$woe_towns$[5]+":"+$woe_towns$[6]+":"+$woe_towns$[7],-,"Spawn for all",-,"^000000Back",L_Return;
+	if (@menu==8) { callsub(S_Spawn,127,31); goto L_Select; }
+	set @temp, 64;
+	for (set .@i, 7; .@i>0; set .@i,.@i-1) { if (.@i==@menu) { set @town, @temp; set @town_, .@i; } set @temp, @temp/2; }
+L_SelectCastles:
+	menu getd("$woe_cas"+@town_+"_1$[1]")+":"+getd("$woe_cas"+@town_+"_1$[2]")+":"+getd("$woe_cas"+@town_+"_1$[3]")+":"+getd("$woe_cas"+@town_+"_1$[4]")+((@set_town!=5)?":"+getd("$woe_cas"+@town_+"_1$[5]"):""),-,"Spawn for all",-,"Back",L_Select;
+	if (@menu==6) { callsub(S_Spawn,@town,31); goto L_SelectCastles; }
+	set @temp, 16;
+	for (set .@i, 5; .@i>0; set .@i,.@i-1) { if (.@i==@menu) { set @cas, @temp; set @cas_,.@i; } set @temp, @temp/2; }
+	callsub(S_Spawn,@town,@cas);
+	goto L_SelectCastles;
+L_Return:
+	return;
+
+//Sub that spawns treasure boxes
+//arg0=Town(s) bitmask, 127=All
+//arg1=Castle(s) bitmask, 31=All
+S_Spawn:
+	set .@tcode, getarg(0); set .@tcurrent, 64;
+	for (set .@i_, 7; .@i_>0; set .@i_,.@i_-1) {
+		if (.@tcode>=.@tcurrent) {
+			set .@temp$, ""; set .@ccode, getarg(1); set .@ccurrent, 16;
+			for (set .@i, 5; .@i>0; set .@i,.@i-1) {
+				if (.@ccode>=.@ccurrent) {
+					if (.@i_<5) donpcevent "Treasure#"+getd("$woe_cas"+.@i_+"_3$["+.@i+"]")+"::OnClock0001";
+					if (.@i_>5) donpcevent "Manager#"+((.@i_==6)?"sch":"aru")+"0"+.@i+"_02::OnClock0001";
+					set .@temp$, .@temp$+getd("$woe_cas"+.@i_+"_1$["+.@i+"]")+((.@ccode>.@ccurrent)?", ":" ");
+					set .@ccode, .@ccode-.@ccurrent;
+				}
+			set .@ccurrent, .@ccurrent/2;
+			}
+			if (getarg(0)!=127&&.@tcurrent!=16&&$woe_tannounce) announce "Treasure boxes spawned for "+$woe_towns$[.@i_]+" ( Castle(s): "+((getarg(1)==31)?"All":.@temp$)+" )!",bc_all|bc_yellow;
+			set .@tcode, .@tcode-.@tcurrent;
+		}
+		set .@tcurrent,.@tcurrent/2;
+	}
+	if (getarg(0)==127) {
+		set .@temp$, ""; set .@ccode, getarg(1); set .@ccurrent, 16;
+		for (set .@i, 5; .@i>0; set .@i,.@i-1) { if (.@ccode>=.@ccurrent) set .@temp$, .@temp$+.@i+((.@ccode>.@ccurrent)?", ":" "); set .@ccode, .@ccode-.@ccurrent; set .@ccurrent, .@ccurrent/2; }
+		if ($woe_tannounce) announce "Treasure boxes spawned for All Towns ( Castle(s): "+((getarg(1)==31)?"All":.@temp$)+" )!",bc_all|bc_yellow;
+	}
+	return;
+}

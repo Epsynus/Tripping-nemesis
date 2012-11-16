@@ -1,0 +1,144 @@
+function	script	teacher_run	{
+	set $teach_skillid_a, 411;
+	set $teachitem_a, 751;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_trap	{
+	set $teach_skillid_a, 124;
+	set $teachitem_a, 752;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_back	{
+	set $teach_skillid_a, 150;
+	set $teachitem_a, 753;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_fire	{
+	set $teach_skillid_a, 229;
+	set $teachitem_a, 754;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_aid	{
+	set $teach_skillid_a, 142;
+	set $teachitem_a, 755;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_endure	{
+	set $teach_skillid_a, 8;
+	set $teachitem_a, 756;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_cure	{
+	set $teach_skillid_a, 35;
+	set $teachitem_a, 757;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_stone	{
+	set $teach_skillid_a, 152;
+	set $teachitem_a, 758;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_repair	{
+	set $teach_skillid_a, 108;
+	set $teachitem_a, 759;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacher_graffiti	{
+	set $teach_skillid_a, 220;
+	set $teachitem_a, 760;
+	callfunc "teacherfunc";
+	end;
+}
+
+function	script	teacherfunc	{
+	if($apprentice$ != "empty") goto try_again;
+	mes "Please follow these directions ^FF0000CAREFULLY^000000:";
+	next;
+	mes "First, is your apprentice online?";
+	next;
+	menu "Yes",-,"No",teach_fail;
+	mes "Ok. Now...";
+	next;
+	mes "Input the ^FF0000EXACT^000000 name of the apprentice.";
+	next;
+	mes "Failure to do so will result in a loss of a training manual.";
+	next;
+	input $apprentice$;
+	next;
+	mes "Please retype your apprentice's name for confirmation:";
+	next;
+	input @apprentice$;
+	next;
+	if($apprentice$!=@apprentice$) goto teach_fail;
+	next;
+	mes "You typed in ^FF0000" + $apprentice$ + "^000000. Are you sure?";
+	next;
+	menu "Yes",-,"No",teach_fail;
+	next;
+	mes "Processing...";
+	next;
+	mes "Please have your apprentice PM ^FF0000NPC:teacher^000000 for further instructions.";
+	delitem $teachitem,1;
+	message $apprentice$, "Please whisper to 'NPC:teacher' to learn your new skill!";
+	message $apprentice$, "You have 1 minute and 30 seconds to do so.";
+	addtimer 126000,"teacher::OnTimer126000";
+	set $teachskill,$teachskill_a;
+	set $teachitem,$teachitem_a;
+	close;
+	end;
+
+try_again:
+	mes "Sorry, but there seems to be a problem. Please wait 5 minutes before trying again.";
+	close;
+	end;
+
+teach_fail:
+	close;
+	end;
+
+}
+
+
+-	script	teacher	-1,{
+
+OnInit:
+	set $apprentice$, "empty";
+	end;
+OnWhisperGlobal:
+	if(strcharinfo(0)==$apprentice$) goto teach_success;
+	if (getgmlevel() > 50) goto teacher_gmreset;
+	end;
+teach_success:
+	mes "Congrats!";
+	set $apprentice$, "empty";
+	getitem $teachitem,1;
+	skill $teach_skillid,1,0;
+	close;
+	end;
+teacher_gmreset:
+	set $apprentice$, "empty";
+	end;
+OnTimer126000:
+	message $apprentice$, "You were unable to learn the skill.";
+	set $apprentice$, "empty";
+	deltimer "teacher::OnTimer126000";
+	end;
+}

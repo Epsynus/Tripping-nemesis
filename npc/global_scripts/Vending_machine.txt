@@ -1,0 +1,271 @@
+//===== Oplex Origins Script =================================
+//= Vending Machine
+//===== By: ================================================== 
+//= Epsynus
+//===== Current Version: ===================================== 
+//= 2.0
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= a vending machine that is only active during day or
+//= if using a portable generator during night
+//===== Changelog: ===========================================
+//= v2.0 - Changed how the NPC works aswell added a config section.
+//= v1.1 - Fixed error & made it cleaner in game.
+//= v1.0 - Original release - non functioning
+//============================================================
+// special note: 
+// I am unsure about a few variables and i cannot test ingame atm myself due to not having a client.
+// so do check if they are what they should be.
+// I have commented out the variables for "currency" untill its decided what to use.
+
+//Where the inital Vending machine spawns. You can get the mapname and X Y cordinates using /where ingame 
+// 910 = the cola vending machine sprite. might want to change that :P
+lavive_01,21,84,0	script	Vending Machine::vendmachine	910,{
+
+// CONFIG SECTION
+//Item 1 - Energy Drink
+set @vending_item_01_id,502; // Energy drink
+set @vending_item_01_ammount,1; // The ammount of Energy drink's they get per use.
+set @item_01_name$, "Energy Drink";	//The name as shown in the selection the player does
+//set	@coincost_item_01,1;	//see top
+
+//Item 2 - Water
+set @vending_item_02_id,504; // Water
+set @vending_item_02_ammount,1; // The ammount of water they get per use.
+set @item_02_name$, "Water";	//The name as shown in the selection the player does
+//set	@coincost_item_02,1;	//see top
+
+//Item 3 - Fruit Juice
+set @vending_item_03_id,514; // Fruit juice
+set @vending_item_03_ammount,1; // The ammount of Fruit Juice they get per use.
+set @item_03_name$, "Fruit Juice";	//The name as shown in the selection the player does
+//set	@coincost_item_03,1;	//see top
+
+//Item 4 - Tea
+set @vending_item_04_id,515; // Tea
+set @vending_item_04_ammount,1; // The ammount of Tea they get per use.
+set @item_04_name$, "Tea";	//The name as shown in the selection the player does
+//set	@coincost_item_04,1;	//see top
+
+//Item 5 - Beer
+set @vending_item_05_id,521; // Beer
+set @vending_item_05_ammount,1; // The ammount of Beer they get per use.
+set @item_05_name$, "Beer";	//The name as shown in the selection the player does
+//set	@coincost_item_05,1;	//see top
+
+//Item 6 - Soda
+set @vending_item_06_id,522; // Soda
+set @vending_item_06_ammount,1; // The ammount of Soda they get per use.
+set @item_06_name$, "Soda";	//The name as shown in the selection the player does
+//set	@coincost_item_06,1;	//see top
+
+//Item 7 - Milk
+set @vending_item_07_id,523; // Milk
+set @vending_item_07_ammount,1; // The ammount of Milk they get per use.
+set @item_07_name$, "Milk";	//The name as shown in the selection the player does
+//set	@coincost_item_07,1;	//see top
+
+// generator & currency
+//set @coinid, 500; //see top - change if other currency
+set @generatorid, 1107;	//Change if the generator id changes some day.
+// END OF CONFIG
+
+		//==========================================================
+		//		Night time & Checking if they got a powered generator
+		//==========================================================
+if(isnight()) {
+		if (countitem(@generatorid) < 1) //checks if they got a generator
+		{
+		mes	"[Vending Machine]";
+		mes	"It seems you have a portable generator.";
+		mes "Do you want to use it to power the vending machine?";
+		menu	"Yes",-,"No.",L_Close; // selection if they actually do want to use it or not.
+		next;
+		mes	"You plug in your portable generator and the machine starts humming";
+		next;
+		delitem	@generatorid,1; // makes them use one of their portable generators. remove this line if you want them to keep it
+		goto	L_start;
+		}	
+		else	
+		{
+		// what it will say if its night and they dont have a generator
+		mes	"[Vending Machine]";
+		mes	"The vending machine is offline, maybe some kind of generator will power it.";
+		close;
+		}
+		}
+		//========================================
+		//	Day time & powered using a generator
+		//========================================
+		if(isday()!=0)
+		{
+		L_start:
+		mes	"[Vending Machine]";
+		mes	"What would you like to do?";
+		next;
+		menu	"Buy an item",L_Buy,"Close",L_Close;
+		
+		L_Buy:
+		next;
+		mes	"[Vending Machine]";
+		mes	"Select an item";
+		menu	"" +@item_01_name$+ "",Item_A,"" +@item_02_name$+ "",Item_B,"" +@item_03_name$+ "",Item_C,"" +@item_04_name$+ "",Item_D,"" +@item_05_name$+ "",Item_E,"" +@item_06_name$+ "",Item_F,"" +@item_07_name$+ "",Item_G,"Close",L_Close;
+		
+		Item_A:
+		next;
+		mes	"[Vending Machine]";
+		mes	"You selected " +@item_01_name$+ "";
+		//mes	"It costs X"; // change once currency is decided
+		menu	"Buy",B_A,"Select another item",L_Buy;
+		// checks if they got enough coins else it tells them so. (same for the other choices)
+		B_A:
+			if (countitem(@coinid) < @coincost_item_01)	{
+			next;
+			mes	"As you press the button the machine humms";
+			close2;
+			getitem @vending_item_01_id,@vending_item_01_ammount;
+			//delitem @coinid,@coincost_item_01; // change once currency decided
+			}
+			else
+			{
+			//mes	"It seems you dont have enough."; // change once currency is decided
+			close;
+			}
+			
+		
+		Item_B:
+		next;
+		mes	"[Vending Machine]";
+		mes	"You selected " +@item_02_name$+ "";
+		//mes	"It costs X"; // change once currency is decided
+		menu	"Buy",B_B,"Select another item",L_Buy;
+		
+		B_B:
+			if (countitem(@coinid) < @coincost_item_02)	{
+			next;
+			mes	"As you press the button the machine humms";
+			close2;
+			getitem @vending_item_02_id,@vending_item_02_ammount;
+			//delitem @coinid,@coincost_item_02; // change once currency decided
+			}
+			else
+			{
+			//mes	"It seems you dont have enough."; // change once currency is decided
+			close;
+			}
+		
+		Item_C:
+		next;
+		mes	"[Vending Machine]";
+		mes	"You selected " +@item_03_name$+ "";
+		//mes	"It costs X"; // change once currency is decided
+		menu	"Buy",B_C,"Select another item",L_Buy;
+		
+		B_C:
+			if (countitem(@coinid) < @coincost_item_03)	{
+			next;
+			mes	"As you press the button the machine humms";
+			close2;
+			getitem @vending_item_03_id,@vending_item_03_ammount;
+			//delitem @coinid,@coincost_item_03; // change once currency decided
+			}
+			else
+			{
+			//mes	"It seems you dont have enough."; // change once currency is decided
+			close;
+			}
+			
+		Item_D:
+		next;
+		mes	"[Vending Machine]";
+		mes	"You selected " +@item_04_name$+ "";
+		//mes	"It costs X"; // change once currency is decided
+		menu	"Buy",B_D,"Select another item",L_Buy;
+		
+		B_D:
+			if (countitem(@coinid) < @coincost_item_04)	{
+			next;
+			mes	"As you press the button the machine humms";
+			close2;
+			getitem @vending_item_04_id,@vending_item_04_ammount;
+			//delitem @coinid,@coincost_item_04; // change once currency decided
+			}
+			else
+			{
+			//mes	"It seems you dont have enough."; // change once currency is decided
+			close;
+			}
+			
+		Item_E:
+		next;
+		mes	"[Vending Machine]";
+		mes	"You selected " +@item_05_name$+ "";
+		//mes	"It costs X"; // change once currency is decided
+		menu	"Buy",B_E,"Select another item",L_Buy;
+		
+		B_E:
+			if (countitem(@coinid) < @coincost_item_05)	{
+			next;
+			mes	"As you press the button the machine humms";
+			close2;
+			getitem @vending_item_05_id,@vending_item_05_ammount;
+			//delitem @coinid,@coincost_item_05; // change once currency decided
+			}
+			else
+			{
+			//mes	"It seems you dont have enough."; // change once currency is decided
+			close;
+			}
+			
+		Item_F:
+		next;
+		mes	"[Vending Machine]";
+		mes	"You selected " +@item_06_name$+ "";
+		//mes	"It costs X"; // change once currency is decided
+		menu	"Buy",B_F,"Select another item",L_Buy;
+		
+		B_F:
+			if (countitem(@coinid) < @coincost_item_06)	{
+			next;
+			mes	"As you press the button the machine humms";
+			close2;
+			getitem @vending_item_06_id,@vending_item_06_ammount;
+			//delitem @coinid,@coincost_item_06; // change once currency decided
+			}
+			else
+			{
+			//mes	"It seems you dont have enough."; // change once currency is decided
+			close;
+			}
+			
+		Item_G:
+		next;
+		mes	"[Vending Machine]";
+		mes	"You selected " +@item_07_name$+ "";
+		//mes	"It costs X"; // change once currency is decided
+		menu	"Buy",B_G,"Select another item",L_Buy;
+		
+		B_G:
+			if (countitem(@coinid) < @coincost_item_07)	{
+			next;
+			mes	"As you press the button the machine humms";
+			close2;
+			getitem @vending_item_07_id,@vending_item_07_ammount;
+			//delitem @coinid,@coincost_item_07; // change once currency decided
+			}
+			else
+			{
+			//mes	"It seems you dont have enough."; // change once currency is decided
+			close;
+			}
+			
+		L_Close:
+		close;
+		}
+}
+
+// Here you put all the clones for this script using this format(Including an example)
+// mapname,X,Y,0 TAB duplicate(vendmachine) TAB Vending Machine TAB 910
+// Example = la_market,149,25,0	duplicate(vendmachine)	Vending Machine::vnd unique number here	910
+//lavive_01,30,27,0	duplicate(vendmachine)	Vending Machine::vnd01	910

@@ -1,0 +1,9 @@
+//Tools
+7,601,10	//Flashlight
+7,602,10	//Sleeping Bag
+7,603,10	//Megaphone
+7,604,10	//Radio
+7,605,10	//Watch
+7,1052,1	//House Key
+7,1053,1	//Lock Pick
+7,1054,1	//Key card

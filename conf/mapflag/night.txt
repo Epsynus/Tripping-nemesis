@@ -1,0 +1,26 @@
+//===== eAthena Script =======================================
+//= Map Flags for maps where the night is visible.
+//===== By: ==================================================
+//= eAthena Dev Team
+//===== Current Version: =====================================
+//= 1.0 [Skotlex]
+//===== Compatible With: =====================================
+//=
+//===== Description: =========================================
+//= 'nightenabled' specifies which maps can display "night".
+//============================================================
+
+lavive_01	mapflag	nightenabled
+lavive_02	mapflag	nightenabled
+lavive_03	mapflag	nightenabled
+lavive_04	mapflag	nightenabled
+lavive_05	mapflag	nightenabled
+lavive_06	mapflag	nightenabled
+lavive_07	mapflag	nightenabled
+lavive_08	mapflag	nightenabled
+lavive_09	mapflag	nightenabled
+lavive_10	mapflag	nightenabled
+la_fild01	mapflag	nightenabled
+la_fild02	mapflag	nightenabled
+la_fild03	mapflag	nightenabled
+la_fild04	mapflag	nightenabled

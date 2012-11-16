@@ -1,0 +1,6 @@
+// Old Violet Box Obtainable Items Database
+//
+// Structure of Database:
+// GroupID,ItemID,Rate
+
+//2,501,14	//Red Potion

@@ -1,0 +1,53 @@
+//===== Oplex Origins Script =================================
+//= Window
+//===== By: ================================================== 
+//= Epsynus and Ducky
+//===== Current Version: ===================================== 
+//= 1.6
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Open & Closed windows
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//= v1.5 - Changed warp portals into an automatic NPC script
+//= v1.6 - Fixed sprites
+//============================================================
+
+lavive_03.gat,26,95,0	script	Window::win_la01	111,{
+	sleep2 1000;	//Give the script a 1 second delay before allowing player to climb through (limits abuse)
+	set @brokenwindow, rand(0,10);
+	if(@brokenwindow == 5) goto win_jam;
+	getmapxy("lavive_01.gat",@mapx1,@mapy1,0,strcharinfo(0));	//Gets coordinates of player so player doesn't access windows from far away
+	getmapxy("lavive_01.gat",@mapx2,@mapy2,1,"win_la01");
+	set @distance, distance(@mapx1,@mapy1,@mapx2,@mapy2);		//Distance formula
+	if(@distance < 5){
+	message strcharinfo(0), "You climbed through a window...";
+	warp "la_in01",47,21;
+	end;
+	}
+	end;
+win_jam:
+//	soundeffect "win_jam",0;	//NOT IMPLEMENTED YET - Add win_jam.wav to data/wav before uncommenting this
+	message strcharinfo(0),"This window is jammed...maybe you should try again.";
+	end;
+}
+
+la_in01.gat,47,20,0	script	Window::win_la02	111,{
+	sleep2 1000;
+	set @brokenwindow, rand(0,10);
+	if(@brokenwindow == 5) goto win_jam;
+	getmapxy("la_in01.gat",@mapx1,@mapy1,0,strcharinfo(0));
+	getmapxy("la_in01.gat",@mapx2,@mapy2,1,"win_la01");
+	set @distance, distance(@mapx1,@mapy1,@mapx2,@mapy2);
+	if(@distance < 5){
+	dispbottom "You climbed through a window...";
+	warp "lavive_03",26,95;
+	end;
+	}
+	end;
+win_jam:
+//	soundeffect "win_jam",0;	//NOT IMPLEMENTED YET - Add win_jam.wav to data/wav before uncommenting this
+	message strcharinfo(0),"This window is jammed...maybe you should try again.";
+	end;
+}

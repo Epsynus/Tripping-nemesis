@@ -1,0 +1,36 @@
+//----======Mock up barricade script V1.0======----
+//===================purpose=======================
+// to give players the ability to dynamically
+//place barricades in the world for protection - 
+//utilizes a monster NPC to act as the barricade 
+//to include a sprite and destructability. then
+//places a wall to block passage.
+//=================================================
+//
+//===== Changelog: ===========================================
+//= v1.0 - Original release - MAG
+//============================================================
+//function	script	Barricade	{
+//
+//	if (countitem(1007) >= 10)	{			//checks if player has required materials
+//		mes "Building barricade...";
+//		sc_start SC_SLEEP,5000,0;			//starts wait time - 15 seconds
+//		callfunc "loading_func";
+//		callfunc "loading_func";
+//		callfunc "loading_func";
+//		callfunc "loading_func";
+//		callfunc "loading_func";
+//		set @randid, rand(1,10000);
+//		getmapxy @playermap$,@playerx,@playery,0;					//get and set player x,y & map for use
+//		monster @playermap$,@playerx,@playery,strcharinfo(0) + @randid,1511,1;		//place an immobile monster to act as barricade
+//		setcell @playermap$,@playerx,@playery,@playerx,@playery,cell_walkable,0;		//set a wall to make the barricade impassable
+//		delitem 1007,10;								//Removes 20 wood from the inventory of the player
+//		mes "Barricade has been built!!!";
+//		close;
+//	}
+//	else {
+//		mes "You need more Wood.";
+//		close;
+//		end;
+//	}
+//}

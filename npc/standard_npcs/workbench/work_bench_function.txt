@@ -1,0 +1,154 @@
+//===== Oplex Origins Script =================================
+//= Work Bench Function
+//===== By: ================================================== 
+//= Sigma
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= We need a fuction that defines variables using data form the data base.
+//= We will call this function within the Work Bench script.
+//= By the time this function has been called, .@item should have been set
+//= by the player in the Work Bench Script via menu selection.
+//= This function will select and set information on the item (.@item) defined.
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//============================================================
+//= Resource Name (Column Name) | Resource ID
+//= fabric	(1002)
+//= metal	(1003)
+//= plastic	(1004)
+//= latex	(1005)
+//= stone	(1006)
+//= wood	(1007)
+//= cyan	(1015)
+//= leather	(1016)
+//= sulfur	(1017)
+//= charcoal	(1018)
+//= salt	(1019)
+//= coal	(1066)
+//= ducttape	(1068)
+//= gunpowder	(1075)
+//= nails	(1150)
+//============================================================
+
+//============================================================
+//= Dismantle Function
+//============================================================
+function	script	work_bench_dismantle	{
+
+	//mes	"Please enter how many of the item you want to break down";
+	//input	.@amount;
+
+	// Check for the same item ID use in the query.
+	next;
+	mes "From dismantling this item, you'll get about:";
+	mes "^0066FF" +getelementofarray(getarg(3),0)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),0)+ "^000000 ^0066FF" +getelementofarray(getarg(3),1)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),1)+ "^000000 ^0066FF" +getelementofarray(getarg(3),2)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),2)+ "^000000 ^0066FF" +getelementofarray(getarg(3),3)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),3)+ "^000000 ^0066FF" +getelementofarray(getarg(3),4)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),4)+ "^000000 ^0066FF" +getelementofarray(getarg(3),5)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),5)+ "^000000 ^0066FF" +getelementofarray(getarg(3),6)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),6)+ "^000000 ^0066FF" +getelementofarray(getarg(3),7)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),7)+ "^000000 ^0066FF" +getelementofarray(getarg(3),8)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),8)+ "^000000 ^0066FF" +getelementofarray(getarg(3),9)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),9)+ "^000000 ^0066FF" +getelementofarray(getarg(3),10)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),10)+ "^000000 ^0066FF" +getelementofarray(getarg(3),11)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),11)+ "^000000 ^0066FF" +getelementofarray(getarg(3),12)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),12)+ "^000000 ^0066FF" +getelementofarray(getarg(3),13)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),13)+ "^000000 ^0066FF" +getelementofarray(getarg(3),14)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),14)+ "^000000";
+	menu	"Yes.",Y_D,"No, I'm done for now.",-;
+	next;
+	close;
+
+Y_D:
+	if (countitem(getarg(1)) >= 1)	{
+		next;
+		mes	"You carefully start working on the item...";
+		next;
+		// Delete the decomposed item
+		delitem getarg(1),1;
+		// Is there a way we can minus a random % amount from the item ammout?
+		// Example: setarray .@percent[0],10%,20%,30%;
+		// Example: set .@rand,rand(0,2);
+		// Example: getitem @farbric,(.@fabric_num*(1-.@rand[.@percent]);
+		// Above is just an example, would be awesome if it can work.
+		// Resource Allocation
+		getitem getelementofarray(getarg(2),0),getelementofarray(getarg(0),0);
+		getitem getelementofarray(getarg(2),1),getelementofarray(getarg(0),1);
+		getitem getelementofarray(getarg(2),2),getelementofarray(getarg(0),2);
+		getitem getelementofarray(getarg(2),3),getelementofarray(getarg(0),3);
+		getitem getelementofarray(getarg(2),4),getelementofarray(getarg(0),4);
+		getitem getelementofarray(getarg(2),5),getelementofarray(getarg(0),5);
+		getitem getelementofarray(getarg(2),6),getelementofarray(getarg(0),6);
+		getitem getelementofarray(getarg(2),7),getelementofarray(getarg(0),7);
+		getitem getelementofarray(getarg(2),8),getelementofarray(getarg(0),8);
+		getitem getelementofarray(getarg(2),9),getelementofarray(getarg(0),9);
+		getitem getelementofarray(getarg(2),10),getelementofarray(getarg(0),10);
+		getitem getelementofarray(getarg(2),11),getelementofarray(getarg(0),11);
+		getitem getelementofarray(getarg(2),12),getelementofarray(getarg(0),12);
+		getitem getelementofarray(getarg(2),13),getelementofarray(getarg(0),13);
+		getitem getelementofarray(getarg(2),14),getelementofarray(getarg(0),14);
+		// Success Message
+		mes "Success!";
+		close;
+		end;
+	}
+	else {
+		next;
+		mes	"Seems like you don't have the item(s) you want to dismantle.";
+		close;
+		end;
+	}
+}
+
+//============================================================
+//= Create Function - Incomplete
+//============================================================
+function	script	work_bench_create	{
+	//mes	"Please enter how many of the item you want to create.";
+	//input	.@amount;
+
+	// Check for resources.
+	next;
+	mes "To create this item, you'll need:";
+	mes "^0066FF" +getelementofarray(getarg(3),0)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),0)+ "^000000 ^0066FF" +getelementofarray(getarg(3),1)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),1)+ "^000000 ^0066FF" +getelementofarray(getarg(3),2)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),2)+ "^000000 ^0066FF" +getelementofarray(getarg(3),3)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),3)+ "^000000 ^0066FF" +getelementofarray(getarg(3),4)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),4)+ "^000000 ^0066FF" +getelementofarray(getarg(3),5)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),5)+ "^000000 ^0066FF" +getelementofarray(getarg(3),6)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),6)+ "^000000 ^0066FF" +getelementofarray(getarg(3),7)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),7)+ "^000000 ^0066FF" +getelementofarray(getarg(3),8)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),8)+ "^000000 ^0066FF" +getelementofarray(getarg(3),9)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),9)+ "^000000 ^0066FF" +getelementofarray(getarg(3),10)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),10)+ "^000000 ^0066FF" +getelementofarray(getarg(3),11)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),11)+ "^000000 ^0066FF" +getelementofarray(getarg(3),12)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),12)+ "^000000 ^0066FF" +getelementofarray(getarg(3),13)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),13)+ "^000000 ^0066FF" +getelementofarray(getarg(3),14)+ ":^000000 ^FF0000" +getelementofarray(getarg(0),14)+ "^000000";
+	menu	"Create.",Y_C,"No, I'm done for now.",-;
+	next;
+	close;
+
+Y_C:
+	if(countitem(getelementofarray(getarg(2),0)) >= getelementofarray(getarg(0),0)) {
+	if(countitem(getelementofarray(getarg(2),1)) >= getelementofarray(getarg(0),1)) {
+	if(countitem(getelementofarray(getarg(2),2)) >= getelementofarray(getarg(0),2)) {
+	if(countitem(getelementofarray(getarg(2),3)) >= getelementofarray(getarg(0),3)) {
+	if(countitem(getelementofarray(getarg(2),4)) >= getelementofarray(getarg(0),4)) {
+	if(countitem(getelementofarray(getarg(2),5)) >= getelementofarray(getarg(0),5)) {
+	if(countitem(getelementofarray(getarg(2),6)) >= getelementofarray(getarg(0),6)) {
+	if(countitem(getelementofarray(getarg(2),7)) >= getelementofarray(getarg(0),7)) {
+	if(countitem(getelementofarray(getarg(2),8)) >= getelementofarray(getarg(0),8)) {
+	if(countitem(getelementofarray(getarg(2),9)) >= getelementofarray(getarg(0),9)) {
+	if(countitem(getelementofarray(getarg(2),10)) >= getelementofarray(getarg(0),10)) {
+	if(countitem(getelementofarray(getarg(2),11)) >= getelementofarray(getarg(0),11)) {
+	if(countitem(getelementofarray(getarg(2),12)) >= getelementofarray(getarg(0),12)) {
+	if(countitem(getelementofarray(getarg(2),13)) >= getelementofarray(getarg(0),13)) {
+	if(countitem(getelementofarray(getarg(2),14)) >= getelementofarray(getarg(0),14)) {
+		
+		next;
+		mes	"You carefully start working on the item...";
+		next;
+		// Resource Deletion
+		delitem getelementofarray(getarg(2),0),getelementofarray(getarg(0),0);
+		delitem getelementofarray(getarg(2),1),getelementofarray(getarg(0),1);
+		delitem getelementofarray(getarg(2),2),getelementofarray(getarg(0),2);
+		delitem getelementofarray(getarg(2),3),getelementofarray(getarg(0),3);
+		delitem getelementofarray(getarg(2),4),getelementofarray(getarg(0),4);
+		delitem getelementofarray(getarg(2),5),getelementofarray(getarg(0),5);
+		delitem getelementofarray(getarg(2),6),getelementofarray(getarg(0),6);
+		delitem getelementofarray(getarg(2),7),getelementofarray(getarg(0),7);
+		delitem getelementofarray(getarg(2),8),getelementofarray(getarg(0),8);
+		delitem getelementofarray(getarg(2),9),getelementofarray(getarg(0),9);
+		delitem getelementofarray(getarg(2),10),getelementofarray(getarg(0),10);
+		delitem getelementofarray(getarg(2),11),getelementofarray(getarg(0),11);
+		delitem getelementofarray(getarg(2),12),getelementofarray(getarg(0),12);
+		delitem getelementofarray(getarg(2),13),getelementofarray(getarg(0),13);
+		delitem getelementofarray(getarg(2),14),getelementofarray(getarg(0),14);
+		mes "Success!";
+		getitem getarg(1),1;	// Create item on success.
+		close;
+		end;
+} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}} else {goto Fail;}
+Fail:
+	next;
+	mes	"Seems like you don't have the proper resources.";
+	close;
+	end;
+}

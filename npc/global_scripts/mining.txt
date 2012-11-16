@@ -1,0 +1,25 @@
+//===== Oplex Origins Script ======================================= 
+//= Mining
+//===== By: ================================================== 
+//= Sigma
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= Any Oplex Version 
+//===== Description: ========================================= 
+//= Enables you to mine!
+//===== Changelog: ===========================================
+//= v1.0 - Original release
+//============================================================
+blank_01,7,7,5	script	Mine::mine	68,{
+		callfunc "mining_func";
+}
+
+// Here you put all the clones for this script use the format below
+//la_in01,174,138,0	duplicate(mine)	Mine::mine00	68
+la_mine00,26,63,0	duplicate(mine)	Mine::mine01	68
+la_mine00,31,67,0	duplicate(mine)	Mine::mine02	68
+la_mine00,20,61,0	duplicate(mine)	Mine::mine03	68
+la_mine00,83,39,0	duplicate(mine)	Mine::mine04	68
+la_mine00,84,31,0	duplicate(mine)	Mine::mine05	68
+la_mine00,85,25,0	duplicate(mine)	Mine::mine06	68

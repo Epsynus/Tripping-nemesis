@@ -1,0 +1,16 @@
+// Old Blue Box Obtainable Items Database
+//
+// Structure of Database:
+// GroupID,ItemID,Rate
+
+//1,501,12	//Red Potion
+
+//1,514,10	//Fruit Juice
+1,515,10	//Tea
+//1,516,10	//Lettuce
+1,517,10	//Bread
+1,518,10	//Rice
+1,519,10	//Can of Soup
+1,520,10	//Egg
+1,523,10	//Milk
+1,501,2		//Uncooked Meat

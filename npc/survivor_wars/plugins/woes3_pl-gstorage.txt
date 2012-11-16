@@ -1,0 +1,114 @@
+// WoE Setter 3 Plug-in
+// Player -  Secure Guild Storage
+// By: [GM]Xeon
+// Version: 1.0.0
+
+-	script	WoES3Pl_RGStore	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	if (!query_sql("show columns from `guild` like 'gstorage_mode'",.@ignore,.@ignore,.@ignore,.@ignore,.@ignore,.@ignore)) query_sql("ALTER TABLE `guild` ADD COLUMN `gstorage_mode` INTEGER UNSIGNED NOT NULL DEFAULT 0 AFTER `emblem_data`, ADD COLUMN `gstorage_pos` INTEGER UNSIGNED NOT NULL DEFAULT 10 AFTER `gstorage_mode`, ADD COLUMN `gstorage_password` VARCHAR(45) AFTER `gstorage_pos`",.@ignore);
+	set $@woes3_pl_playermenu$[getarraysize($@woes3_pl_playermenu$)], "Secure Guild Storage";
+	set $@woes3_pl_player$[getarraysize($@woes3_pl_player$)], "GStore";
+	end;
+}
+
+function	script	WoES3Pl_GStore	{
+L_Guild:
+	if (!query_sql("show columns from `guild` like 'gstorage_mode'",@ignore,@ignore,@ignore,@ignore,@ignore,@ignore)) { mes "There was a critical database error. Plrease report this to a GM!"; return; }
+	if (!getcharid(2)) {
+		mes "[Secure GStorage]";
+		mes "Sorry, you must be in a guild to use this function!";
+		return;
+	}
+	mes "[Secure GStorage]";
+	mes "What would you like to do?";
+	next;
+	switch(select("Use guild storage","View settings","Back")) {
+		case 1:
+			goto L_UseGStorage;
+		case 2:
+			query_sql "select gstorage_mode,gstorage_pos,gstorage_password from `guild` where `guild_id` = "+getcharid(2),@mode,@pos,@password$;
+			if (strcharinfo(0) == getguildmaster(getcharid(2))) {
+				next;
+				mes "[Secure GStorage]";
+				mes "Guild storage access mode is currently set to "+@mode[0];
+				mes "0=Unrestricted access";
+				mes "1=Position requirement";
+				mes "2=Password protected";
+				switch(select("Change mode","Set minimum allowed position","Set password","Back")) {
+					case 1:
+						mes "Enter the mode #";
+						input @temp;
+						if (@temp < 0) set @temp, 0;
+						if (@temp > 2) set @temp, 2;
+						query_sql "update `ragnarok`.`guild` set gstorage_mode = "+@temp+" where guild_id = "+getcharid(2),@ignore;
+						mes "Mode set to "+@temp;
+						next;
+						goto L_Guild;
+					case 2:
+						mes "Enter the minimum position";
+						input @temp;
+						if (@temp < 1) set @temp, 1;
+						if (@temp > 20) set @temp, 20;
+						query_sql "update `ragnarok`.`guild` set gstorage_pos = "+@temp+" where guild_id = "+getcharid(2),@ignore;
+						mes "Minimum position set to "+@temp;
+						next;
+						goto L_Guild;
+					case 3:
+						mes "Enter the password, enter one space to cancel";
+						input @temp$;
+						set @temp$, escape_sql(@temp$);
+						if (@temp$ == " ") {
+							next;
+							goto L_Guild;
+						}
+						query_sql "update `ragnarok`.`guild` set gstorage_password = '"+escape_sql(@temp$)+"' where guild_id = "+getcharid(2),@ignore;
+						mes "Password set to "+@temp$;
+						next;
+						goto L_Guild;
+					case 4:
+						next;
+						goto L_Guild;
+				}
+			} else {
+				query_sql "select gstorage_mode from `ragnarok`.`guild` where guild_id = "+getcharid(2),@mode;
+				mes "[Secure GStorage]";
+				switch(@mode) {
+					case 0: mes "Guild storage is not currently restricted."; break;
+					case 1: mes "Guild storage is currently restricted by position."; break;
+					case 2: mes "Guild storage is currently restricted via password."; break;
+				}
+				next;
+				goto L_Guild;
+			}
+		case 3:
+			return;
+	}
+
+L_UseGStorage:
+	if (strcharinfo(0) == getguildmaster(getcharid(2))) goto L_UseGStorageSkip;
+	query_sql "select gstorage_mode,gstorage_pos,gstorage_password from `ragnarok`.`guild` where guild_id = "+getcharid(2),@mode,@pos,@password$;
+	if (@mode[0] == 1) {
+		query_sql "select position from `ragnarok`.`guild_member` where guild_id = "+getcharid(2)+" and char_id = "+getcharid(0),@current_pos;
+		if (@current_pos[0] > (@pos[0] - 1)) {
+			mes "[Secure GStorage]";
+			mes "Sorry, but you are not authorized to use guild storage.";
+			return;
+		}
+	}
+	if (@mode[0] == 2) {
+		mes "[Secure GStorage]";
+		mes "The guild leader has instated password protected guild storage, please enter the password now.";
+		input @pw$;
+		if (@pw$ != @password$[0]) {
+			next;
+			mes "[Secure GStorage]";
+			mes "Sorry, that password is incorrect.";
+			return;
+		}
+	}
+L_UseGStorageSkip:
+	close2;
+	guildopenstorage();
+	end;
+}

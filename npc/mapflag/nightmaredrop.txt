@@ -1,0 +1,1 @@
+//lavive_01	mapflag	pvp_nightmaredrop	random,equip,10000

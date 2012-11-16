@@ -1,0 +1,78 @@
+// WoE Setter 3 Plug-in
+// Player -  Secure Guild Storage
+// By: [GM]Xeon
+// Version: 1.0.0
+
+-	script	WoES3Pl_RGBank	-1,{
+end;
+OnLoadPlugins: //The following section adds the plug-in to the main NPC
+	if (!query_sql("show columns from `guild` like 'gbank'",.@ignore,.@ignore,.@ignore,.@ignore,.@ignore,.@ignore)) query_sql("ALTER TABLE `guild` ADD COLUMN `gbank_pass` VARCHAR(32) AFTER `emblem_data`, ADD COLUMN `gbank` BIGINT UNSIGNED NOT NULL DEFAULT 0 AFTER `gbank_pass`",.@ignore);
+	set $@woes3_pl_playermenu$[getarraysize($@woes3_pl_playermenu$)], "Guild Bank Account";
+	set $@woes3_pl_player$[getarraysize($@woes3_pl_player$)], "GBank";
+	end;
+}
+
+function	script	WoES3Pl_GBank	{
+	if (!query_sql("show columns from `guild` like 'gbank'",.@ignore,.@ignore,.@ignore,.@ignore,.@ignore)) { mes "There was a critical database error. Please report this to a GM!"; return; }
+	mes "[Guild Bank]";
+	if (!getcharid(2)) { mes "You must be in a guild to use this function!"; return; }
+	query_sql("select gbank,gbank_pass from `guild` where `guild_id` = '"+getcharid(2)+"'",@gbankacc,@gpass$);
+	mes "Current guild bank account balance is: "+@gbankacc+" zeny";
+	next;
+L_Menu:
+	menu "Deposit:Withdraw"+((getcharid(0) == getguildmasterid(getcharid(2)))?":Settings":""),-,"Back",L_Return;
+	mes "[Guild Bank]";
+	switch(@menu) {
+		case 1:
+			mes "Enter the amount";
+			input @amt;
+			if (Zeny < @amt) {
+				mes "You don't have enough zeny!!";
+				break;
+			}
+			//query
+			set Zeny, Zeny-@amt;
+			query_sql("update `guild` set `gbank` = `gbank`+"+@amt+" where `guild_id` = '"+getcharid(2)+"'",@ignore);
+			mes @amt+" zeny deposited.";
+			break;
+		case 2:
+			if (@gpass$ != "") {
+				mes "Enter the guild bank password.";
+				input @pass$;
+				if (@pass$ != @gpass$) {
+					mes "Invalid password!";
+					break;
+				}
+			}
+			mes "Enter the amount to withdraw.";
+			input @amt;
+			query_sql("select gbank from `guild` where `guild_id` = '"+getcharid(2)+"'",@gbankacc);
+			if (@gbankacc < @amt) {
+				mes "The guild bank account doesn't have that much zeny!";
+				break;
+			}
+			set Zeny, Zeny+@amt;
+			query_sql("update `guild` set `gbank` = `gbank`-"+@amt+" where `guild_id` = '"+getcharid(2)+"'",@ignore);
+			mes @amt+" zeny withdrawn.";
+			break;
+		case 3:
+			switch(select("Set password","BacK")) {
+				case 1:
+					mes "Enter the password. It must be at MOST 32 characters.";
+					input @pass$;
+					if (getstrlen(@pass$) > 32) {
+						mes "Password is too long!";
+						break;
+					}
+					query_sql("update `guild` set `gbank_pass` = '"+escape_sql(@pass$)+"' where `guild_id` = '"+getcharid(2)+"'",@ignore);
+					break;
+				case 2: break;
+					
+			}
+			break;
+	}
+	next;
+	goto L_Menu;
+L_Return:
+	return;
+}
