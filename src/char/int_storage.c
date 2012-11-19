@@ -18,8 +18,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-// ファイル名のデフォルト
-// inter_config_read()で再設定される
+// inter_config_read()
 char storage_txt[1024]="save/storage.txt";
 char guild_storage_txt[1024]="save/g_storage.txt";
 
